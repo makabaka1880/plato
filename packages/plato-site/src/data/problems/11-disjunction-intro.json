@@ -1,0 +1,36 @@
+{
+  "description": "Having one thing means having it \u2014 or something else entirely.",
+  "goal": "(-> A (or A B))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "The goal is $A \\to (A \\lor B)$. Read it aloud: if $A$ is true, then $A$ or $B$ is true. This is inescapable \u2014 adding an alternative can only make a statement **weaker**, never stronger.",
+      "tactic": null
+    },
+    {
+      "text": "An implication goal calls for our standard opening: assume the left-hand side.",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "We have $A$ at step 1. The rule `or-intro-l` takes a truth and slots it onto the **left** side of an $\\lor$. The right side can be anything you like \u2014 here, $B$. This captures the idea: '$A$ is true, so $A$ or $B$ is certainly true.'",
+      "tactic": "(or-intro-l 1 B)"
+    },
+    {
+      "text": "Now discard the assumption. We proved $A \\lor B$ by relying on $A$ \u2014 so $A \\to (A \\lor B)$ stands on its own.",
+      "tactic": "(->-intro A 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "\u2228-intro-l",
+      "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}",
+      "description": "If you've proved $p$, you've proved $p \\lor q$ \u2014 because the left side is already true. The $q$ can be anything."
+    },
+    {
+      "name": "\u2228-intro-r",
+      "rule": "\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}",
+      "description": "If you've proved $q$, you've proved $p \\lor q$ \u2014 because the right side is already true. The $p$ can be anything."
+    }
+  ]
+}

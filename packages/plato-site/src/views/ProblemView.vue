@@ -3,6 +3,7 @@ import { computed, ref, watch, nextTick } from 'vue'
 import type { Problem } from '@/types'
 import { useProblemLatex } from '@/composables/useProblemLatex'
 import { useVictory } from '@/composables/useVictory'
+import { useProgressStore } from '@/stores/progress'
 import Katex from '@/components/Katex.vue'
 import InlineLatex from '@/components/InlineLatex.vue'
 import ProofRepl from '@/components/ProofRepl.vue'
@@ -10,18 +11,21 @@ import PreferenceModal from '@/components/PreferenceModal.vue'
 import TacticSidebar from '@/components/TacticSidebar.vue'
 
 const props = defineProps<{
-  problemIdx: number
-  problems: Problem[]
+    problemIdx: number
+    problems: Problem[]
 }>()
 
 const emit = defineEmits<{
-  next: []
-  prev: []
-  home: []
+    next: []
+    prev: []
+    home: []
 }>()
 
 const problem = computed(() => props.problems[props.problemIdx] ?? null)
-const hasNext = computed(() => props.problemIdx < props.problems.length - 1)
+const hasNext = computed(() =>
+  props.problemIdx < props.problems.length - 1 &&
+  props.problemIdx < progress.highestSolved + 1
+)
 const hasPrev = computed(() => props.problemIdx > 0)
 
 const problemRef = computed(() => problem.value)
@@ -33,190 +37,330 @@ const agreed = ref(false)
 const showRepl = ref(false)
 
 watch(() => props.problemIdx, () => {
-  agreed.value = false
-  showRepl.value = false
-  victory.solved.value = false
-  updateLatex()
+    agreed.value = false
+    showRepl.value = false
+    victory.solved.value = false
+    updateLatex()
 })
 
 async function onAgree() {
-  agreed.value = true
-  await nextTick()
-  setTimeout(() => { showRepl.value = true }, 500)
+    agreed.value = true
+    await nextTick()
+    setTimeout(() => { showRepl.value = true }, 500)
 }
 
+const progress = useProgressStore()
+
 function onSolved() {
-  if (problem.value) {
-    victory.fire(problem.value.unlocks)
-  }
+    if (problem.value) {
+        victory.fire(problem.value.unlocks)
+        progress.markSolved(props.problemIdx)
+    }
 }
 </script>
 
 <template>
-  <div v-if="!problem" class="not-found">
-    Problem not found.
-  </div>
-  <div v-else class="root-row">
-    <div class="root">
-      <div class="header">
-        <button class="logo" @click="emit('home')">Plato</button>
-        <span class="sep">/</span>
-        <span>{{ props.problemIdx + 1 }} / {{ props.problems.length }}</span>
-        <span class="spacer"></span>
-        <span class="goal-chip">{{ problem.goal }}</span>
-        <button class="gear-btn" @click="prefsOpen = true" title="preferences">⚙</button>
-      </div>
-
-      <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
-
-      <div class="body">
-        <Transition name="fade-up">
-          <div v-if="!agreed" class="prompt">
-            <div class="prove-label">MAKE ME BELIEVE</div>
-            <div class="prove-desc">
-              <InlineLatex :text="problem.description" />
-            </div>
-            <div class="goal-line">
-              <span v-if="problem.premise" class="premise-label">PREMISE</span>
-              <span v-if="problem.premise" class="premise-katex">
-                <Katex :expr="premiseLatex" />
-              </span>
-              <span class="goal-label">GOAL</span>
-              <span class="goal-katex">
-                <Katex :expr="goalLatex" />
-              </span>
-            </div>
-            <button class="agree-btn" @click="onAgree">Agree</button>
-          </div>
-        </Transition>
-
-        <Transition name="fade-in">
-          <ProofRepl
-            v-if="agreed && showRepl"
-            :goal-latex="goalLatex"
-            :premise-latex="premiseLatex"
-            :goal="problem.goal"
-            :premise="problem.premise"
-            :guides="problem.guides"
-            :hints="problem.hints"
-            @solved="onSolved"
-            style="flex:1;overflow:hidden"
-          />
-        </Transition>
-
-        <Transition name="fade-in">
-          <div v-if="victory.solved.value" class="victory-overlay">
-            <div class="victory">
-              <div class="victory-text">I believe you.</div>
-              <button v-if="hasNext" class="victory-btn" @click="emit('next')">
-                next problem &rarr;
-              </button>
-              <button v-else class="victory-btn" @click="emit('home')">
-                back home
-              </button>
-            </div>
-          </div>
-        </Transition>
-      </div>
-
-      <div class="footer">
-        <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">&larr; prev</button>
-        <span class="spacer"></span>
-        <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">next &rarr;</button>
-      </div>
+    <div v-if="!problem" class="not-found">
+        Problem not found.
     </div>
+    <div v-else class="root-row">
+        <div class="root">
+            <div class="header">
+                <button class="logo" @click="emit('home')">Plato</button>
+                <span class="sep">/</span>
+                <span>{{ props.problemIdx + 1 }} / {{ props.problems.length }}</span>
+                <span class="spacer"></span>
+                <span class="goal-chip">{{ problem.goal }}</span>
+                <button class="gear-btn" @click="prefsOpen = true" title="preferences">⚙</button>
+            </div>
 
-    <TacticSidebar />
-  </div>
+            <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
+
+            <div class="body">
+                <Transition name="fade-up">
+                    <div v-if="!agreed" class="prompt">
+                        <div class="prove-label">MAKE ME BELIEVE</div>
+                        <div class="prove-desc">
+                            <InlineLatex :text="problem.description" />
+                        </div>
+                        <div class="goal-line">
+                            <span v-if="problem.premise" class="premise-label">PREMISE</span>
+                            <span v-if="problem.premise" class="premise-katex">
+                                <Katex :expr="premiseLatex" />
+                            </span>
+                            <span class="goal-label">GOAL</span>
+                            <span class="goal-katex">
+                                <Katex :expr="goalLatex" />
+                            </span>
+                        </div>
+                        <button class="agree-btn" @click="onAgree">Agree</button>
+                    </div>
+                </Transition>
+
+                <Transition name="fade-in">
+                    <ProofRepl v-if="agreed && showRepl" :goal-latex="goalLatex" :premise-latex="premiseLatex"
+                        :goal="problem.goal" :premise="problem.premise" :guides="problem.guides" :hints="problem.hints"
+                        @solved="onSolved" style="flex:1;overflow:hidden" />
+                </Transition>
+
+                <Transition name="fade-in">
+                    <div v-if="victory.solved.value" class="victory-overlay">
+                        <div class="victory">
+                            <div class="victory-text">I believe you.</div>
+                            <button v-if="hasNext" class="victory-btn" @click="emit('next')">
+                                next problem &rarr;
+                            </button>
+                            <button v-else class="victory-btn" @click="emit('home')">
+                                back home
+                            </button>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+
+            <div class="footer">
+                <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">&larr; prev</button>
+                <span class="spacer"></span>
+                <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">next &rarr;</button>
+            </div>
+        </div>
+
+        <TacticSidebar />
+    </div>
 </template>
 
 <style scoped>
-.root-row { display: flex; flex-direction: row; height: 100%; }
-.root { display: flex; flex-direction: column; height: 100%; flex: 1; overflow: hidden; }
+.root-row {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
 .header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px; border-bottom: 1px solid var(--color-border);
-  font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 14px;
 }
+
 .logo {
-  text-decoration: none; font-weight: 600; color: inherit;
-  border: none; background: none; cursor: pointer;
-  font-family: inherit; font-size: inherit; padding: 0;
+    text-decoration: none;
+    font-weight: 600;
+    color: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
 }
-.sep { color: var(--color-border-strong); }
-.spacer { flex: 1; }
-.goal-chip { font-size: 13px; color: var(--color-muted); }
+
+.sep {
+    color: var(--color-border-strong);
+}
+
+.spacer {
+    flex: 1;
+}
+
+.goal-chip {
+    font-size: 13px;
+    color: var(--color-muted);
+}
+
 .gear-btn {
-  background: none; border: none; font-size: 16px;
-  cursor: pointer; opacity: 0.35; padding: 0 4px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.35;
+    padding: 0 4px;
 }
-.gear-btn:hover { opacity: 0.7; }
-.body { flex: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+
+.gear-btn:hover {
+    opacity: 0.7;
+}
+
+.body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
 .footer {
-  display: flex; gap: 8px; padding: 8px 12px;
-  border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--color-border);
 }
-.nav-btn { padding: 4px 12px; font-family: inherit; font-size: 13px; cursor: pointer; }
-.not-found { padding: 32px; }
+
+.nav-btn {
+    padding: 4px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.not-found {
+    padding: 32px;
+}
 
 /* ── prompt ─────────────────────── */
 .prompt {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center; padding: 40px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
 }
+
 .prove-label {
-  font-size: 13px; font-weight: 600; letter-spacing: 0.1em;
-  color: var(--color-muted); margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    margin-bottom: 16px;
 }
+
 .prove-desc {
-  font-size: clamp(20px, 4vw, 32px);
-  max-width: 700px; line-height: 1.45; margin-bottom: 32px;
+    font-size: clamp(20px, 4vw, 32px);
+    max-width: 700px;
+    line-height: 1.45;
+    margin-bottom: 32px;
 }
+
 .goal-line {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 15px; color: var(--color-subtle); margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--color-subtle);
+    margin-bottom: 32px;
 }
-.premise-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--color-border-strong); }
-.premise-katex { font-size: 16px; color: var(--color-muted); margin-right: 16px; }
-.goal-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #aaa; }
-.goal-katex { font-size: 18px; color: var(--color-primary-hover); }
+
+.premise-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--color-border-strong);
+}
+
+.premise-katex {
+    font-size: 16px;
+    color: var(--color-muted);
+    margin-right: 16px;
+}
+
+.goal-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #aaa;
+}
+
+.goal-katex {
+    font-size: 18px;
+    color: var(--color-primary-hover);
+}
+
 .agree-btn {
-  font-family: inherit; font-size: 14px;
-  padding: 8px 32px; cursor: pointer;
-  background: var(--color-primary); color: var(--color-primary-fg); border: none;
-  border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 8px 32px;
+    cursor: pointer;
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+    border: none;
+    border-radius: 4px;
 }
-.agree-btn:hover { background: var(--color-primary-hover); }
+
+.agree-btn:hover {
+    background: var(--color-primary-hover);
+}
 
 /* ── victory ───────────────────── */
 .victory-overlay {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.92);
-  z-index: 10;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.92);
+    z-index: 10;
 }
-.victory { text-align: center; }
+
+.victory {
+    text-align: center;
+}
+
 .victory-text {
-  font-size: clamp(28px, 5vw, 48px);
-  font-weight: 400; margin-bottom: 28px;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 400;
+    margin-bottom: 28px;
 }
+
 .victory-btn {
-  font-family: inherit; font-size: 15px;
-  padding: 8px 28px; cursor: pointer;
-  background: var(--color-primary); color: var(--color-primary-fg); border: none;
-  border-radius: 4px; display: inline-block;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 8px 28px;
+    cursor: pointer;
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+    border: none;
+    border-radius: 4px;
+    display: inline-block;
 }
-.victory-btn:hover { background: var(--color-primary-hover); }
+
+.victory-btn:hover {
+    background: var(--color-primary-hover);
+}
 
 /* ── transitions ────────────────── */
-.fade-up-enter-active { transition: all 0.4s ease; }
-.fade-up-leave-active { transition: all 0.4s ease; }
-.fade-up-enter-from { opacity: 0; transform: translateY(12px); }
-.fade-up-leave-to   { opacity: 0; transform: translateY(-12px); }
+.fade-up-enter-active {
+    transition: all 0.4s ease;
+}
 
-.fade-in-enter-active { transition: opacity 0.4s ease 0.3s; }
-.fade-in-leave-active { transition: opacity 0.15s ease; }
-.fade-in-enter-from { opacity: 0; }
-.fade-in-leave-to   { opacity: 0; }
+.fade-up-leave-active {
+    transition: all 0.4s ease;
+}
+
+.fade-up-enter-from {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.fade-up-leave-to {
+    opacity: 0;
+    transform: translateY(-12px);
+}
+
+.fade-in-enter-active {
+    transition: opacity 0.4s ease 0.3s;
+}
+
+.fade-in-leave-active {
+    transition: opacity 0.15s ease;
+}
+
+.fade-in-enter-from {
+    opacity: 0;
+}
+
+.fade-in-leave-to {
+    opacity: 0;
+}
 </style>

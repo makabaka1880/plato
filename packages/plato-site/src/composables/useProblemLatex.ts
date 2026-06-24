@@ -20,11 +20,9 @@ export function useProblemLatex(problem: Ref<Problem | undefined | null>) {
   function update() {
     if (SessionClass && problem.value) {
       goalLatex.value = SessionClass.formulaLatex(problem.value.goal)
-      if (problem.value.premise) {
+      if (problem.value.premise.length > 0) {
         premiseLatex.value = problem.value.premise
-          .split(/\s+/)
-          .filter(Boolean)
-          .map((a: string) => SessionClass.formulaLatex(a))
+          .map(a => SessionClass.formulaLatex(a))
           .join(', ')
       } else {
         premiseLatex.value = ''

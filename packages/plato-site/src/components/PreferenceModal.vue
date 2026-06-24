@@ -1,9 +1,28 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { usePreferencesStore } from '@/stores/preferences'
 
-defineEmits<{ close: [] }>()
+const emit = defineEmits<{ close: [] }>()
 
 const prefs = usePreferencesStore()
+const doneBtn = ref<HTMLButtonElement | null>(null)
+
+function onDocKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    e.preventDefault()
+    emit('close')
+  }
+}
+
+onMounted(async () => {
+  await nextTick()
+  doneBtn.value?.focus()
+  document.addEventListener('keydown', onDocKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', onDocKeydown)
+})
 </script>
 
 <template>
@@ -18,7 +37,7 @@ const prefs = usePreferencesStore()
         </button>
       </div>
 
-      <button class="done-btn" @click="emit('close')">done</button>
+      <button ref="doneBtn" class="done-btn" @click="emit('close')">done</button>
     </div>
   </div>
 </template>

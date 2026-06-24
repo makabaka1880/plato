@@ -1,7 +1,7 @@
 {
   "description": "I am, therefore I am.",
-  "goal": "(imp I I)",
-  "premise": "",
+  "goal": "(-> I I)",
+  "premise": [],
   "guides": [
     {
       "text": "Let's first understand the goal. $I \\to I$ means '$I$ implies $I$' — if $I$ is true, then $I$ is true. Hardly controversial."
@@ -17,7 +17,7 @@
       "text": "So $\\{I\\} \\vdash I$ reads: 'given $I$, we can deduce $I$'. Which is just a fancy way of saying: if you know $I$, you know $I$."
     },
     {
-      "text": "Now, '$A$ implies $B$' **means** that $B$ follows from assuming $A$. We already have $\\{I\\} \\vdash I$. Use `->-intro` to discharge the assumption and close the proof:",
+      "text": "Now, '$A$ implies $B$' **means** that $B$ follows from assuming $A$. We already have $\\{I\\} \\vdash I$ at step 1. Use `->-intro` to discharge the assumption $I$ and close the proof. Its first argument is the formula you want to discharge and the second is the step number:",
       "tactic": "(->-intro I 1)"
     }
   ],

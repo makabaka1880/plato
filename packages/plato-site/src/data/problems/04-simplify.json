@@ -1,0 +1,36 @@
+{
+  "description": "If two things are true, then one thing is true.",
+  "goal": "(-> (and A B) A)",
+  "premise": [],
+  "guides": [
+    {
+      "text": "We're proving $A \\land B \\to A$. In words: if both $A$ and $B$ are true, then certainly $A$ is true. The logic is hard to argue with.",
+      "tactic": null
+    },
+    {
+      "text": "As always with an implication, we start by assuming the left-hand side. This time the left-hand side is a conjunction: $A \\land B$.",
+      "tactic": "(assume (and A B))"
+    },
+    {
+      "text": "Now we have $A \\land B$ at step 1. The rule `and-elim-l` extracts the **left** half of a conjunction \u2014 the $A$ from $A \\land B$. Think of it as knowing both means knowing each.",
+      "tactic": "(and-elim-l 1)"
+    },
+    {
+      "text": "We set out to get $A$ under the assumption $A \\land B$, and we have it. Use `->-intro` to discharge the assumption. Notice the first argument is $(A \\land B)$ — the formula you discharge doesn't have to be a bare atom, it can be any formula.",
+      "tactic": "(->-intro (and A B) 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "\u2227-elim-l",
+      "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}",
+      "description": "If you know $p \\land q$, then you know $p$ \u2014 the left half of the conjunction."
+    },
+    {
+      "name": "\u2227-elim-r",
+      "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}",
+      "description": "If you know $p \\land q$, then you know $q$ \u2014 the right half of the conjunction."
+    }
+  ]
+}

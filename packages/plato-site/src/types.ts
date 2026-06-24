@@ -1,7 +1,7 @@
 export interface Problem {
     id: number
     description: string
-    premise: string
+    premise: string[]
     goal: string
     guides: Hint[]
     hints: Hint[]

@@ -1,7 +1,7 @@
 {
     "description": "Two things are true.",
     "goal": "(and A B)",
-    "premise": "A B",
+    "premise": ["A", "B"],
     "guides": [
         {
             "text": "We're told two things are true — $A$ and $B$. Our job is to prove that they're **both** true, written $A \\land B$."

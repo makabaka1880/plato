@@ -1,0 +1,47 @@
+{
+  "description": "When either path leads to the same city, the fork doesn't matter.",
+  "goal": "(-> (or A B) (or B A))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "The goal is $(A \\lor B) \\to (B \\lor A)$. If you squint, it just says: '$A$ or $B$' and '$B$ or $A$' are the same claim. Disjunction doesn't care about order. But we have to **prove** it, which means we need a new tool: proof by cases.",
+      "tactic": null
+    },
+    {
+      "text": "Start as usual for an implication: assume the left side, $A \\lor B$. This will be the disjunction we eliminate by cases.",
+      "tactic": "(assume (or A B))"
+    },
+    {
+      "text": "The strategy: we'll prove $B \\lor A$ **twice** \u2014 once from assuming $A$, once from assuming $B$. If both paths reach the same destination, then the disjunction $A \\lor B$ guarantees that destination. First, assume the left disjunct: $A$.",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "From $A$, we need to build $B \\lor A$. Since $A$ is our truth and we want it on the **right** of $\\lor$, use `or-intro-r`. The left side can be anything \u2014 let it be $B$.",
+      "tactic": "(or-intro-r 2 B)"
+    },
+    {
+      "text": "One case done. Now assume the right disjunct: $B$.",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "From $B$, we again need $B \\lor A$. This time $B$ goes on the **left**, so use `or-intro-l` with $A$ as the right side.",
+      "tactic": "(or-intro-l 4 A)"
+    },
+    {
+      "text": "Here is the payoff. We have $A \\lor B$ at step 1. From $A$ we proved $B \\lor A$ (step 3). From $B$ we also proved $B \\lor A$ (step 5). The rule `or-elim` \u2014 **proof by cases** \u2014 lets us conclude $B \\lor A$ outright. It takes three arguments: the disjunction, the left-case proof, and the right-case proof.",
+      "tactic": "(or-elim 1 3 5)"
+    },
+    {
+      "text": "We've reached $B \\lor A$ under the assumption $A \\lor B$. One final `->-intro` discharges that assumption and the proof is complete.",
+      "tactic": "(->-intro (or A B) 6)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "\u2228-elim",
+      "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}",
+      "description": "If $p \\lor q$ is true, and both $p$ and $q$ independently lead to $r$, then $r$ is true regardless. Reason by cases \u2014 exhaust the possibilities."
+    }
+  ]
+}

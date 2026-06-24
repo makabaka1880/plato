@@ -1,14 +1,14 @@
 {
     "description": "When you know yourself, you know yourself twice over.",
     "goal": "(-> A (and A A))",
-    "premise": "",
+    "premise": [],
     "guides": [],
     "hints": [
         {
             "text": "When your goal is an implication $A \\to B$, the standard approach is to assume the left-hand side and then prove the right-hand side. Try starting there."
         },
         {
-            "text": "You now have $A$ in your context. To prove $A \\land A$, you need two copies of the same truth — one for each side of the $\\land$.",
+            "text": "Assume $A$ to bring it into your context. To prove $A \\land A$, you'll need two copies of the same truth — one for each side of the $\\land$.",
             "tactic": "(assume A)"
         },
         {

@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import type { Hint } from '@/types'
 import InlineLatex from './InlineLatex.vue'
 
-defineProps<{ guide: Hint }>()
+const props = defineProps<{ guide: Hint }>()
 
 const emit = defineEmits<{
     insert: [tactic: string]
     dismiss: []
 }>()
+
+const okBtn = ref<HTMLButtonElement | null>(null)
+
+onMounted(() => {
+  if (!props.guide.tactic) okBtn.value?.focus()
+})
 </script>
 
 <template>
@@ -17,7 +24,7 @@ const emit = defineEmits<{
         <button v-if="guide.tactic" class="tactic" @click="emit('insert', guide.tactic!)">
             {{ guide.tactic }}
         </button>
-        <button v-else class="ok" @click="emit('dismiss')">OK</button>
+        <button v-else ref="okBtn" class="ok" @click="emit('dismiss')">OK</button>
     </div>
 </template>
 

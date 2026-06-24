@@ -1,0 +1,29 @@
+{
+  "description": "If two things are true, then the second thing is also true.",
+  "goal": "(-> (and A B) B)",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "This is the mirror image of the last problem. The goal is $A \\land B \\to B$ \u2014 it should feel just as obvious. Start exactly the same way: assume the conjunction.",
+      "tactic": null
+    },
+    {
+      "text": "Assume $A \\land B$ to get started.",
+      "tactic": "(assume (and A B))"
+    },
+    {
+      "text": "Last time you used `and-elim-l` to get the left half. This time you need the **other** side. Which elimination rule takes the right half?",
+      "tactic": null
+    },
+    {
+      "text": "Use `and-elim-r` on step 1 to extract $B$.",
+      "tactic": "(and-elim-r 1)"
+    },
+    {
+      "text": "Now discharge the assumption to finish the implication.",
+      "tactic": "(->-intro (and A B) 2)"
+    }
+  ],
+  "unlocks": []
+}

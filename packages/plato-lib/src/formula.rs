@@ -86,18 +86,89 @@ impl PropWWF {
         }
     }
 
-    /// Returns a LaTeX representation.
+    /// Returns a LaTeX representation with explicit parentheses
+    /// for compound sub-formulas so the structure is unambiguous.
     /// `A`, `\top`, `\bot`, `A \land B`, `A \lor B`, `\lnot A`, `A \to B`.
     pub fn latex(&self) -> String {
         match self {
             Self::Top => "\\top".into(),
             Self::Bottom => "\\bot".into(),
             Self::Atom(s) => s.clone(),
-            Self::Neg(p) => format!("\\lnot {}", p.latex()),
-            Self::Conj(p, q) => format!("{} \\land {}", p.latex(), q.latex()),
-            Self::Disj(p, q) => format!("{} \\lor {}", p.latex(), q.latex()),
-            Self::Imp(ant, consq) => format!("{} \\to {}", ant.latex(), consq.latex()),
+            Self::Neg(p) => {
+                let inner = p.latex();
+                if p.is_compound() {
+                    format!("\\lnot \\left({}\\right)", inner)
+                } else {
+                    format!("\\lnot {}", inner)
+                }
+            }
+            Self::Conj(p, q) => format!(
+                "{} \\land {}",
+                p.latex_child(),
+                q.latex_child()
+            ),
+            Self::Disj(p, q) => format!(
+                "{} \\lor {}",
+                p.latex_child(),
+                q.latex_child()
+            ),
+            Self::Imp(ant, consq) => format!(
+                "{} \\to {}",
+                ant.latex_child(),
+                consq.latex_child()
+            ),
         }
+    }
+
+    /// Whether this formula is compound (needs parentheses when used as a child).
+    fn is_compound(&self) -> bool {
+        matches!(
+            self,
+            Self::Conj(..) | Self::Disj(..) | Self::Imp(..) | Self::Neg(..)
+        )
+    }
+
+    /// Render a child formula, parenthesizing it if compound.
+    fn latex_child(&self) -> String {
+        let s = self.latex();
+        if self.is_compound() {
+            format!("\\left({}\\right)", s)
+        } else {
+            s
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    fn f(s: &str) -> String {
+        use crate::parser::sexpr;
+        let tokens = sexpr::tokenize(s);
+        let sexpr = sexpr::parse_one(&tokens).unwrap();
+        crate::parser::formula::parse_formula(&sexpr).unwrap().latex()
+    }
+
+    #[test]
+    fn latex_parens() {
+        // Atoms don't get parenthesized
+        assert_eq!(f("A"), "A");
+        // Simple binary — no internal parens needed
+        assert_eq!(f("(and A B)"), "A \\land B");
+        // Nesting: compound child gets wrapped
+        assert_eq!(f("(-> A (or A B))"), "A \\to \\left(A \\lor B\\right)");
+        assert_eq!(
+            f("(-> (and A B) A)"),
+            "\\left(A \\land B\\right) \\to A"
+        );
+        assert_eq!(
+            f("(-> (or A B) (or B A))"),
+            "\\left(A \\lor B\\right) \\to \\left(B \\lor A\\right)"
+        );
+        // Deep nesting: the previously-ambiguous formula
+        assert_eq!(
+            f("(-> (and (or A B) (-> A C)) (or C B))"),
+            "\\left(\\left(A \\lor B\\right) \\land \\left(A \\to C\\right)\\right) \\to \\left(C \\lor B\\right)"
+        );
     }
 }
 

@@ -5,9 +5,11 @@ import { usePreferencesStore } from '@/stores/preferences'
 import Katex from '@/components/Katex.vue'
 import GuideCard from './GuideCard.vue'
 import HintCard from './HintCard.vue'
+import HelpModal from './HelpModal.vue'
 import { useProofSession } from '@/composables/useProofSession'
 import { useGuideProgression } from '@/composables/useGuideProgression'
 import { useHints } from '@/composables/useHints'
+import { useBracketPairing } from '@/composables/useBracketPairing'
 
 const props = defineProps<{
   goalLatex: string
@@ -26,7 +28,7 @@ const inpEl = ref<HTMLInputElement | null>(null)
 const {
   ready, input, entries,
   stepLatex, run: sessionRun, reset: sessionReset,
-  insertTactic, isGoalResolved, SessionClass,
+  insertTactic: _insertTactic, isGoalResolved, SessionClass,
 } = useProofSession()
 
 const rawText = computed(() =>
@@ -47,11 +49,22 @@ const guideInputDisabled = computed(() =>
   visibleGuide.value !== null && !visibleGuide.value.tactic
 )
 
+// ── help modal ──────────────────────────────────────────────────────
+const showHelp = ref(false)
+
 // ── execute ───────────────────────────────────────────────────────
 function run() {
   const expr = input.value.trim()
   if (!expr) return
   input.value = ''
+
+  // Intercept help / ? / (help) — show the help panel instead of sending to WASM.
+  const norm = expr.replace(/[()]/g, '').trim()
+  if (norm === 'help' || norm === '?') {
+    showHelp.value = true
+    scrollDown()
+    return
+  }
 
   const g = visibleGuide.value
   if (g && g.tactic && !SessionClass.value.tacticEquals(g.tactic, expr)) {
@@ -97,7 +110,93 @@ function reset() {
   sessionReset()
   guideReset()
   hintsReset()
+  history.value = []
+  historyIdx.value = -1
+  savedDraft = ''
   inpEl.value?.focus()
+}
+
+const { onKeydown: onBracketKeydown } = useBracketPairing(input, inpEl)
+
+// ── command history ───────────────────────────────────────────────
+const history = ref<string[]>([])
+const historyIdx = ref(-1)
+let savedDraft = ''
+
+function onKeydown(e: KeyboardEvent) {
+  onBracketKeydown(e)
+  if (e.key === 'Enter' && !e.defaultPrevented) {
+    const cmd = input.value.trim()
+
+    // ── empty input: fill in the most prominent tactic ──────────
+    if (!cmd) {
+      const g = visibleGuide.value
+      if (g?.tactic) {
+        insertTactic(g.tactic)
+        return
+      }
+      for (const i of openHints.value) {
+        const h = props.hints[i]
+        if (h?.tactic) {
+          insertTactic(h.tactic)
+          return
+        }
+      }
+      for (const i of openHints.value) {
+        if (!props.hints[i]?.tactic) {
+          dismissHint(i)
+          return
+        }
+      }
+      return
+    }
+
+    if (history.value.length === 0 || history.value[history.value.length - 1] !== cmd) {
+      history.value.push(cmd)
+    }
+    historyIdx.value = history.value.length
+    savedDraft = ''
+    run()
+    return
+  }
+  if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    if (historyIdx.value === history.value.length) {
+      savedDraft = input.value
+    }
+    if (historyIdx.value > 0) {
+      historyIdx.value--
+      input.value = history.value[historyIdx.value]
+    }
+    return
+  }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    if (historyIdx.value < history.value.length - 1) {
+      historyIdx.value++
+      input.value = history.value[historyIdx.value]
+    } else if (historyIdx.value === history.value.length - 1) {
+      historyIdx.value = history.value.length
+      input.value = savedDraft
+    }
+    return
+  }
+}
+
+/** Enter on the repl container: dismiss text-only guides/hints when input is disabled. */
+function onReplKeydown(e: KeyboardEvent) {
+  if (e.key !== 'Enter') return
+  // let the input's own handler deal with this
+  if (e.target === inpEl.value) return
+  if (guideInputDisabled.value) {
+    e.preventDefault()
+    advanceGuide()
+  }
+}
+
+function insertTactic(tactic: string) {
+  _insertTactic(tactic)
+  nextTick(() => inpEl.value?.focus())
 }
 
 defineExpose({ insertTactic })
@@ -105,7 +204,7 @@ defineExpose({ insertTactic })
 
 <template>
   <div v-if="!ready" class="loading">loading wasm…</div>
-  <div v-else class="repl">
+  <div v-else class="repl" @keydown="onReplKeydown">
     <div class="goal">
       <div v-if="props.premiseLatex" class="premise-line">
         <Katex :expr="props.premiseLatex" />
@@ -172,7 +271,7 @@ defineExpose({ insertTactic })
     <div class="input-wrap">
       <div class="input-row">
         <input
-          ref="inpEl" v-model="input" @keydown.enter="run"
+          ref="inpEl" v-model="input" @keydown="onKeydown"
           :disabled="guideInputDisabled"
           :placeholder="visibleGuide?.tactic ?? '...'"
           class="repl-input"
@@ -181,7 +280,10 @@ defineExpose({ insertTactic })
           →
         </button>
       </div>
+      <div class="help-hint">type <code>help</code> or <code>?</code> to see available commands</div>
     </div>
+
+    <HelpModal v-if="showHelp" @close="showHelp = false" />
   </div>
 </template>
 
@@ -271,4 +373,14 @@ defineExpose({ insertTactic })
 }
 .submit-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .submit-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.help-hint {
+  text-align: center; font-size: 11px; color: var(--color-border-strong);
+  margin-top: 6px; opacity: 0.5;
+}
+.help-hint code {
+  font-family: inherit; font-size: 11px;
+  padding: 0 3px; border: 1px solid var(--color-border);
+  border-radius: 2px; background: var(--color-subtle-bg);
+}
 </style>
