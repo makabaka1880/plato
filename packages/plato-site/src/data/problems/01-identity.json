@@ -1,0 +1,37 @@
+{
+  "description": "I am, therefore I am.",
+  "goal": "(imp I I)",
+  "premise": "",
+  "guides": [
+    {
+      "text": "Let's first understand the goal. $I \\to I$ means '$I$ implies $I$' — if $I$ is true, then $I$ is true. Hardly controversial."
+    },
+    {
+      "text": "To prove an implication, we assume the left-hand side and try to reach the right-hand side. So let's assume $I$.",
+      "tactic": "(assume I)"
+    },
+    {
+      "text": "The symbol $\\vdash$ is pronounced 'entails'. Everything to its left is the **context** — a set of propositions we're allowed to take for granted. The right-hand side is what we can conclude from them."
+    },
+    {
+      "text": "So $\\{I\\} \\vdash I$ reads: 'given $I$, we can deduce $I$'. Which is just a fancy way of saying: if you know $I$, you know $I$."
+    },
+    {
+      "text": "Now, '$A$ implies $B$' **means** that $B$ follows from assuming $A$. We already have $\\{I\\} \\vdash I$. Use `->-intro` to discharge the assumption and close the proof:",
+      "tactic": "(->-intro I 1)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "assume",
+      "rule": "\\frac{}{\\{p\\} \\vdash p}",
+      "description": "If you assume a proposition, you can deduce it — because you just said it's true."
+    },
+    {
+      "name": "→-intro",
+      "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}",
+      "description": "If from assuming $p$ you can reach $q$, then $p$ implies $q$ — and you can safely drop $p$ from the context."
+    }
+  ]
+}

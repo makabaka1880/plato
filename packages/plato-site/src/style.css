@@ -1,0 +1,38 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+}
+
+:root {
+  --color-bg:           #fff;
+  --color-fg:           #111;
+  --color-border:       #eee;
+  --color-border-light: #ddd;
+  --color-border-strong:#ccc;
+  --color-muted:        #999;
+  --color-subtle:       #666;
+  --color-subtle-bg:    #f7f7f7;
+  --color-card-bg:      #fafafa;
+  --color-hint-bg:      #fefef0;
+  --color-hint-border:  #f0f0d0;
+  --color-tactic-bg:    #e8e8e8;
+  --color-tactic-fg:    #444;
+  --color-primary:      #111;
+  --color-primary-fg:   #fff;
+  --color-primary-hover:#333;
+  --color-error:        #c44;
+  --font-mono: 'JetBrains Mono', 'Inconsolata', 'Noto Sans', 'Noto Sans SC', monospace, sans-serif;
+}
+
+body {
+  font-family: var(--font-mono);
+  background: var(--color-bg);
+  color: var(--color-fg);
+}

@@ -1,0 +1,21 @@
+{
+  "name": "plato-lib",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "pkg",
+    "index.js",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "build": "wasm-pack build --target web",
+    "build:release": "wasm-pack build --target web --release",
+    "dev": "cargo watch -w src -s 'wasm-pack build --target web --dev'"
+  },
+  "devDependencies": {
+    "wasm-pack": "^0.13.1"
+  }
+}
