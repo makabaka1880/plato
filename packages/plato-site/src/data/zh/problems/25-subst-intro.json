@@ -8,7 +8,7 @@
       "tactic": null
     },
     {
-      "text": "**[substitution|替换] 规则**说的是：如果一个 [judgement|判断] 在包含某些 [atom|原子] 时成立，那么当你把这些原子统一换成任意 [formula|公式] 时，判断仍然成立。形式上：$\\Gamma \\vdash p$ [implication|蕴含] $\\Gamma[P:=F] \\vdash p[P:=F]$ 对任意 $P$ 和 $F$ 成立。先证明恒等式 $P \\to P$——从第 01 题我们就见过的老朋友。",
+      "text": "**[substitution|替换] 规则**说的是：如果一个 [judgement|断言] 在包含某些 [atom|原子] 时成立，那么当你把这些原子统一换成任意 [formula|公式] 时，断言仍然成立。形式上：$\\Gamma \\vdash p$ [implication|蕴含] $\\Gamma[P:=F] \\vdash p[P:=F]$ 对任意 $P$ 和 $F$ 成立。先证明恒等式 $P \\to P$——从第 01 题我们就见过的老朋友。",
       "tactic": "(assume P)"
     },
     {
@@ -29,7 +29,7 @@
     {
       "name": "subst",
       "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}",
-      "description": "在一个已证明的判断中，统一地把原子替换为任意公式。证明的结构是骨架，具体的符号是皮——换皮不换骨。"
+      "description": "在一个已证明的断言中，统一地把原子替换为任意公式。证明的结构是骨架，具体的符号是皮——换皮不换骨。"
     }
   ]
 }

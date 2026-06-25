@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { usePreferencesStore } from '@/stores/preferences'
 
 const { t, locale } = useI18n()
+const prefs = usePreferencesStore()
+
+function setLocale(loc: string) {
+  locale.value = loc
+  prefs.setLocale(loc)
+}
 
 const props = defineProps<{ hasProgress: boolean }>()
 
@@ -25,11 +32,11 @@ onMounted(() => {
         <div class="lang-switch">
           <button
             :class="{ active: locale === 'en' }"
-            @click="locale = 'en'"
+            @click="setLocale('en')"
           >EN</button>
           <button
             :class="{ active: locale === 'zh' }"
-            @click="locale = 'zh'"
+            @click="setLocale('zh')"
           >中文</button>
         </div>
         <h1>{{ t('home.title') }}</h1>

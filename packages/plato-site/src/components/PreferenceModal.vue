@@ -4,10 +4,16 @@ import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences'
 
 const { t, locale } = useI18n()
+const prefs = usePreferencesStore()
+
+function toggleLocale() {
+  const next = locale.value === 'en' ? 'zh' : 'en'
+  locale.value = next
+  prefs.setLocale(next)
+}
 
 const emit = defineEmits<{ close: [] }>()
 
-const prefs = usePreferencesStore()
 const doneBtn = ref<HTMLButtonElement | null>(null)
 
 function onDocKeydown(e: KeyboardEvent) {
@@ -42,7 +48,7 @@ onUnmounted(() => {
 
       <div class="row">
         <span>{{ t('preferences.language') }}</span>
-        <button class="toggle" @click="locale = locale === 'en' ? 'zh' : 'en'">
+        <button class="toggle" @click="toggleLocale()">
           {{ locale === 'en' ? 'English' : '中文' }}
         </button>
       </div>

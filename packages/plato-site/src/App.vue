@@ -3,12 +3,14 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { loadProblems } from '@/data'
 import { useProgressStore } from '@/stores/progress'
+import { useTacticsStore } from '@/stores/tactics'
 import HomeView from '@/views/HomeView.vue'
 import ProblemView from '@/views/ProblemView.vue'
 
 const { t, locale } = useI18n()
 
 const progress = useProgressStore()
+const tactics = useTacticsStore()
 
 type Page =
     | { type: 'home' }
@@ -28,6 +30,7 @@ function goHome() {
 
 function onStart() {
     progress.reset()
+    tactics.reset()
     page.value = { type: 'problem', idx: 0 }
 }
 

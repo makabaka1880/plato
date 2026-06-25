@@ -85,10 +85,12 @@ export function useProofSession(goal?: Ref<string | undefined>) {
   }
 
   const SessionClassRef = ref<any>(null)
+  const sessionRef = ref<any>(null)
   onMounted(async () => {
     await ensureWasm()
     session = new (SessionClass as any)()
     SessionClassRef.value = SessionClass
+    sessionRef.value = session
     ready.value = true
   })
 
@@ -96,5 +98,6 @@ export function useProofSession(goal?: Ref<string | undefined>) {
     ready, input, entries,
     stepLatex, run, reset, insertTactic, isGoalResolved,
     SessionClass: SessionClassRef as Ref<any>,
+    session: sessionRef as Ref<any>,
   }
 }

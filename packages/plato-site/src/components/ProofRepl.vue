@@ -13,6 +13,8 @@ import { useProofSession } from '@/composables/useProofSession'
 import { useGuideProgression } from '@/composables/useGuideProgression'
 import { useHints } from '@/composables/useHints'
 import { useBracketPairing } from '@/composables/useBracketPairing'
+import { useAutocomplete } from '@/composables/useAutocomplete'
+import { useLiveParse } from '@/composables/useLiveParse'
 
 const { t, locale } = useI18n()
 
@@ -31,10 +33,12 @@ const prefs = usePreferencesStore()
 const inpEl = ref<HTMLInputElement | null>(null)
 
 const {
-    ready, input, entries,
+    ready, input, entries, session,
     stepLatex, run: sessionRun, reset: sessionReset,
     insertTactic: _insertTactic, isGoalResolved, SessionClass,
 } = useProofSession()
+
+const liveParse = useLiveParse(input, session, stepLatex)
 
 const rawText = computed(() =>
     entries.value.map(e => `> ${e.cmd}\n${e.text}`).join('\n')
@@ -133,6 +137,16 @@ function reset() {
 }
 
 const { onKeydown: onBracketKeydown } = useBracketPairing(input, inpEl)
+const stepPreviews = computed(() => {
+  const map: Record<string, string> = {}
+  for (const e of entries.value) {
+    if (e.step !== null) {
+      map[String(e.step)] = stepLatex(e.step)
+    }
+  }
+  return map
+})
+const autocomplete = useAutocomplete(input, inpEl, stepPreviews)
 
 // ── command history ───────────────────────────────────────────────
 const history = ref<string[]>([])
@@ -140,8 +154,23 @@ const historyIdx = ref(-1)
 let savedDraft = ''
 
 function onKeydown(e: KeyboardEvent) {
+    // Autocomplete takes priority when visible
+    if (autocomplete.visible.value) {
+      if (['Tab','ArrowUp','ArrowDown','Escape','Enter'].includes(e.key)) {
+        autocomplete.onKeydown(e)
+        if (e.key !== 'Enter') return
+        // Enter: accept suggestion + close dropdown, don't submit
+        if (e.defaultPrevented) return
+      }
+    }
     onBracketKeydown(e)
+    // Bracket pairing may have moved the cursor without changing input (e.g. skipping past `)`).
+    // Refresh autocomplete so the menu dismisses if we're no longer inside a fragment.
+    if (autocomplete.visible.value) autocomplete.refresh()
     if (e.key === 'Enter' && !e.defaultPrevented) {
+        // ── live parse error: don't submit ────────────────────────
+        if (liveParse.parseError.value) return
+
         const cmd = input.value.trim()
 
         // ── empty input: fill in the most prominent tactic ──────────
@@ -288,12 +317,34 @@ defineExpose({ insertTactic })
 
         <div class="input-wrap">
             <div class="input-row">
-                <input ref="inpEl" v-model="input" @keydown="onKeydown" :disabled="guideInputDisabled"
+                <div v-if="autocomplete.visible.value" class="ac-dropdown">
+                    <div
+                        v-for="(s, i) in autocomplete.suggestions.value.slice(0, 6)"
+                        :key="s.label"
+                        class="ac-item"
+                        :class="{ active: i === autocomplete.activeIndex.value, kindFormula: s.kind === 'formula', kindStep: s.kind === 'step' }"
+                        @click="autocomplete.activeIndex.value = i; autocomplete.accept()"
+                        @mousedown.prevent
+                    >
+                        <span class="ac-label">{{ s.label }}</span>
+                        <span v-if="s.latex" class="ac-desc"><Katex :expr="s.latex" /></span>
+                        <span v-else class="ac-desc">{{ s.description }}</span>
+                    </div>
+                </div>
+                <input ref="inpEl" v-model="input" @keydown="onKeydown" @click="autocomplete.onCursorCheck()" :disabled="guideInputDisabled"
                     :placeholder="visibleGuide?.tactic ?? t('repl.placeholder')" class="repl-input" />
-                <button class="submit-btn" @click="run" :disabled="guideInputDisabled" :title="t('common.submit')">
+                <button class="submit-btn" @click="run" :disabled="guideInputDisabled || !!liveParse.parseError.value" :title="t('common.submit')">
                     →
                 </button>
             </div>
+            <div v-if="liveParse.liveMeta.value" class="live-preview">
+              <span class="live-tag">{{ liveParse.liveMeta.value.cmdName }}</span>
+              <span v-if="liveParse.liveMeta.value.params.F" class="live-param"><InlineLatex :text="'$F$: $' + liveParse.liveMeta.value.params.F + '$'" /></span>
+              <template v-for="(latex, key) in liveParse.liveMeta.value.stepPreviews" :key="key">
+                <span class="live-param"><InlineLatex :text="'$' + key + '$: $' + latex + '$'" /></span>
+              </template>
+            </div>
+            <div v-else-if="liveParse.parseError.value" class="live-preview live-err">{{ liveParse.parseError.value }}</div>
             <div class="help-hint">
               <i18n-t keypath="repl.helpHint" tag="span">
                 <template #cmd><code>help</code></template>
@@ -475,12 +526,66 @@ defineExpose({ insertTactic })
 .input-wrap {
     flex-shrink: 0;
     padding: clamp(12px, 2vh, 20px) clamp(32px, 12vw, 160px) clamp(40px, 10vh, 80px);
+    position: relative;
+}
+
+/* ── autocomplete dropdown ───────── */
+.ac-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px 6px 0 0;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+    z-index: 10;
+    margin-bottom: 4px;
+}
+.ac-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--color-border);
+}
+.ac-item:last-child {
+    border-bottom: none;
+}
+.ac-item.active {
+    background: var(--color-subtle-bg);
+}
+.ac-item.kindFormula {
+    border-top: 1px solid var(--color-border);
+}
+.ac-item.kindStep .ac-desc {
+    white-space: normal;
+    overflow: visible;
+    font-size: 10px;
+}
+.ac-label {
+    font-weight: 600;
+    color: var(--color-primary-hover);
+    flex-shrink: 0;
+    min-width: 60px;
+}
+.ac-desc {
+    color: var(--color-muted);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .input-row {
     display: flex;
     align-items: center;
     gap: 8px;
+    position: relative;
 }
 
 .repl-input {
@@ -527,6 +632,37 @@ defineExpose({ insertTactic })
 .submit-btn:disabled {
     opacity: 0.2;
     cursor: not-allowed;
+}
+
+/* ── live parse preview ─────────── */
+.live-preview {
+    text-align: center;
+    font-size: 11px;
+    color: var(--color-muted);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.live-tag {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.live-param {
+    font-family: inherit;
+}
+.live-param code {
+    font-family: inherit;
+    font-size: 11px;
+    padding: 0 3px;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    background: var(--color-subtle-bg);
+}
+.live-err {
+    color: var(--color-error);
 }
 
 .help-hint {

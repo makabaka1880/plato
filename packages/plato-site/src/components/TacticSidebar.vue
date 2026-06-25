@@ -64,7 +64,7 @@ watch(items, (next) => {
       />
     </TransitionGroup>
     <div v-if="items.length === 0" class="empty">
-      Solve problems to collect tactics
+      {{ t('tactics.empty') }}
     </div>
   </div>
 </template>
@@ -127,16 +127,20 @@ watch(items, (next) => {
 .close-btn:hover { color: var(--color-fg); }
 
 .sidebar {
-  width: 280px; flex-shrink: 0; overflow-y: auto;
-  padding: 20px 18px; border-left: 1px solid var(--color-border);
+  width: min(280px, 15vw); flex-shrink: 0; overflow-y: auto;
+  padding: 16px 14px; border-left: 1px solid var(--color-border);
   height: 100%; box-sizing: border-box;
 }
 .title {
   font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
   color: #bbb; text-transform: uppercase;
+  margin-bottom: 14px;
 }
 .empty {
   font-size: 12px; color: #bbb; line-height: 1.6;
+}
+.sidebar :deep(.card) {
+  margin-bottom: 12px;
 }
 
 .list-enter-active { transition: all 0.35s ease; }

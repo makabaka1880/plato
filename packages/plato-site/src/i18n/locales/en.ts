@@ -18,7 +18,7 @@ export default {
   problem: {
     notFound: 'Problem not found.',
     logo: 'Plato',
-    preferences: 'preferences',
+    preferences: 'Preferences',
     makeMeBelieve: 'MAKE ME BELIEVE',
     premise: 'PREMISE',
     goal: 'GOAL',

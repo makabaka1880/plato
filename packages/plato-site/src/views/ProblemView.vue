@@ -77,7 +77,9 @@ function onSolved(lines: string[]) {
                 <span>{{ props.problemIdx + 1 }} / {{ props.problems.length }}</span>
                 <span class="spacer"></span>
                 <span class="goal-chip">{{ problem.goal }}</span>
-                <button class="gear-btn" @click="prefsOpen = true" :title="t('problem.preferences')">⚙</button>
+                <span class="spacer"></span>
+                <a class="gh-link" href="https://github.com/makabaka1880/plato" target="_blank" title="GitHub">GitHub</a>
+                <button class="prefs-link" @click="prefsOpen = true">{{ t('problem.preferences') }}</button>
             </div>
 
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
@@ -159,9 +161,9 @@ function onSolved(lines: string[]) {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--color-border);
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .logo {
@@ -189,17 +191,34 @@ function onSolved(lines: string[]) {
     color: var(--color-muted);
 }
 
-.gear-btn {
+.prefs-link {
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
     background: none;
     border: none;
-    font-size: 16px;
-    cursor: pointer;
-    opacity: 0.35;
-    padding: 0 4px;
+    color: var(--color-muted);
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
-.gear-btn:hover {
-    opacity: 0.7;
+.prefs-link:hover {
+    color: var(--color-fg);
+    background: var(--color-subtle-bg);
+}
+
+.gh-link {
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--color-muted);
+    text-decoration: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.gh-link:hover {
+    color: var(--color-fg);
+    background: var(--color-subtle-bg);
 }
 
 .body {
@@ -316,6 +335,9 @@ function onSolved(lines: string[]) {
 
 .victory {
     text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px 16px;
 }
 
 .victory-text {
@@ -325,18 +347,18 @@ function onSolved(lines: string[]) {
 }
 
 .proof-scroll {
-    max-height: 40vh;
+    max-height: 35vh;
     overflow-y: auto;
     text-align: left;
     font-size: 13px;
     line-height: 2;
     color: var(--color-subtle);
-    padding: 16px 24px;
-    margin-bottom: 24px;
+    padding: 16px 18px;
+    margin: 0 auto 24px;
     background: var(--color-subtle-bg);
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    max-width: 560px;
+    width: min(560px, 85vw);
     white-space: pre-wrap;
 }
 
