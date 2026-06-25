@@ -52,7 +52,7 @@ const {
 // ── compiled NLG proof ────────────────────────────────────────────
 const proofLines = computed(() =>
   entries.value
-    .filter(e => e.meta)
+    .filter(e => e.step !== null && e.meta)
     .map((e, i) => `${i + 1}. ${nlgText(e.meta!)}`)
 )
 const guideInputDisabled = computed(() =>
@@ -250,9 +250,10 @@ defineExpose({ insertTactic })
                     <div v-if="e.meta" class="nlg"><InlineLatex :text="nlgText(e.meta)" @glossary-click="onGlossaryClick" /></div>
                 </div>
                 <div v-if="e.error" class="err">{{ e.text }}</div>
-                <div v-else class="step">
-                    <Katex :expr="stepLatex(e.step!)" />
+                <div v-else-if="e.step !== null" class="step">
+                    <Katex :expr="stepLatex(e.step)" />
                 </div>
+                <div v-else class="step step-text">{{ e.text }}</div>
             </div>
             <div id="judgements-end" />
         </div>
