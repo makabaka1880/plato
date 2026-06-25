@@ -56,6 +56,7 @@ function renderSeg(seg: Segment) {
   padding: 1px 5px;
   border-radius: 3px;
   font-size: 0.92em;
+  white-space: nowrap;
 }
 .glossary-link {
   text-decoration: underline;

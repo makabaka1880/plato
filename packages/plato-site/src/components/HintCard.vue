@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Hint } from '@/types'
 import InlineLatex from './InlineLatex.vue'
@@ -13,12 +12,6 @@ const emit = defineEmits<{
   dismiss: []
   glossaryClick: [term: string]
 }>()
-
-const okBtn = ref<HTMLButtonElement | null>(null)
-
-onMounted(() => {
-  if (!props.hint.tactic) okBtn.value?.focus()
-})
 
 function onTactic(tactic: string) {
   emit('insert', tactic)

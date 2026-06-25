@@ -52,7 +52,7 @@ onUnmounted(() => {
 
 <template>
     <div class="about-root">
-        <NavBar has-prefs @open-prefs="prefsOpen = true" />
+        <NavBar @open-prefs="prefsOpen = true" />
         <div class="progress-bar">
             <div class="progress-fill" :style="{ width: `${progress * 100}%` }"></div>
         </div>

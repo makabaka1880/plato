@@ -8,10 +8,6 @@ const { t } = useI18n()
 const emit = defineEmits<{
     'open-prefs': []
 }>()
-
-defineProps<{
-    hasPrefs?: boolean
-}>()
 </script>
 
 <template>
@@ -21,7 +17,7 @@ defineProps<{
         <slot />
         <span class="spacer"></span>
         <a class="gh-link" href="https://github.com/makabaka1880/plato" target="_blank" title="GitHub">GitHub</a>
-        <button v-if="hasPrefs !== false" class="prefs-link" @click="emit('open-prefs')">{{ t('problem.preferences') }}</button>
+        <button class="prefs-link" @click="emit('open-prefs')">{{ t('problem.preferences') }}</button>
     </div>
 </template>
 

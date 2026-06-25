@@ -42,7 +42,7 @@ export default {
         premise: 'PREMISE',
         goal: 'GOAL',
         agree: 'Agree',
-        victory: 'I Believe You.',
+        victory: 'I am Convinced.',
         nextProblem: 'Next Problem →',
         backHome: 'Back Home',
         prev: '← Prev',

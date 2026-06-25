@@ -226,17 +226,6 @@ function onKeydown(e: KeyboardEvent) {
     }
 }
 
-/** Enter on the repl container: dismiss text-only guides/hints when input is disabled. */
-function onReplKeydown(e: KeyboardEvent) {
-    if (e.key !== 'Enter') return
-    // let the input's own handler deal with this
-    if (e.target === inpEl.value) return
-    if (guideInputDisabled.value) {
-        e.preventDefault()
-        advanceGuide()
-    }
-}
-
 function insertTactic(tactic: string) {
     _insertTactic(tactic)
     nextTick(() => inpEl.value?.focus())
@@ -262,7 +251,7 @@ defineExpose({ insertTactic })
 
 <template>
     <div v-if="!ready" class="loading">{{ t('common.loading') }}</div>
-    <div v-else class="repl" @keydown="onReplKeydown">
+    <div v-else class="repl">
         <div class="goal">
             <div v-if="props.premiseLatex" class="premise-line">
                 <Katex :expr="props.premiseLatex" />

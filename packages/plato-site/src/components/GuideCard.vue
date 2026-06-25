@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Hint } from '@/types'
 import InlineLatex from './InlineLatex.vue'
@@ -13,12 +12,6 @@ const emit = defineEmits<{
     dismiss: []
     glossaryClick: [term: string]
 }>()
-
-const okBtn = ref<HTMLButtonElement | null>(null)
-
-onMounted(() => {
-  if (!props.guide.tactic) okBtn.value?.focus()
-})
 </script>
 
 <template>
@@ -28,7 +21,7 @@ onMounted(() => {
         <button v-if="guide.tactic" class="tactic" @click="emit('insert', guide.tactic!)">
             {{ guide.tactic }}
         </button>
-        <button v-else ref="okBtn" class="ok" @click="emit('dismiss')">{{ t('common.ok') }}</button>
+        <button v-else class="ok" @click="emit('dismiss')">{{ t('common.ok') }}</button>
     </div>
 </template>
 
