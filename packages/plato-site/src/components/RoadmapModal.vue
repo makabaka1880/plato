@@ -87,97 +87,46 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 
 <style lang="scss" scoped>
 .rm-backdrop {
-    position: fixed; inset: 0; z-index: 400;
-    background: rgba(0,0,0,0.3);
-    display: flex; align-items: center; justify-content: center;
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;
 }
 .rm-modal {
-    background: var(--color-bg);
-    border-radius: 12px;
-    max-width: 600px;
-    width: 92vw;
-    max-height: 80vh;
-    display: flex; flex-direction: column;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  background: var(--color-bg); border-radius: 12px;
+  max-width: 600px; width: 92vw; max-height: 80vh;
+  display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
 }
-.rm-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px 12px;
-    border-bottom: 1px solid var(--color-border);
+.rm-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; border-bottom: 1px solid var(--color-border); }
+.rm-title { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.rm-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-muted); line-height: 1;
+  &:hover { color: var(--color-fg); }
 }
-.rm-title {
-    font-size: 13px; font-weight: 600;
-    letter-spacing: 0.06em; text-transform: uppercase;
-}
-.rm-close {
-    background: none; border: none; font-size: 22px;
-    cursor: pointer; color: var(--color-muted); line-height: 1;
-}
-.rm-close:hover { color: var(--color-fg); }
-.rm-body {
-    overflow-y: auto; padding: 14px 20px 20px;
-}
-.rm-empty {
-    font-size: 13px; color: var(--color-muted); text-align: center;
-    padding: 40px 0;
-}
+.rm-body { overflow-y: auto; padding: 14px 20px 20px; }
+.rm-empty { font-size: 13px; color: var(--color-muted); text-align: center; padding: 40px 0; }
 .rm-section-header {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-    color: var(--color-muted); text-transform: uppercase;
-    margin: 12px 0 6px;
-    padding-top: 4px;
-    border-top: 1px solid var(--color-border);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--color-muted);
+  text-transform: uppercase; margin: 12px 0 6px; padding-top: 4px;
+  border-top: 1px solid var(--color-border);
+  &:first-child { margin-top: 0; border-top: none; padding-top: 0; }
 }
-.rm-section-header:first-child {
-    margin-top: 0;
-    border-top: none;
-    padding-top: 0;
-}
-.rm-list {
-    display: flex; flex-direction: column; gap: 8px;
-}
+.rm-list { display: flex; flex-direction: column; gap: 8px; }
 .rm-stop {
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    overflow: hidden;
-}
-.rm-stop.active {
-    border-color: var(--color-primary-hover);
+  border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden;
+  &.active { border-color: var(--color-primary-hover); }
 }
 .rm-stop-btn {
-    display: flex; align-items: center; gap: 12px;
-    width: 100%; text-align: left;
-    font-family: inherit; font-size: 13px;
-    padding: 10px 14px; cursor: pointer;
-    background: var(--color-subtle-bg); border: none;
-    color: var(--color-fg);
-    transition: background 0.15s;
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  font-family: inherit; font-size: 13px; padding: 10px 14px; cursor: pointer;
+  background: var(--color-subtle-bg); border: none; color: var(--color-fg);
+  transition: background 0.15s;
+  &:hover { background: var(--color-border); }
 }
-.rm-stop-btn:hover { background: var(--color-border); }
 .rm-stop-num {
-    flex-shrink: 0;
-    width: 28px; height: 28px;
-    border-radius: 100%;
-    background: var(--color-primary);
-    color: var(--color-primary-fg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600;
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 100%;
+  background: var(--color-primary); color: var(--color-primary-fg);
+  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;
 }
-.rm-stop-desc {
-    flex: 1; line-height: 1.45;
-}
-.rm-proof {
-    border-top: 1px solid var(--color-border);
-    padding: 12px 14px 14px;
-    background: var(--color-bg);
-}
-.rm-proof-label {
-    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
-    color: var(--color-muted); text-transform: uppercase;
-    margin-bottom: 8px;
-}
-.rm-proof-line {
-    font-size: 12px; line-height: 1.9;
-    color: var(--color-subtle);
-}
+.rm-stop-desc { flex: 1; line-height: 1.45; }
+.rm-proof { border-top: 1px solid var(--color-border); padding: 12px 14px 14px; background: var(--color-bg); }
+.rm-proof-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--color-muted); text-transform: uppercase; margin-bottom: 8px; }
+.rm-proof-line { font-size: 12px; line-height: 1.9; color: var(--color-subtle); }
 </style>

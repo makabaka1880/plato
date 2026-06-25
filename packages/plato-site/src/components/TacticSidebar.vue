@@ -86,85 +86,66 @@ watch(items, (next) => {
 </template>
 
 <style lang="scss">
-/* un-scoped so Teleported backdrop matches */
 .backdrop {
   position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,0.2);
-  display: flex; justify-content: flex-end;
-}
-.backdrop > .overlay {
-  width: min(300px, 85vw);
-  background: #fff;
-  overflow-y: auto;
-  padding: 20px 18px;
-  box-shadow: -4px 0 16px rgba(0,0,0,0.1);
-}
-@media (min-width: 821px) {
-  .backdrop { display: none; }
+  background: rgba(0,0,0,0.2); display: flex; justify-content: flex-end;
+  > .overlay {
+    width: min(300px, 85vw); background: #fff;
+    overflow-y: auto; padding: 20px 18px;
+    box-shadow: -4px 0 16px rgba(0,0,0,0.1);
+  }
+  @media (min-width: 821px) { display: none; }
 }
 
-.slide-enter-active { transition: all 0.2s ease; }
-.slide-leave-active { transition: all 0.15s ease; }
-.slide-enter-from { opacity: 0; }
-.slide-enter-from .overlay { transform: translateX(100%); }
-.slide-enter-active .overlay { transition: transform 0.2s ease; }
-.slide-leave-to   { opacity: 0; }
-.slide-leave-to   .overlay { transform: translateX(100%); }
-.slide-leave-active .overlay { transition: transform 0.15s ease; }
+.slide-enter-active { transition: all 0.2s ease;
+  .overlay { transition: transform 0.2s ease; }
+}
+.slide-leave-active { transition: all 0.15s ease;
+  .overlay { transition: transform 0.15s ease; }
+}
+.slide-enter-from { opacity: 0;
+  .overlay { transform: translateX(100%); }
+}
+.slide-leave-to { opacity: 0;
+  .overlay { transform: translateX(100%); }
+}
 </style>
 
 <style lang="scss" scoped>
 .toggle-btn {
-  display: none;
-  position: fixed; bottom: 16px; right: 16px; z-index: 50;
+  display: none; position: fixed; bottom: 16px; right: 16px; z-index: 50;
   background: #fff; border: 1px solid var(--color-border);
   border-radius: 100%; width: 44px; height: 44px; font-size: 18px;
   cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   align-items: center; justify-content: center;
+  &:hover { border-color: var(--color-muted); }
 }
-.toggle-btn:hover { border-color: var(--color-muted); }
-
 .badge {
   position: absolute; top: -4px; right: -4px;
   background: var(--color-primary); color: var(--color-primary-fg);
-  font-size: 10px; width: 18px; height: 18px;
-  border-radius: 100%;
+  font-size: 10px; width: 18px; height: 18px; border-radius: 100%;
   display: flex; align-items: center; justify-content: center;
 }
-
-.overlay-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
-}
+.overlay-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .close-btn {
-  background: none; border: none; font-size: 20px; cursor: pointer;
-  color: var(--color-muted); line-height: 1;
+  background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-muted); line-height: 1;
+  &:hover { color: var(--color-fg); }
 }
-.close-btn:hover { color: var(--color-fg); }
-
 .sidebar {
   width: min(280px, 15vw); flex-shrink: 0; overflow-y: auto;
   padding: 16px 14px; border-left: 1px solid var(--color-border);
   height: 100%; box-sizing: border-box;
+  :deep(.card) { margin-bottom: 8px; }
 }
-.title {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-  color: #bbb; text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.empty {
-  font-size: 12px; color: #bbb; line-height: 1.6;
-}
-.sidebar :deep(.card) {
-  margin-bottom: 8px;
-}
+.title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #bbb; text-transform: uppercase; margin-bottom: 14px; }
+.empty { font-size: 12px; color: #bbb; line-height: 1.6; }
 
 .list-enter-active { transition: all 0.35s ease; }
 .list-leave-active { transition: all 0.2s ease; }
 .list-enter-from { opacity: 0; transform: translateX(12px); }
 
 @media (max-width: 820px) {
-  .sidebar   { display: none; }
+  .sidebar { display: none; }
   .toggle-btn { display: flex; }
 }
 </style>

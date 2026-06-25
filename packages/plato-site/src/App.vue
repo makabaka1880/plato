@@ -22,45 +22,16 @@ const { t } = useI18n()
 </template>
 
 <style lang="scss" scoped>
-.app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
+.app { display: flex; flex-direction: column; height: 100vh; }
+.main { flex: 1; overflow: hidden; position: relative; }
 
-.main {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-}
-
-/* ── page transitions ──────────────────── */
-.page-enter-active,
-.page-leave-active {
-    transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.page-enter-from {
-    opacity: 0;
-    transform: translateY(12px);
-}
-
-.page-leave-to {
-    opacity: 0;
-    transform: translateY(-8px);
-}
+.page-enter-active, .page-leave-active { transition: opacity 0.25s ease, transform 0.25s ease; }
+.page-enter-from { opacity: 0; transform: translateY(12px); }
+.page-leave-to { opacity: 0; transform: translateY(-8px); }
 
 .footer {
-    flex-shrink: 0;
-    text-align: center;
-    padding: 6px 12px;
-    font-size: 11px;
-    color: var(--color-muted);
-    border-top: 1px solid var(--color-border);
-}
-
-.footer a {
-    color: inherit;
-    font-weight: 500;
+  flex-shrink: 0; text-align: center; padding: 6px 12px;
+  font-size: 11px; color: var(--color-muted); border-top: 1px solid var(--color-border);
+  a { color: inherit; font-weight: 500; }
 }
 </style>

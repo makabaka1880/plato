@@ -318,309 +318,139 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    outline: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0, 0, 0, 0.3); outline: none;
+  display: flex; align-items: center; justify-content: center;
 }
 
 .modal {
-    background: var(--color-bg);
-    border-radius: 12px;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
-    max-height: 85vh;
-    max-width: 620px;
-    width: 92vw;
-    display: flex;
-    flex-direction: column;
+  background: var(--color-bg); border-radius: 12px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
+  max-height: 85vh; max-width: 620px; width: 92vw;
+  display: flex; flex-direction: column;
 }
 
 .head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--color-border);
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-bottom: 1px solid var(--color-border);
 }
 
-.tabs {
-    display: flex;
-    gap: 2px;
-}
+.tabs { display: flex; gap: 2px; }
 
 .tab {
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-muted);
-    background: none;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: color 0.15s, background 0.15s;
+  font-family: inherit; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--color-muted); background: none;
+  border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  &:hover { color: var(--color-fg); }
+  &.active { color: var(--color-fg); background: var(--color-subtle-bg); }
 }
 
-.tab:hover {
-    color: var(--color-fg);
-}
-
-.tab.active {
-    color: var(--color-fg);
-    background: var(--color-subtle-bg);
-}
-
-.count {
-    font-size: 11px;
-    color: var(--color-muted);
-    margin-left: auto;
-}
+.count { font-size: 11px; color: var(--color-muted); margin-left: auto; }
 
 .close-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--color-muted);
-    margin-left: 0;
+  background: none; border: none; font-size: 20px;
+  cursor: pointer; color: var(--color-muted); margin-left: 0;
+  &:hover { color: var(--color-primary-hover); }
 }
 
-.close-btn:hover {
-    color: var(--color-primary-hover);
-}
-
-.body {
-    overflow-y: auto;
-    padding: 10px 20px;
-}
-
-.group {
-    margin-bottom: 14px;
-}
+.body { overflow-y: auto; padding: 10px 20px; }
+.group { margin-bottom: 14px; }
 
 .group-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-muted);
-    margin-bottom: 6px;
-    padding-top: 4px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--color-muted);
+  margin-bottom: 6px; padding-top: 4px;
 }
 
-/* ── Commands: cmd cards ──────────── */
+// ── Commands ─────────────────────────────────────────────────
 .cmd {
-    padding: 6px 10px;
-    margin-bottom: 4px;
-    border-radius: 6px;
-    border: 1px solid var(--color-border);
-    background: var(--color-subtle-bg);
+  padding: 6px 10px; margin-bottom: 4px; border-radius: 6px;
+  border: 1px solid var(--color-border); background: var(--color-subtle-bg);
+  &.locked {
+    opacity: 0.35; background: transparent; border-style: dashed;
+    .syntax { color: var(--color-muted); }
+  }
 }
+.cmd-head { display: flex; align-items: center; gap: 6px; }
+.syntax { font-size: 12px; color: var(--color-primary-hover); }
+.lock-icon { font-size: 10px; }
+.desc { font-size: 11px; color: var(--color-muted); margin-top: 2px; }
+.rule { margin-top: 4px; font-size: 14px; padding: 4px 0; }
 
-.cmd.locked {
-    opacity: 0.35;
-    background: transparent;
-    border-style: dashed;
-}
-
-.cmd-head {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.syntax {
-    font-size: 12px;
-    color: var(--color-primary-hover);
-}
-
-.locked .syntax {
-    color: var(--color-muted);
-}
-
-.lock-icon {
-    font-size: 10px;
-}
-
-.desc {
-    font-size: 11px;
-    color: var(--color-muted);
-    margin-top: 2px;
-}
-
-.rule {
-    margin-top: 4px;
-    font-size: 14px;
-    padding: 4px 0;
-}
-
-/* ── Notations: symbol table ──────── */
+// ── Notations ────────────────────────────────────────────────
 .sym-table {
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    overflow: hidden;
+  border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden;
 }
 
 .sym-row {
-    display: flex;
-    align-items: center;
-    padding: 6px 10px;
-    border-bottom: 1px solid var(--color-border);
+  display: flex; align-items: center; padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border);
+  &:last-child { border-bottom: none; }
 }
+.sym-render { width: 48px; flex-shrink: 0; font-size: 16px; text-align: center; color: var(--color-fg); }
+.sym-name { width: 110px; flex-shrink: 0; font-size: 11px; color: var(--color-muted); }
+.sym-code { font-family: inherit; font-size: 12px; color: var(--color-primary-hover); }
 
-.sym-row:last-child {
-    border-bottom: none;
-}
-
-.sym-render {
-    width: 48px;
-    flex-shrink: 0;
-    font-size: 16px;
-    text-align: center;
-    color: var(--color-fg);
-}
-
-.sym-name {
-    width: 110px;
-    flex-shrink: 0;
-    font-size: 11px;
-    color: var(--color-muted);
-}
-
-.sym-code {
-    font-family: inherit;
-    font-size: 12px;
-    color: var(--color-primary-hover);
-}
-
-/* ── Glossary: alphabet nav ──────── */
-.glossary-body {
-    padding-top: 0;
-}
+// ── Glossary ─────────────────────────────────────────────────
+.glossary-body { padding-top: 0; }
 
 .alpha-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--color-border);
-    position: sticky;
-    top: 0;
-    background: var(--color-bg);
-    z-index: 1;
+  display: flex; flex-wrap: wrap; gap: 2px;
+  margin: 0 0 12px; padding: 0 0 10px;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky; top: 0; background: var(--color-bg); z-index: 1;
 }
 
 .alpha-btn {
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--color-muted);
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
+  font-family: inherit; font-size: 11px; font-weight: 600; line-height: 1;
+  color: var(--color-muted); background: none;
+  border: 1px solid transparent; border-radius: 3px;
+  width: 24px; height: 24px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s, border-color 0.15s;
+  &:hover { color: var(--color-fg); border-color: var(--color-border); }
 }
 
-.alpha-btn:hover {
-    color: var(--color-fg);
-    border-color: var(--color-border);
-}
+.alpha-anchor { scroll-margin-top: 46px; }
 
-.alpha-anchor {
-    scroll-margin-top: 46px;
-}
-
-/* ── Glossary: entry cards ────────── */
-.gloss-flash {
-    animation: glossHighlight 1.8s ease-out;
-}
+.gloss-flash { animation: glossHighlight 1.8s ease-out; }
 
 @keyframes glossHighlight {
-    0% {
-        background: var(--color-glossary-flash);
-        border-color: #b0d0f0;
-    }
-
-    100% {
-        background: var(--color-subtle-bg);
-        border-color: var(--color-border);
-    }
+  0% { background: var(--color-glossary-flash); border-color: #b0d0f0; }
+  100% { background: var(--color-subtle-bg); border-color: var(--color-border); }
 }
 
 .gloss-entry {
-    padding: 8px 10px;
-    margin-bottom: 4px;
-    border-radius: 6px;
-    border: 1px solid var(--color-border);
-    background: var(--color-subtle-bg);
-    scroll-margin-top: 46px;
+  padding: 8px 10px; margin-bottom: 4px; border-radius: 6px;
+  border: 1px solid var(--color-border); background: var(--color-subtle-bg);
+  scroll-margin-top: 46px;
+  code { font-family: inherit; font-size: 11px; padding: 0 3px; border: 1px solid var(--color-border); border-radius: 2px; background: var(--color-bg); }
 }
 
-.gloss-term {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--color-fg);
-    margin-bottom: 3px;
-}
+.gloss-term { font-size: 12px; font-weight: 600; color: var(--color-fg); margin-bottom: 3px; }
 
 .gloss-intuitive {
-    font-size: 11px;
-    color: var(--color-fg);
-    line-height: 1.65;
-    padding: 6px 8px;
-    margin-bottom: 6px;
-    background: var(--color-hint-bg);
-    border-left: 3px solid var(--color-hint-border);
-    border-radius: 0 4px 4px 0;
+  font-size: 11px; color: var(--color-fg); line-height: 1.65;
+  padding: 6px 8px; margin-bottom: 6px;
+  background: var(--color-hint-bg); border-left: 3px solid var(--color-hint-border);
+  border-radius: 0 4px 4px 0;
 }
-
 .gloss-def {
-    font-size: 11px;
-    color: var(--color-muted);
-    line-height: 1.65;
-}
-
-.gloss-entry code,
-.gloss-def code {
-    font-family: inherit;
-    font-size: 11px;
-    padding: 0 3px;
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    background: var(--color-bg);
+  font-size: 11px; color: var(--color-muted); line-height: 1.65;
+  code { font-family: inherit; font-size: 11px; padding: 0 3px; border: 1px solid var(--color-border); border-radius: 2px; background: var(--color-bg); }
 }
 
 .foot {
-    padding: 10px 20px 14px;
-    font-size: 11px;
-    color: var(--color-border-strong);
-    border-top: 1px solid var(--color-border);
-    text-align: center;
-    flex-shrink: 0;
+  padding: 10px 20px 14px; font-size: 11px;
+  color: var(--color-border-strong); border-top: 1px solid var(--color-border);
+  text-align: center; flex-shrink: 0;
 }
 
 kbd {
-    font-family: inherit;
-    font-size: 10px;
-    padding: 1px 5px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 3px;
-    background: var(--color-subtle-bg);
+  font-family: inherit; font-size: 10px; padding: 1px 5px;
+  border: 1px solid var(--color-border-strong); border-radius: 3px;
+  background: var(--color-subtle-bg);
 }
 </style>

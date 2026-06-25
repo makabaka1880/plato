@@ -172,204 +172,67 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100%;
-    padding-top: 6vh;
-    overflow-y: auto;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start; height: 100%; padding-top: 6vh; overflow-y: auto;
+  h1 { font-size: clamp(28px, 6vw, 56px); font-weight: 400; letter-spacing: -0.02em; margin-bottom: 32px; }
 }
 
 .lang-switch {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 2px;
-}
-
-.lang-switch button {
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--color-muted);
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    padding: 3px 8px;
-    cursor: pointer;
+  margin-bottom: 20px; display: flex; gap: 2px;
+  button {
+    font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    color: var(--color-muted); background: none; border: 1px solid transparent;
+    border-radius: 3px; padding: 3px 8px; cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
+    &:hover { color: var(--color-fg); border-color: var(--color-border); }
+    &.active { color: var(--color-fg); border-color: var(--color-border); background: var(--color-subtle-bg); }
+  }
 }
 
-.lang-switch button:hover {
-    color: var(--color-fg);
-    border-color: var(--color-border);
-}
-
-.lang-switch button.active {
-    color: var(--color-fg);
-    border-color: var(--color-border);
-    background: var(--color-subtle-bg);
-}
-
-.hero h1 {
-    font-size: clamp(28px, 6vw, 56px);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    margin-bottom: 32px;
-}
-
-.actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 32px;
-}
+.actions { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-bottom: 32px; }
 
 .hero-btn {
-    font-family: inherit;
-    font-size: 15px;
-    padding: 8px 0;
-    cursor: pointer;
-    width: 200px;
-    background: var(--color-primary);
-    color: var(--color-primary-fg);
-    border: none;
-    border-radius: 4px;
+  font-family: inherit; font-size: 15px; padding: 8px 0; cursor: pointer;
+  width: 200px; background: var(--color-primary); color: var(--color-primary-fg);
+  border: none; border-radius: 4px;
+  &:hover { background: var(--color-primary-hover); }
+  &.secondary, &.custom-btn {
+    background: transparent; border: 1px solid var(--color-border); color: var(--color-muted);
+    &:hover { background: var(--color-subtle-bg); border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
+  }
 }
 
-.hero-btn:hover {
-    background: var(--color-primary-hover);
-}
-
-.hero-btn.secondary {
-    background: transparent;
-    border: 1px solid var(--color-border);
-    color: var(--color-muted);
-}
-
-.hero-btn.secondary:hover {
-    background: var(--color-subtle-bg);
-    border-color: var(--color-primary-hover);
-    color: var(--color-primary-hover);
-}
-
-.hero-btn.custom-btn {
-    background: transparent;
-    border: 1px solid var(--color-border);
-    color: var(--color-muted);
-}
-
-.hero-btn.custom-btn:hover {
-    background: var(--color-subtle-bg);
-    border-color: var(--color-primary-hover);
-    color: var(--color-primary-hover);
-}
-
-/* ── section cards ─────────────── */
-.sections {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: min(320px, 80vw);
-    margin-bottom: 16px;
-}
+// ── Section cards ─────────────────────────────────────────────
+.sections { display: flex; flex-direction: column; gap: 8px; width: min(320px, 80vw); margin-bottom: 16px; }
 
 .section-card {
-    padding: 12px 16px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+  padding: 12px 16px; border: 1px solid var(--color-border);
+  border-radius: 6px; cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  &:hover { border-color: var(--color-primary-hover); background: var(--color-subtle-bg); }
+  &.complete { opacity: 0.7; }
 }
-
-.section-card:hover {
-    border-color: var(--color-primary-hover);
-    background: var(--color-subtle-bg);
-}
-
-.section-card.complete {
-    opacity: 0.7;
-}
-
-.section-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-fg);
-    margin-bottom: 8px;
-}
-
-.section-progress {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 8px;
-}
-
+.section-name { font-size: 14px; font-weight: 600; color: var(--color-fg); margin-bottom: 8px; }
+.section-progress { display: flex; gap: 4px; margin-bottom: 8px; }
 .section-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 100%;
-    background: var(--color-border);
-    transition: background 0.3s;
+  width: 8px; height: 8px; border-radius: 100%; background: var(--color-border); transition: background 0.3s;
+  &.solved { background: var(--color-primary); }
 }
-
-.section-dot.solved {
-    background: var(--color-primary);
-}
-
-.section-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.section-count {
-    font-size: 11px;
-    color: var(--color-muted);
-}
-
+.section-meta { display: flex; align-items: center; justify-content: space-between; }
+.section-count { font-size: 11px; color: var(--color-muted); }
 .replay-btn {
-    font-family: inherit;
-    font-size: 11px;
-    padding: 2px 8px;
-    cursor: pointer;
-    background: none;
-    border: 1px solid var(--color-border);
-    border-radius: 3px;
-    color: var(--color-muted);
-    transition: color 0.15s, border-color 0.15s;
-}
-
-.replay-btn:hover {
-    color: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
+  font-family: inherit; font-size: 11px; padding: 2px 8px; cursor: pointer;
+  background: none; border: 1px solid var(--color-border); border-radius: 3px;
+  color: var(--color-muted); transition: color 0.15s, border-color 0.15s;
+  &:hover { color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
 }
 
 .sub-actions {
-    display: flex;
-    gap: 0;
-    align-items: center;
-    justify-content: center;
-    margin-top: 16px;
-    font-size: 12px;
-    color: var(--color-border-strong);
-}
-
-.sub-actions a {
-    color: inherit;
-    text-decoration: none;
-    padding: 2px 6px;
-    cursor: pointer;
-    transition: color 0.15s;
-}
-
-.sub-actions a:hover {
-    color: var(--color-muted);
-}
-
-.sub-actions .sub-sep {
-    color: var(--color-border);
-    user-select: none;
+  display: flex; gap: 0; align-items: center; justify-content: center;
+  margin-top: 16px; font-size: 12px; color: var(--color-border-strong);
+  a {
+    color: inherit; text-decoration: none; padding: 2px 6px; cursor: pointer; transition: color 0.15s;
+    &:hover { color: var(--color-muted); }
+  }
+  .sub-sep { color: var(--color-border); user-select: none; }
 }
 </style>

@@ -50,23 +50,8 @@ function renderSeg(seg: Segment) {
 </template>
 
 <style lang="scss" scoped>
-.inline-code {
-  font-family: inherit;
-  background: var(--color-border);
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-size: 0.92em;
-  white-space: nowrap;
-}
-.glossary-link {
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 2px;
-  cursor: pointer;
-  color: var(--color-primary-hover);
-  transition: color 0.15s;
-}
-.glossary-link:hover {
-  color: var(--color-fg);
+.inline-code { font-family: inherit; background: var(--color-border); padding: 1px 5px; border-radius: 3px; font-size: 0.92em; white-space: nowrap; }
+.glossary-link { text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; cursor: pointer; color: var(--color-primary-hover); transition: color 0.15s;
+  &:hover { color: var(--color-fg); }
 }
 </style>

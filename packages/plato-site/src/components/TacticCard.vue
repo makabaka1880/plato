@@ -66,95 +66,46 @@ const detailOpen = ref(false)
 .card {
   padding: 12px 14px; background: var(--color-card-bg);
   border-radius: 8px; border: 1px solid var(--color-border);
-  font-size: 13px; line-height: 1.5;
-  cursor: pointer;
+  font-size: 13px; line-height: 1.5; cursor: pointer;
   transition: all 0.3s ease, border-color 0.15s;
+  &:hover { border-color: var(--color-muted); }
 }
-.card:hover {
-  border-color: var(--color-muted);
-}
-
-.name {
-  font-weight: 600; font-size: 14px; margin-bottom: 8px;
-}
-.rule {
-  display: flex; justify-content: center;
-  padding: 12px 0; font-size: 15px;
-}
-.desc {
-  font-size: 12px; color: var(--color-subtle); margin-top: 8px;
-}
-
-.pop {
-  animation: cardPop 0.4s ease;
-}
+.name { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+.rule { display: flex; justify-content: center; padding: 12px 0; font-size: 15px; }
+.desc { font-size: 12px; color: var(--color-subtle); margin-top: 8px; }
+.pop { animation: cardPop 0.4s ease; }
 @keyframes cardPop {
-  0%   { transform: scale(0.95); opacity: 0.5; }
-  60%  { transform: scale(1.02); }
+  0% { transform: scale(0.95); opacity: 0.5; }
+  60% { transform: scale(1.02); }
   100% { transform: scale(1); opacity: 1; }
 }
 </style>
 
 <style lang="scss">
-/* un-scoped so Teleported backdrop styles work */
 .tactic-backdrop {
-  position: fixed; inset: 0; z-index: 300;
-  background: rgba(0,0,0,0.2);
+  position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.2);
   display: flex; align-items: center; justify-content: center;
 }
 .tactic-detail {
-  background: var(--color-bg);
-  border-radius: 12px;
-  max-width: 520px;
-  width: 92vw;
-  max-height: 80vh;
-  overflow-y: auto;
+  background: var(--color-bg); border-radius: 12px; max-width: 520px;
+  width: 92vw; max-height: 80vh; overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0,0,0,0.15);
 }
-.tactic-detail-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid var(--color-border);
+.tactic-detail-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; border-bottom: 1px solid var(--color-border); }
+.tactic-detail-name { font-weight: 600; font-size: 16px; }
+.tactic-detail-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-muted); line-height: 1;
+  &:hover { color: var(--color-fg); }
 }
-.tactic-detail-name {
-  font-weight: 600; font-size: 16px;
-}
-.tactic-detail-close {
-  background: none; border: none; font-size: 22px;
-  cursor: pointer; color: var(--color-muted); line-height: 1;
-}
-.tactic-detail-close:hover { color: var(--color-fg); }
-.tactic-detail-body {
-  padding: 16px 20px 20px;
-}
-.tactic-detail-section {
-  margin-bottom: 16px;
-}
-.tactic-detail-label {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
-  color: var(--color-muted); text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.tactic-detail-syntax {
-  font-family: var(--font-mono);
-  font-size: 13px; color: var(--color-primary-hover);
-  padding: 2px 6px; background: var(--color-subtle-bg);
-  border-radius: 4px; border: 1px solid var(--color-border);
-}
-.tactic-detail-rule {
-  display: flex; justify-content: center;
-  padding: 12px 0; font-size: 16px;
-}
-.tactic-detail-text {
-  font-size: 13px; color: var(--color-subtle); line-height: 1.8;
-  white-space: pre-wrap;
-  font-family: var(--font-mono);
-}
+.tactic-detail-body { padding: 16px 20px 20px; }
+.tactic-detail-section { margin-bottom: 16px; }
+.tactic-detail-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--color-muted); text-transform: uppercase; margin-bottom: 6px; }
+.tactic-detail-syntax { font-family: var(--font-mono); font-size: 13px; color: var(--color-primary-hover); padding: 2px 6px; background: var(--color-subtle-bg); border-radius: 4px; border: 1px solid var(--color-border); }
+.tactic-detail-rule { display: flex; justify-content: center; padding: 12px 0; font-size: 16px; }
+.tactic-detail-text { font-size: 13px; color: var(--color-subtle); line-height: 1.8; white-space: pre-wrap; font-family: var(--font-mono); }
 
-.tactic-fade-enter-active { transition: all 0.2s ease; }
+.tactic-fade-enter-active { transition: all 0.2s ease;
+  .tactic-detail { transform: scale(0.95); }
+}
 .tactic-fade-leave-active { transition: all 0.15s ease; }
-.tactic-fade-enter-from { opacity: 0; }
-.tactic-fade-enter-from .tactic-detail { transform: scale(0.95); }
-.tactic-fade-leave-to { opacity: 0; }
-.tactic-fade-leave-to .tactic-detail { transform: scale(0.95); }
+.tactic-fade-enter-from, .tactic-fade-leave-to { opacity: 0; }
 </style>

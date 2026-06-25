@@ -37,43 +37,31 @@ function onTactic(tactic: string) {
 
 <style lang="scss" scoped>
 .card {
-  position: relative; width: min(80vw, 520px);
-  padding: 10px 14px; margin-bottom: 6px;
-  background: var(--color-hint-bg); border-radius: 8px;
-  font-size: 13px; line-height: 1.55; border: 1px solid var(--color-hint-border);
+  position: relative; width: min(80vw, 520px); padding: 10px 14px; margin-bottom: 6px;
+  background: var(--color-hint-bg); border-radius: 8px; font-size: 13px; line-height: 1.55;
+  border: 1px solid var(--color-hint-border);
 }
 .close {
-  position: absolute; top: 6px; right: 10px;
-  background: none; border: none; font-size: 16px;
-  cursor: pointer; color: var(--color-muted); line-height: 1;
+  position: absolute; top: 6px; right: 10px; background: none; border: none;
+  font-size: 16px; cursor: pointer; color: var(--color-muted); line-height: 1;
+  &:hover { color: var(--color-primary-hover); }
 }
-.close:hover { color: var(--color-primary-hover); }
-
 .tactic {
-  font-family: inherit; font-size: 12px; margin-top: 6px;
-  padding: 4px 12px; cursor: pointer;
+  font-family: inherit; font-size: 12px; margin-top: 6px; padding: 4px 12px; cursor: pointer;
   background: var(--color-tactic-bg); border: 1px solid var(--color-border-light);
   border-radius: 4px; color: var(--color-tactic-fg);
-  max-width: 80%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  &:hover { background: var(--color-border-light); }
 }
-.tactic:hover { background: var(--color-border-light); }
-
 .ok {
-  font-family: inherit; font-size: 12px; margin-top: 6px;
-  padding: 4px 16px; cursor: pointer;
-  background: var(--color-primary); color: var(--color-primary-fg); border: none;
-  border-radius: 4px;
+  font-family: inherit; font-size: 12px; margin-top: 6px; padding: 4px 16px; cursor: pointer;
+  background: var(--color-primary); color: var(--color-primary-fg); border: none; border-radius: 4px;
+  &.small { padding: 2px 12px; font-size: 11px; }
+  &:hover { background: var(--color-primary-hover); }
 }
-.ok.small { padding: 2px 12px; font-size: 11px; }
-.ok:hover { background: var(--color-primary-hover); }
-
 .pulse { animation: btnGlow 1s ease-in-out infinite; }
-
 @keyframes btnGlow {
   0%, 100% { background: var(--color-tactic-bg); }
-  50%      { background: #d0d0ff; border-color: #aac; }
+  50% { background: #d0d0ff; border-color: #aac; }
 }
 </style>

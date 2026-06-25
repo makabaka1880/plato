@@ -23,58 +23,18 @@ const emit = defineEmits<{
 
 <style lang="scss" scoped>
 .header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--color-border);
-    font-size: 15px;
-    flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-bottom: 1px solid var(--color-border);
+  font-size: 15px; flex-shrink: 0;
 }
+.logo { text-decoration: none; font-weight: 600; color: inherit; border: none; background: none; cursor: pointer; font-family: inherit; font-size: inherit; padding: 0; }
+.spacer { flex: 1; }
 
-.logo {
-    text-decoration: none;
-    font-weight: 600;
-    color: inherit;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: inherit;
-    padding: 0;
+%header-link {
+  font-family: inherit; font-size: 13px; color: var(--color-muted);
+  padding: 2px 6px; border-radius: 4px;
+  &:hover { color: var(--color-fg); background: var(--color-subtle-bg); }
 }
-
-.spacer {
-    flex: 1;
-}
-
-.gh-link {
-    font-family: inherit;
-    font-size: 13px;
-    color: var(--color-muted);
-    text-decoration: none;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.gh-link:hover {
-    color: var(--color-fg);
-    background: var(--color-subtle-bg);
-}
-
-.prefs-link {
-    font-family: inherit;
-    font-size: 13px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--color-muted);
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.prefs-link:hover {
-    color: var(--color-fg);
-    background: var(--color-subtle-bg);
-}
+.gh-link { @extend %header-link; text-decoration: none; }
+.prefs-link { @extend %header-link; background: none; border: none; cursor: pointer; }
 </style>
