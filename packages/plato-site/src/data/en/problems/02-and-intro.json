@@ -1,0 +1,36 @@
+{
+  "description": "Two things are true.",
+  "goal": "(and A B)",
+  "premise": [
+    "A",
+    "B"
+  ],
+  "guides": [
+    {
+      "text": "We're told two things are true — $A$ and $B$. Our job is to prove that they're **both** true, written $A \\land B$."
+    },
+    {
+      "text": "Just like last time, we begin by assuming each [premise|premise]. Let's start with $A$.",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "And now $B$ — we'll need both before we can combine them.",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "The rule `and-intro` takes two truths and pairs them up. We have $A$ at step 1 and $B$ at step 2. Let's join them.",
+      "tactic": "(and-intro 1 2)"
+    },
+    {
+      "text": "Notice the [context|context] now contains both $A$ and $B$, and our [conclusion|conclusion] is $A \\land B$. The proof is complete — two things are indeed true."
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "∧-intro",
+      "rule": "\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}",
+      "description": "If you've proved $p$ and you've proved $q$, then you've proved $p \\land q$ — they're both true together."
+    }
+  ]
+}

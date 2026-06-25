@@ -1,0 +1,44 @@
+{
+  "description": "我在故我在。",
+  "goal": "(-> I I)",
+  "premise": [],
+  "guides": [
+    {
+      "text": "我们先来理解一下目标。 $I \\to I$ 的意思是 '$I$ [implication|蕴涵了] $I$' ——如果 $I$ 成立, 那 $I$ 也成立。很合理吧。"
+    },
+    {
+      "text": "要想证明一个 [implication|蕴含关系], 我们先假设左边的[proposition|命题], 然后试图推出右边的命题。先来假设(assume) $I$。",
+      "tactic": "(assume I)"
+    },
+    {
+      "text": "$\\vdash$ 这个符号叫断言符号，念做 '[judgement|推出]' 或者\"可以推导出\"。 断言符左侧的东西叫 **[context|上下文]** —— 这是我们设为前提的所有 [proposition|命题]。右侧是我们可以用前提推出的结论。"
+    },
+    {
+      "text": "所以 $\\{I\\} \\vdash I$ 可以读作：'假设 $I$ 成立, 我们可以推出 $I$'。换种更直白的说法：知道 $I$，当然就知道 $I$。"
+    },
+    {
+      "text": "暂停一下，厘清几个术语。**[judgement|判断]** 就是证明中的一行，写作 $\\Gamma \\vdash p$。它是一个完整的断言：\"从这些假设出发，我能证明这个结论。\" $\\vdash$ 这个符号本身叫做**断言符**（turnstile）——它把左边已知的东西跟右边要证明的东西隔开。当我们说 $\\Gamma$ [judgement|蕴含] $p$ 时，意思是 $\\Gamma$ 里的东西在逻辑上足以\"逼出\" $p$ 为真。$\\vdash$ 右边那个公式叫 **[conclusion|结论]** ——它是这一步真正要确立的东西。你在证明区看到的每一行都是一个判断，每一行 $\\vdash$ 右边的部分就是那一步的结论。"
+    },
+    {
+      "text": "在我们的例子里：[context|上下文]是 $\\{I\\}$（只有这一个[assumption|假设]），断言符 $\\vdash$ 表示 '[judgement|因此]'，[conclusion|结论] 是 $I$。判断、断言符、结论——三个术语，说的其实是同一行的三个部位。好，术语课结束，我们把证明收尾。",
+      "tactic": null
+    },
+    {
+      "text": "'$A$ [implication|蕴含] $B$' 的**意思**就是：假设 $A$ 成立, 能推出 $B$。在第 1 步我们已经有了 $\\{I\\} \\vdash I$。现在用 `->-intro` 来 [assumption|消去] $I$ 这个假设, 证明就可以结束了。它的第一个参数是你要消去的[formula|公式], 第二个是步骤号：",
+      "tactic": "(->-intro I 1)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "assume",
+      "rule": "\\frac{}{\\{p\\} \\vdash p}",
+      "description": "如果你假设一个命题成立，那你自然可以推出它——因为你刚刚声明它是真的。"
+    },
+    {
+      "name": "→-intro",
+      "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}",
+      "description": "如果从假设 $p$ 成立你能推出 $q$，那么 $p$ 蕴含 $q$——而且你可以放心地把 $p$ 从上下文里拿掉了。"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "description": "落霞与孤鹜齐飞。",
+  "goal": "B",
+  "premise": [
+    "(exists x (App P x))",
+    "(forall x (-> (App P x) B))"
+  ],
+  "guides": [],
+  "hints": [
+    {
+      "text": "最后一道题，也是对一阶逻辑功力的综合检验。目标：$\\exists x.\\; (App P x) \\land \\forall x.\\; ((App P x) \\to (App Q x)) \\to \\exists x.\\; (App Q x)$。既有存在也有全称——两条量词手拉手跳了一支推理的舞。",
+      "tactic": null
+    },
+    {
+      "text": "假设合取前提。用 `and-elim-l` 取出 $\\exists x.\\; P(x)$——\"有东西是 $P$\"；用 `and-elim-r` 取出 $\\forall x.\\; (P(x) \\to Q(x))$——\"所有是 $P$ 的东西也是 $Q$\"。\"Someone is P and everything that is P is Q.\" 那么显然 \"Someone is Q\"。现在要用形式系统走一遍。",
+      "tactic": "(assume (exists x (App P x)))"
+    },
+    {
+      "text": "有\"存在某个东西是 $P$\"和\"所有是 $P$ 的东西也是 $Q$\"。显然存在某个东西是 $Q$——但你要把 $\\exists$-elim 和 $\\forall$-elim 配合起来用。存在和全称的协奏曲。",
+      "tactic": "(assume (forall x (-> (App P x) B)))"
+    },
+    {
+      "text": "引入新鲜[witness|见证] $y$，假设 $P(y)$。$y$ 就是那个神秘的东西——我们不知道它是谁，只知道它叫 $y$ 而且满足 $P$。从全称前提用 `forall-elim` 推出 $P(y) \\to Q(y)$，然后用 `->-elim` 推出 $Q(y)$。",
+      "tactic": "(fix y)"
+    },
+    {
+      "text": "从 $Q(y)$ 用 exists-intro 推出 $\\exists x.\\; Q(x)$。见证 $y$ 完成了它的使命——它证明了\"存在 $Q$\"成立。",
+      "tactic": "(assume (App P y))"
+    },
+    {
+      "text": "用 `and-intro` 把 $y$ 和 $P(y)$ 绑在一起，放到同一个 [context|上下文]。",
+      "tactic": "(forall-elim 2 y)"
+    },
+    {
+      "text": "从合并的 [context|上下文] 中提取 $P(y)$。",
+      "tactic": "(and-intro 3 4)"
+    },
+    {
+      "text": "应用 [modus-ponens|肯定前件]：$P(y) \\to B$（步骤 5）和 $P(y)$（步骤 7）推出 $B$。",
+      "tactic": "(and-elim-r 6)"
+    },
+    {
+      "text": "用 `exists-elim` 关闭 [witness|见证]——存在式（步骤 1）、见证子证明（步骤 8）和变量名。见证退场，结论登台。",
+      "tactic": "(->-elim 5 7)"
+    },
+    {
+      "text": "最终结论：$\\exists x.\\; Q(x)$。\"存在某个东西是 $Q$\"——从\"存在 $P$ 且所有 $P$ 都是 $Q$\"中顺利推导出来。这个证明是一阶推理的微型缩影：全称给我们规则，存在给我们起点，两者组合就是推理的全部。",
+      "tactic": "(exists-elim 1 8 y)"
+    }
+  ],
+  "unlocks": []
+}

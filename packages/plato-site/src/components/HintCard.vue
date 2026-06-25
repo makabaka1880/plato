@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Hint } from '@/types'
 import InlineLatex from './InlineLatex.vue'
+
+const { t } = useI18n()
 
 const props = defineProps<{ hint: Hint; pulse: boolean }>()
 
 const emit = defineEmits<{
   insert: [tactic: string]
   dismiss: []
+  glossaryClick: [term: string]
 }>()
 
 const okBtn = ref<HTMLButtonElement | null>(null)
@@ -24,8 +28,8 @@ function onTactic(tactic: string) {
 
 <template>
   <div class="card">
-    <button class="close" @click="emit('dismiss')" title="dismiss">&times;</button>
-    <InlineLatex :text="hint.text" />
+    <button class="close" @click="emit('dismiss')" :title="t('common.dismiss')">{{ t('common.close') }}</button>
+    <InlineLatex :text="hint.text" @glossary-click="emit('glossaryClick', $event)" />
     <button
       v-if="hint.tactic"
       class="tactic"
@@ -34,7 +38,7 @@ function onTactic(tactic: string) {
     >
       {{ hint.tactic }}
     </button>
-    <button v-else ref="okBtn" class="ok small" @click="emit('dismiss')">OK</button>
+    <button v-else ref="okBtn" class="ok small" @click="emit('dismiss')">{{ t('common.ok') }}</button>
   </div>
 </template>
 

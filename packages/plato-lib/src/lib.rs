@@ -176,6 +176,32 @@ impl Prover {
     }
 }
 
+// ── Command metadata ────────────────────────────────────────────
+
+/// Parsed metadata for an s-expression command — its canonical name
+/// and a JSON string of template parameters.
+#[wasm_bindgen]
+pub struct CmdMeta {
+    cmd: String,
+    params_json: String,
+}
+
+#[wasm_bindgen]
+impl CmdMeta {
+    /// Canonical command name, e.g. `"->-intro"`, `"and-elim-l"`.
+    #[wasm_bindgen(getter)]
+    pub fn cmd_name(&self) -> String {
+        self.cmd.clone()
+    }
+
+    /// JSON string of parameter key→value pairs, e.g. `{"n":"1","F":"I"}`.
+    /// Parse with `JSON.parse()` on the JS side.
+    #[wasm_bindgen(getter)]
+    pub fn params_json(&self) -> String {
+        self.params_json.clone()
+    }
+}
+
 // ── Session (s-expression REPL) ─────────────────────────────────
 
 /// A proof session driven by s-expression commands.
@@ -191,6 +217,27 @@ impl Session {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self(parser::session::Session::new())
+    }
+
+    /// Parse an s-expression command without executing it, returning
+    /// structured metadata (command name + template parameters).
+    /// Returns `undefined` (null in JS) on parse error.
+    pub fn parse_meta(&self, input: &str) -> Option<CmdMeta> {
+        use parser::command::parse_input;
+        let cmd = parse_input(input).ok()?;
+        let (name, params) = cmd.meta();
+        // Manual JSON serialization — avoid pulling in serde_json
+        let mut json = String::from("{");
+        for (i, (k, v)) in params.iter().enumerate() {
+            if i > 0 { json.push(','); }
+            json.push('"');
+            json.push_str(k);
+            json.push_str("\":\"");
+            json.push_str(&v.replace('\\', "\\\\").replace('"', "\\\""));
+            json.push('"');
+        }
+        json.push('}');
+        Some(CmdMeta { cmd: name, params_json: json })
     }
 
     /// Execute one s-expression command. Returns the formatted result
@@ -215,6 +262,12 @@ impl Session {
     /// LaTeX for step `n` (1-indexed), or `undefined` if out of range.
     pub fn step_latex(&self, n: usize) -> Option<String> {
         self.0.step_latex(n)
+    }
+
+    /// Just the conclusion formula's LaTeX for step `n`, or `undefined`.
+    #[wasm_bindgen(js_name = stepFormulaLatex)]
+    pub fn step_formula_latex(&self, n: usize) -> Option<String> {
+        self.0.step_formula_latex(n)
     }
 
     /// Parse an s-expression formula and return its LaTeX.

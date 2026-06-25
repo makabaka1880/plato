@@ -1,0 +1,57 @@
+{
+  "description": "天下大势，分久必合。",
+  "goal": "(-> (and (or A B) (-> A C)) (or C B))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "目标：$(A \\land B \\to C) \\to (A \\to (B \\to C))$。这是\"柯里化\"在[implication|蕴含]中的一种形式——把\"需要两个前提一起来\"变成\"一次接收一个\"。",
+      "tactic": null
+    },
+    {
+      "text": "先假设 $A \\land B \\to C$。这是一个需要\"$A$ 且 $B$ 同时成立\"才能触发的蕴含。",
+      "tactic": "(assume (and (or A B) (-> A C)))"
+    },
+    {
+      "text": "再假设 $A$。接下来假设 $B$。现在上下文里有三个假设，目标是 $C$。",
+      "tactic": null
+    },
+    {
+      "text": "我们手上有 $A$ 和 $B$，但它们还没合在一起——而 $A \\land B \\to C$ 需要一个[conjunction|合取]来触发它。用 `and-intro` 把 $A$ 和 $B$ 组成 $A \\land B$。",
+      "tactic": "(and-elim-l 1)"
+    },
+    {
+      "text": "现在用 [modus-ponens|肯定前件]：$A \\land B \\to C$ 和 $A \\land B$ 推出 $C$。",
+      "tactic": "(and-elim-r 1)"
+    },
+    {
+      "text": "依次 [assumption|消去] $B$，$A$，和 $A \\land B \\to C$。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "最终结论：$(A \\land B \\to C) \\to (A \\to (B \\to C))$。如果你有一个需要两个前提的工具，你可以把它变成一次只吃一个参数的流水线——这就是柯里化。",
+      "tactic": "(->-elim 3 4)"
+    },
+    {
+      "text": "现在处理 $B$ 的情况：假设 $B$。",
+      "tactic": "(or-intro-l 5 B)"
+    },
+    {
+      "text": "从 $B$ 出发，也要得出 $C \\lor B$。这次 $B$ 在右边——用 `or-intro-r`。",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "两种情况——$A$ 和 $B$——都导向了 $C \\lor B$。用 `or-elim` 配合步骤 2 的 [disjunction|析取] 和你的两个分支证明。殊途同归。",
+      "tactic": "(or-intro-r 7 C)"
+    },
+    {
+      "text": "你从 [conjunction|合取] 推出了 $C \\lor B$。消去 [assumption|假设]，[implication|蕴含式] 得证。",
+      "tactic": "(or-elim 2 6 8)"
+    },
+    {
+      "text": "收尾工作——逐层消去。最终定理是 $C \\lor B$。",
+      "tactic": "(->-intro (and (or A B) (-> A C)) 9)"
+    }
+  ],
+  "unlocks": []
+}

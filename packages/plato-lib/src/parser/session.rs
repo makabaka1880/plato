@@ -36,6 +36,14 @@ impl Session {
         Some(format!("{}.\\; {}", n, self.steps[n - 1].latex()))
     }
 
+    /// Returns just the conclusion formula as LaTeX for step `n` (1-indexed), or None.
+    pub fn step_formula_latex(&self, n: usize) -> Option<String> {
+        if n < 1 || n > self.steps.len() {
+            return None;
+        }
+        Some(self.steps[n - 1].prop.latex())
+    }
+
     /// Parse an s-expression formula string and return its LaTeX.
     /// e.g. `"(and A B)"` → `"A \\land B"`.
     pub fn formula_latex(s: &str) -> String {

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const props = defineProps<{ hasProgress: boolean }>()
 
@@ -19,13 +22,23 @@ onMounted(() => {
 
 <template>
     <div class="hero">
-        <h1>? ⊢ Plato</h1>
+        <div class="lang-switch">
+          <button
+            :class="{ active: locale === 'en' }"
+            @click="locale = 'en'"
+          >EN</button>
+          <button
+            :class="{ active: locale === 'zh' }"
+            @click="locale = 'zh'"
+          >中文</button>
+        </div>
+        <h1>{{ t('home.title') }}</h1>
         <div class="actions">
           <button v-if="props.hasProgress" ref="continueBtn" class="hero-btn" @click="emit('continue')">
-            Continue
+            {{ t('home.continue') }}
           </button>
           <button ref="startBtn" class="hero-btn" :class="props.hasProgress ? 'secondary' : ''" @click="emit('start')">
-            &rarr; Start Fresh
+            {{ t('home.startFresh') }}
           </button>
         </div>
     </div>
@@ -38,6 +51,34 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     height: 100%;
+}
+
+.lang-switch {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 2px;
+}
+.lang-switch button {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.lang-switch button:hover {
+  color: var(--color-fg);
+  border-color: var(--color-border);
+}
+.lang-switch button.active {
+  color: var(--color-fg);
+  border-color: var(--color-border);
+  background: var(--color-subtle-bg);
 }
 
 .hero h1 {

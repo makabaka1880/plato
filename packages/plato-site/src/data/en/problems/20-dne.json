@@ -1,0 +1,31 @@
+{
+  "description": "Two wrongs don't make a right, but two nots make a yes.",
+  "goal": "(-> (not (not A)) A)",
+  "premise": [],
+  "guides": [
+    {
+      "text": "The goal is $\\lnot \\lnot A \\to A$. In everyday reasoning: if it's not the case that $A$ is false, then $A$ must be true. This is **[double-negation|double negation] elimination** — a hallmark of classical logic. (In intuitionistic logic, you don't get this for free, but Plato is classical.)",
+      "tactic": null
+    },
+    {
+      "text": "Assume the doubly-negated $A$. The [s-expression|s-expression] `(not (not A))` is parsed as $\\lnot \\lnot A$.",
+      "tactic": "(assume (not (not A)))"
+    },
+    {
+      "text": "The rule `dne` ([double-negation|double negation] elimination) strips two layers of [negation|negation]. From $\\lnot \\lnot A$ at step 1, it gives you plain $A$. One step — that's it.",
+      "tactic": "(dne 1)"
+    },
+    {
+      "text": "Discharge the [assumption|assumption]. The [double-negation|double negation] is gone, leaving a clean [implication|implication].",
+      "tactic": "(->-intro (not (not A)) 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "¬¬-elim",
+      "rule": "\\frac{\\Gamma \\vdash \\lnot \\lnot p}{\\Gamma \\vdash p}",
+      "description": "From $\\lnot \\lnot p$ derive $p$. Eliminate a double negation — classical logic's escape hatch."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "description": "说曹操曹操就到。",
+  "goal": "B",
+  "premise": [
+    "A",
+    "(-> A B)"
+  ],
+  "guides": [
+    {
+      "text": "这次的[goal|目标]是 $B$。但我们有[premise|前提]了：$A \\to B$ 和 $A$。如果你知道\"如果 $A$ 那 $B$\"，而且知道 $A$ 是真的，那 $B$ 当然是真的。这就是 [modus-ponens|肯定前件]。",
+      "tactic": null
+    },
+    {
+      "text": "两条[premise|前提] 已经躺在[context|上下文]里了。$A \\to B$ 在步骤 1，$A$ 在步骤 2。不需要 `assume`——前提是开局就送给你的。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "$A \\to B$ 是一个 [implication|蕴含式]，意思是\"如果有 $A$，那就一定有 $B$\"。现在我们手上已经有了 $A$，所以 $B$ 就是囊中之物。",
+      "tactic": "(assume (-> A B))"
+    },
+    {
+      "text": "`->-elim` 就是 [modus-ponens|肯定前件] 对应的命令。第一个参数是蕴含所在的步骤号，第二个是前件所在的步骤号。",
+      "tactic": "(->-elim 2 1)"
+    },
+    {
+      "text": "执行 `(->-elim 1 2)`——从步骤 1 的 $A \\to B$ 和步骤 2 的 $A$ 推出 $B$。[context|上下文] 累积了所有 [premise|前提]，[conclusion|结论] 是 $B$。证毕。",
+      "tactic": null
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "→-elim",
+      "rule": "\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}",
+      "description": "有了 $p \\to q$ 和 $p$，你就能推出 $q$——逻辑中最自然的推理步。"
+    }
+  ]
+}

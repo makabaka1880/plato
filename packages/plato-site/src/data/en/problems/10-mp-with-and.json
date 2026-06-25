@@ -1,0 +1,33 @@
+{
+  "description": "A promise wrapped with its key still opens the door.",
+  "goal": "(-> (and A (-> A B)) B)",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "The goal is $(A \\land (A \\to B)) \\to B$. We're given $A$ and the promise $A \\to B$ bundled together. If you can extract both, [modus-ponens|modus ponens] takes care of the rest. Start by assuming the [conjunction|conjunction].",
+      "tactic": null
+    },
+    {
+      "text": "Assume the bundled promise: $A \\land (A \\to B)$.",
+      "tactic": "(assume (and A (-> A B)))"
+    },
+    {
+      "text": "Peel off the left half — that's $A$, the key.",
+      "tactic": "(and-elim-l 1)"
+    },
+    {
+      "text": "Now the right half — that's $A \\to B$, the promise itself.",
+      "tactic": "(and-elim-r 1)"
+    },
+    {
+      "text": "You have the promise at step 3 and the key at step 2. Use [modus-ponens|modus ponens] to unlock $B$.",
+      "tactic": "(->-elim 3 2)"
+    },
+    {
+      "text": "Discharge the [assumption|assumption] to wrap up.",
+      "tactic": "(->-intro (and A (-> A B)) 4)"
+    }
+  ],
+  "unlocks": []
+}

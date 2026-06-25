@@ -1,0 +1,41 @@
+{
+  "description": "If it is, then it ain't what it ain't.",
+  "goal": "(-> A (not (not A)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "The goal is $A \\to \\lnot \\lnot A$. If $A$ is true, then its [double-negation|double negation] should also be true. To prove $\\lnot \\lnot A$, you'll need `not-intro` with $\\lnot A$ as the [formula|formula] to negate. Start by assuming $A$.",
+      "tactic": null
+    },
+    {
+      "text": "Assume $A$ to begin the [implication|implication].",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "Now you need to prove $\\lnot \\lnot A$ under the [assumption|assumption] $A$. The rule `not-intro (not A) N M` requires two subproofs that share $\\lnot A$ in their [context|context] and reach contradictory [conclusion|conclusions]. To get $\\lnot A$ into a context, assume it.",
+      "tactic": "(assume (not A))"
+    },
+    {
+      "text": "Now you have $A$ at step 1 and $\\lnot A$ at step 2, but in separate contexts. Use `and-intro` to merge them — the union of the two contexts will contain both.",
+      "tactic": "(and-intro 1 2)"
+    },
+    {
+      "text": "The merged [context|context] now has both $A$ and $\\lnot A$. Extract each one individually — they'll share the same context. First, pull out $A$ with `and-elim-l`.",
+      "tactic": "(and-elim-l 3)"
+    },
+    {
+      "text": "Now pull out $\\lnot A$ with `and-elim-r`.",
+      "tactic": "(and-elim-r 3)"
+    },
+    {
+      "text": "Steps 4 and 5 both have $\\lnot A$ in their contexts, and prove $A$ and $\\lnot A$ — a [contradiction|contradiction]. Apply `not-intro` to get $\\lnot \\lnot A$.",
+      "tactic": "(not-intro (not A) 4 5)"
+    },
+    {
+      "text": "Discharge the original [assumption|assumption] $A$ to get the full [implication|implication].",
+      "tactic": "(->-intro A 6)"
+    }
+  ],
+  "unlocks": []
+}

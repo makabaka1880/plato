@@ -1,0 +1,33 @@
+{
+  "description": "钥匙在手，不怕开不了锁。",
+  "goal": "(-> (and A (-> A B)) B)",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "前提：$A \\land B$，$A \\to C$。目标：$C$。有点绕，但 [modus-ponens|肯定前件] 和合取消除配合起来就能搞定。",
+      "tactic": null
+    },
+    {
+      "text": "$A \\to C$ 需要一个 $A$ 来触发它。但我们被给的是一条[conjunction|合取] $A \\land B$，不是单独的 $A$——需要先拆。",
+      "tactic": "(assume (and A (-> A B)))"
+    },
+    {
+      "text": "用 `and-elim-l` 从合取里取出 $A$。$A \\land B$ 的里面本来就藏着 $A$——你只需要把它拿出来。",
+      "tactic": "(and-elim-l 1)"
+    },
+    {
+      "text": "现在 $A \\to C$ 和 $A$ 都在手上了。用 [modus-ponens|肯定前件]——推出 $C$。",
+      "tactic": "(and-elim-r 1)"
+    },
+    {
+      "text": "证毕。你会发现很多证明都是\"拆包裹 + 肯定前件\"这个模式的变种。",
+      "tactic": "(->-elim 3 2)"
+    },
+    {
+      "text": "[assumption|消去] 假设，收工。",
+      "tactic": "(->-intro (and A (-> A B)) 4)"
+    }
+  ],
+  "unlocks": []
+}

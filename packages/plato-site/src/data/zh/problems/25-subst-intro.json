@@ -1,0 +1,35 @@
+{
+  "description": "一招鲜，吃遍天。",
+  "goal": "(-> (and A B) (and A B))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "目标：$(A \\land B) \\to (A \\land B)$。你可以从零证明它——假设 [conjunction|合取]，然后[assumption|消去]。三步。但也可以用两**步**——用之前证过的证明做替换。不要重复造轮子。",
+      "tactic": null
+    },
+    {
+      "text": "**[substitution|替换] 规则**说的是：如果一个 [judgement|判断] 在包含某些 [atom|原子] 时成立，那么当你把这些原子统一换成任意 [formula|公式] 时，判断仍然成立。形式上：$\\Gamma \\vdash p$ [implication|蕴含] $\\Gamma[P:=F] \\vdash p[P:=F]$ 对任意 $P$ 和 $F$ 成立。先证明恒等式 $P \\to P$——从第 01 题我们就见过的老朋友。",
+      "tactic": "(assume P)"
+    },
+    {
+      "text": "[assumption|消去] $P$，得 $P \\to P$。经典到骨子里。",
+      "tactic": "(->-intro P 1)"
+    },
+    {
+      "text": "步骤 2 证明了 $P \\to P$。现在把所有的 $P$ 替换为 $(A \\land B)$。语法：`(subst N (P (and A B)))`——先写步骤号，再写 `([atom|原子] 替换成什么)` 的配对。",
+      "tactic": "(subst 2 (P (and A B)))"
+    },
+    {
+      "text": "步骤 3 直接给出了 $(A \\land B) \\to (A \\land B)$——正好是目标，两步证明加一次 [substitution|替换] 搞定。关键洞见：**替换是一条结构性规则**。一个正确证明的\"骨架\"不依赖具体的 [atom|原子]——换成任何东西，逻辑结构还是一样。",
+      "tactic": null
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "subst",
+      "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}",
+      "description": "在一个已证明的判断中，统一地把原子替换为任意公式。证明的结构是骨架，具体的符号是皮——换皮不换骨。"
+    }
+  ]
+}

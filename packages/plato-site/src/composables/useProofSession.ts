@@ -5,6 +5,7 @@ interface Entry {
   text: string
   error: boolean
   step: number | null
+  meta: { cmdName: string; params: Record<string, string> } | null
 }
 
 let SessionClass: any
@@ -31,11 +32,28 @@ export function useProofSession(goal?: Ref<string | undefined>) {
   }
 
   function run(expr: string): { result: string; step: number | null } {
+    // Parse metadata first (before execution, in case of errors)
+    let meta: Entry['meta'] = null
+    try {
+      const rawMeta = session.parse_meta(expr)
+      if (rawMeta) {
+        meta = {
+          cmdName: rawMeta.cmd_name,
+          params: JSON.parse(rawMeta.params_json),
+        }
+      }
+    } catch { /* meta parse failure is non-fatal */ }
+
     try {
       const result: string = session.execute(expr)
       const error = result.startsWith('Error:')
       const step = error ? null : ++stepCount
-      entries.value.push({ cmd: expr, text: result, error, step })
+      // Patch the conclusion formula into meta after successful execution
+      if (step !== null && meta) {
+        const concl = session.stepFormulaLatex(step)
+        if (concl) meta.params.conclusion = concl
+      }
+      entries.value.push({ cmd: expr, text: result, error, step, meta: error ? null : meta })
       return { result, step }
     } catch (err: any) {
       entries.value.push({
@@ -43,6 +61,7 @@ export function useProofSession(goal?: Ref<string | undefined>) {
         text: 'Error: ' + err.message,
         error: true,
         step: null,
+        meta: null,
       })
       return { result: 'Error: ' + err.message, step: null }
     }

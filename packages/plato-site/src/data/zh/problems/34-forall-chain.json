@@ -1,0 +1,37 @@
+{
+  "description": "一传二，二传三。",
+  "goal": "(-> (forall x (-> (App P x) (App Q x))) (-> (App P a) (App Q a)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "目标：把假言三段论推广到一阶逻辑。$\\forall x.\\; ((App P x) \\to (App Q x)) \\to (\\forall x.\\; ((App Q x) \\to (App R x)) \\to \\forall x.\\; ((App P x) \\to (App R x)))$。如果\"所有 P 都是 Q\"且\"所有 Q 都是 R\"，那么\"所有 P 都是 R\"。传递性的全称化。",
+      "tactic": null
+    },
+    {
+      "text": "假设 $\\forall x.\\; (P(x) \\to Q(x))$ 和 $\\forall x.\\; (Q(x) \\to R(x))$。然后要对任意 $x$ 证明 $P(x) \\to R(x)$。",
+      "tactic": "(assume (forall x (-> (App P x) (App Q x))))"
+    },
+    {
+      "text": "用 `fix y` 取一个任意的项。假设 $(App P y)$。目标是 $(App R y)$。注意 $y$ 是\"随便谁\"——我们对它没有任何特殊了解，所以最终可以泛化回 $\\forall$。",
+      "tactic": "(assume (App P a))"
+    },
+    {
+      "text": "对两条全称前提用 `forall-elim` 将量词钉到 $y$ 上。得到 $(App P y) \\to (App Q y)$ 和 $(App Q y) \\to (App R y)$。",
+      "tactic": "(forall-elim 1 a)"
+    },
+    {
+      "text": "用 [modus-ponens|肯定前件] 两次。从 $(App P y) \\to (App Q y)$ 和 $(App P y)$ 推出 $(App Q y)$。然后从 $(App Q y) \\to (App R y)$ 和 $(App Q y)$ 推出 $(App R y)$。多米诺骨牌在 $y$ 身上连续倒下。",
+      "tactic": "(->-elim 3 2)"
+    },
+    {
+      "text": "[assumption|消去] 假设。用 `forall-intro` 把 $y$ 泛化——因为我们对 $y$ 没有任何特殊假设，推广到全称是合法的。再消去两个量词前提。",
+      "tactic": "(->-intro (App P a) 4)"
+    },
+    {
+      "text": "全称量词下的假言三段论——\"对一切都成立\"的传递性定理。亚里士多德见了也会点头。",
+      "tactic": "(->-intro (forall x (-> (App P x) (App Q x))) 5)"
+    }
+  ],
+  "unlocks": []
+}

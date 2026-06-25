@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, nextTick, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Hint } from '@/types'
 import { usePreferencesStore } from '@/stores/preferences'
+import { loadNlg } from '@/data'
+import InlineLatex from '@/components/InlineLatex.vue'
 import Katex from '@/components/Katex.vue'
 import GuideCard from './GuideCard.vue'
 import HintCard from './HintCard.vue'
@@ -11,16 +14,18 @@ import { useGuideProgression } from '@/composables/useGuideProgression'
 import { useHints } from '@/composables/useHints'
 import { useBracketPairing } from '@/composables/useBracketPairing'
 
+const { t, locale } = useI18n()
+
 const props = defineProps<{
     goalLatex: string
     premiseLatex?: string
     goal?: string
-    premise?: string
+    premise?: string[]
     guides: Hint[]
     hints: Hint[]
 }>()
 
-const emit = defineEmits<{ stepTaken: []; solved: []; openPrefs: [] }>()
+const emit = defineEmits<{ stepTaken: []; solved: [proofLines: string[]]; openPrefs: [] }>()
 
 const prefs = usePreferencesStore()
 const inpEl = ref<HTMLInputElement | null>(null)
@@ -44,13 +49,24 @@ const {
     toggleHint, dismissHint, reset: hintsReset,
 } = useHints(() => props.hints.length)
 
-// ── guide input enforcement ───────────────────────────────────────
+// ── compiled NLG proof ────────────────────────────────────────────
+const proofLines = computed(() =>
+  entries.value
+    .filter(e => e.meta)
+    .map((e, i) => `${i + 1}. ${nlgText(e.meta!)}`)
+)
 const guideInputDisabled = computed(() =>
     visibleGuide.value !== null && !visibleGuide.value.tactic
 )
 
 // ── help modal ──────────────────────────────────────────────────────
 const showHelp = ref(false)
+const glossaryTerm = ref<string | null>(null)
+
+function onGlossaryClick(term: string) {
+  glossaryTerm.value = term
+  showHelp.value = true
+}
 
 // ── execute ───────────────────────────────────────────────────────
 function run() {
@@ -70,7 +86,7 @@ function run() {
     if (g && g.tactic && !SessionClass.value.tacticEquals(g.tactic, expr)) {
         entries.value.push({
             cmd: expr,
-            text: `Error: expected \`${g.tactic}\``,
+            text: t('repl.tacticExpected', { tactic: g.tactic }),
             error: true,
             step: null,
         })
@@ -83,7 +99,7 @@ function run() {
         const next = new Set(openHints.value)
         let changed = false
         for (const i of next) {
-            if (props.hints[i].tactic && SessionClass.value.tacticEquals(props.hints[i].tactic!, expr)) {
+            if (props.hints[i]!.tactic && SessionClass.value.tacticEquals(props.hints[i]!.tactic!, expr)) {
                 next.delete(i)
                 changed = true
             }
@@ -94,7 +110,7 @@ function run() {
         emit('stepTaken')
 
         if (props.goal && isGoalResolved(props.goal)) {
-            emit('solved')
+            emit('solved', proofLines.value)
         }
     }
     scrollDown()
@@ -166,7 +182,7 @@ function onKeydown(e: KeyboardEvent) {
         }
         if (historyIdx.value > 0) {
             historyIdx.value--
-            input.value = history.value[historyIdx.value]
+            input.value = history.value[historyIdx.value]!
         }
         return
     }
@@ -174,7 +190,7 @@ function onKeydown(e: KeyboardEvent) {
         e.preventDefault()
         if (historyIdx.value < history.value.length - 1) {
             historyIdx.value++
-            input.value = history.value[historyIdx.value]
+            input.value = history.value[historyIdx.value]!
         } else if (historyIdx.value === history.value.length - 1) {
             historyIdx.value = history.value.length
             input.value = savedDraft
@@ -199,11 +215,26 @@ function insertTactic(tactic: string) {
     nextTick(() => inpEl.value?.focus())
 }
 
+// ── NLG rendering ─────────────────────────────────────────────────
+// Keys that hold LaTeX formula values (should be wrapped in $...$ for KaTeX)
+const FORMULA_KEYS = new Set(['F', 'conclusion'])
+
+function nlgText(meta: { cmdName: string; params: Record<string, string> }): string {
+  const nlg = loadNlg(locale.value)
+  const tpl = nlg[meta.cmdName]
+  if (!tpl) return ''
+  return tpl.replace(/\{(\w+)\}/g, (_, key: string) => {
+    const val = meta.params[key] ?? `{${key}}`
+    if (FORMULA_KEYS.has(key)) return '$' + val + '$'
+    return val
+  })
+}
+
 defineExpose({ insertTactic })
 </script>
 
 <template>
-    <div v-if="!ready" class="loading">Loading WASM…</div>
+    <div v-if="!ready" class="loading">{{ t('common.loading') }}</div>
     <div v-else class="repl" @keydown="onReplKeydown">
         <div class="goal">
             <div v-if="props.premiseLatex" class="premise-line">
@@ -214,7 +245,10 @@ defineExpose({ insertTactic })
 
         <div v-if="prefs.viewMode === 'tex'" class="judgements">
             <div v-for="(e, i) in entries" :key="i" class="entry">
-                <div class="cmd">&gt; {{ e.cmd }}</div>
+                <div class="entry-row">
+                    <div class="cmd">&gt; {{ e.cmd }}</div>
+                    <div v-if="e.meta" class="nlg"><InlineLatex :text="nlgText(e.meta)" @glossary-click="onGlossaryClick" /></div>
+                </div>
                 <div v-if="e.error" class="err">{{ e.text }}</div>
                 <div v-else class="step">
                     <Katex :expr="stepLatex(e.step!)" />
@@ -228,13 +262,8 @@ defineExpose({ insertTactic })
         <div class="mid-spacer" />
 
         <div class="guide-slot">
-            <GuideCard
-              v-if="visibleGuide"
-              :key="guideIdx"
-              :guide="visibleGuide"
-              @insert="insertTactic"
-              @dismiss="advanceGuide()"
-            />
+            <GuideCard v-if="visibleGuide" :key="guideIdx" :guide="visibleGuide" @insert="insertTactic"
+                @dismiss="advanceGuide()" @glossary-click="onGlossaryClick" />
         </div>
 
         <div v-if="props.hints.length" class="hint-bar">
@@ -242,14 +271,15 @@ defineExpose({ insertTactic })
                 <button v-for="i in hintRevealed" :key="i" class="bulb" :class="{
                     active: openHints.has(i - 1),
                     pulse: i === hintRevealed && !openHints.has(i - 1),
-                }" @click="toggleHint(i - 1)" :title="openHints.has(i - 1) ? 'hide hint ' + i : 'show hint ' + i">💡</button>
+                }" @click="toggleHint(i - 1)"
+                    :title="openHints.has(i - 1) ? t('repl.hideHint', { n: i }) : t('repl.showHint', { n: i })">💡</button>
             </div>
 
             <div v-if="anyHintOpen" class="hint-cards">
                 <template v-for="(h, i) in props.hints" :key="i">
                     <Transition name="fade-down">
                         <HintCard v-if="openHints.has(i)" :hint="h" :pulse="true" @insert="insertTactic"
-                            @dismiss="dismissHint(i)" />
+                            @dismiss="dismissHint(i)" @glossary-click="onGlossaryClick" />
                     </Transition>
                 </template>
             </div>
@@ -258,15 +288,19 @@ defineExpose({ insertTactic })
         <div class="input-wrap">
             <div class="input-row">
                 <input ref="inpEl" v-model="input" @keydown="onKeydown" :disabled="guideInputDisabled"
-                    :placeholder="visibleGuide?.tactic ?? '...'" class="repl-input" />
-                <button class="submit-btn" @click="run" :disabled="guideInputDisabled" title="submit">
+                    :placeholder="visibleGuide?.tactic ?? t('repl.placeholder')" class="repl-input" />
+                <button class="submit-btn" @click="run" :disabled="guideInputDisabled" :title="t('common.submit')">
                     →
                 </button>
             </div>
-            <div class="help-hint">Type <code>help</code> or <code>?</code> to see available commands</div>
+            <div class="help-hint">
+              <i18n-t keypath="repl.helpHint" tag="span">
+                <template #cmd><code>help</code></template>
+              </i18n-t>
+            </div>
         </div>
 
-        <HelpModal v-if="showHelp" @close="showHelp = false" />
+        <HelpModal v-if="showHelp" :glossary-term="glossaryTerm ?? undefined" @close="showHelp = false; glossaryTerm = null" />
     </div>
 </template>
 
@@ -310,9 +344,23 @@ defineExpose({ insertTactic })
     padding: 4px 0;
 }
 
+.entry-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    align-items: baseline;
+}
+
 .cmd {
     font-size: 11px;
     color: #bbb;
+    flex-shrink: 0;
+}
+
+.nlg {
+    font-size: 11px;
+    color: var(--color-muted);
+    line-height: 1.55;
 }
 
 .step {

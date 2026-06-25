@@ -1,0 +1,240 @@
+[
+  {
+    "id": "assumption",
+    "term": "Assumption",
+    "key": "A",
+    "definition": "A temporary hypothesis introduced during a proof, written with the `(assume F)` command. Assumptions must be discharged before the proof is complete — for example, →-intro discharges an assumption by turning it into the antecedent of an implication.",
+    "intuitive": "Like saying \"let's pretend this is true for a moment.\" You borrow a fact temporarily, use it, then give it back before the proof ends."
+  },
+  {
+    "id": "atom",
+    "term": "Atom",
+    "key": "A",
+    "definition": "The simplest kind of formula — a single letter with no internal structure. Uppercase letters (P, Q, A…) are propositional atoms; lowercase letters (x, y, t…) are term atoms. For example, `P` and `x` are atoms; `(-> P Q)` is not.",
+    "intuitive": "A single letter. The simplest possible building block of logic — like a single brick before you build a wall."
+  },
+  {
+    "id": "bound-variable",
+    "term": "Bound variable",
+    "key": "B",
+    "definition": "A variable that appears in the scope of a quantifier (∀x. … or ∃x. …). The quantifier 'captures' the variable, so its name can be changed (alpha-renaming) without changing the meaning of the formula.",
+    "intuitive": "A variable that belongs to a quantifier. Think of it like \"x\" in \"for every person x\" — the x is just a placeholder; you could replace it with y and it would mean the same thing."
+  },
+  {
+    "id": "conclusion",
+    "term": "Conclusion",
+    "key": "C",
+    "definition": "The formula you are trying to prove — also called the goal. A proof is complete when the final step's conclusion matches the goal and its context contains only the allowed premises.",
+    "intuitive": "The finish line. The statement you're trying to prove — if your proof were a race, the conclusion is the finish tape."
+  },
+  {
+    "id": "conjunction",
+    "term": "Conjunction (∧)",
+    "key": "C",
+    "definition": "The logical 'and'. A conjunction `(and p q)` is true exactly when both p and q are true. To prove a conjunction, use ∧-intro (prove each half separately). To use one, apply ∧-elim-l or ∧-elim-r to extract the left or right half.",
+    "intuitive": "\"Both things are true at the same time.\" Like saying \"it's raining AND I have an umbrella\" — the whole statement is only true if both parts are true."
+  },
+  {
+    "id": "connective",
+    "term": "Connective",
+    "key": "C",
+    "definition": "A logical operator that combines smaller formulas into larger ones. The standard connectives are: → (implication), ∧ (conjunction), ∨ (disjunction), ¬ (negation), ∀ (universal quantifier), and ∃ (existential quantifier). Each connective has introduction and elimination rules.",
+    "intuitive": "A glue word for logic. Just like \"and\", \"or\", \"if…then\", and \"not\" connect ideas in everyday speech, connectives connect formulas in logic."
+  },
+  {
+    "id": "context",
+    "term": "Context (Γ)",
+    "key": "C",
+    "definition": "The set of assumptions available at a given proof step. Written as Γ (capital Gamma). Each step in a proof carries its own context — the formulas you are allowed to rely on at that point. The ⊢ symbol separates the context from the conclusion.",
+    "intuitive": "Your backpack of known facts. At any point in a proof, the context is what you've collected and can use — assumptions you've made, premises you started with."
+  },
+  {
+    "id": "contradiction",
+    "term": "Contradiction (⊥)",
+    "key": "C",
+    "definition": "The always-false formula, written ⊥ or 'bottom'. Deriving ⊥ from an assumption lets you conclude the negation of that assumption via ¬-intro. From ⊥ alone, any formula follows — this is the principle of explosion (ex falso).",
+    "intuitive": "An impossible situation. Like saying \"it's raining and it's not raining\" at the same time — this can never be true. In logic, reaching a contradiction means something went wrong with your assumptions."
+  },
+  {
+    "id": "disjunction",
+    "term": "Disjunction (∨)",
+    "key": "D",
+    "definition": "The logical 'or'. A disjunction `(or p q)` is true when at least one of p or q is true. To prove one, use ∨-intro-l or ∨-intro-r (pick one side and prove it). To use a disjunction, apply ∨-elim (proof by cases): show that the goal follows from either possibility.",
+    "intuitive": "\"At least one of these is true (maybe both).\" When you say \"I'll have tea OR coffee,\" in everyday English you usually mean one or the other. In logic, ∨ means at least one is true — both being true is fine too."
+  },
+  {
+    "id": "double-negation",
+    "term": "Double negation (¬¬)",
+    "key": "D",
+    "definition": "The formula ¬¬p ('not not p'). In classical logic, ¬¬p is equivalent to p, and you can eliminate the double negation with the `(dne N)` command. This rule is not valid in intuitionistic logic.",
+    "intuitive": "\"Not not\" cancels out. Saying \"I'm not unhappy\" means you're happy. Two negatives make a positive — that's exactly what double negation elimination does."
+  },
+  {
+    "id": "elimination-rule",
+    "term": "Elimination rule",
+    "key": "E",
+    "definition": "A rule for using (taking apart) a formula whose main connective is the one being eliminated. Example: from p → q and p, use →-elim (modus ponens) to derive q. Elimination rules let you extract information from complex formulas.",
+    "intuitive": "A rule for taking apart and using something you already proved. If you've proved \"A and B\", the elimination rule lets you say \"so A is true.\" You're unpacking what you already have."
+  },
+  {
+    "id": "ex-falso",
+    "term": "Ex falso quodlibet",
+    "key": "E",
+    "definition": "The principle of explosion: from ⊥ (a contradiction), any formula whatsoever follows. The name is Latin for 'from falsehood, anything'. Use the `(ex-falso N F)` command — step N must prove ⊥, and F is the formula you want to derive.",
+    "intuitive": "From nonsense, anything follows. If you've accidentally proved something impossible (⊥), you can conclude literally any statement — because in a broken system, anything goes. The name is Latin for \"from falsehood.\""
+  },
+  {
+    "id": "existential-generalisation",
+    "term": "Existential generalisation",
+    "key": "E",
+    "definition": "The ∃-intro rule: if you have proved φ with some specific term t in place of x, you can conclude ∃x.φ. 'If a concrete example exists, then something exists.' Use the `(exists-intro N t x)` command.",
+    "intuitive": "\"I found one, so at least one exists.\" If you can point to a specific example (say, a red apple), then you can conclude \"there exists something red.\""
+  },
+  {
+    "id": "existential-quantifier",
+    "term": "Existential quantifier (∃)",
+    "key": "E",
+    "definition": "Written ∃ and typed as `exists`. The formula ∃x.φ reads 'there exists an x such that φ'. To prove it, use ∃-intro (provide a witness). To use it, apply ∃-elim (introduce a fresh witness variable, prove your goal, then discharge the witness).",
+    "intuitive": "\"There exists\" or \"there is at least one.\" Like saying \"someone in this room speaks French\" — you're claiming at least one person does, without necessarily saying who."
+  },
+  {
+    "id": "formula",
+    "term": "Formula",
+    "key": "F",
+    "definition": "A well-formed expression in the logical language. Atoms (single letters like P or x) are formulas, and larger formulas are built by combining smaller ones with connectives: `(not p)`, `(-> p q)`, `(and p q)`, `(or p q)`, `(forall x p)`, `(exists x p)`, and `(App P t)`.",
+    "intuitive": "A grammatically correct sentence in logic. Just like \"the cat sat on the mat\" is a valid English sentence, `(-> P Q)` is a valid formula. A random jumble of symbols is not."
+  },
+  {
+    "id": "free-variable",
+    "term": "Free variable",
+    "key": "F",
+    "definition": "A variable that is not bound by any quantifier in a formula. In ∀-intro, the variable being generalised must not appear free in any other assumption — otherwise the generalisation is unsound (you would be claiming 'for all x' when you only proved it for a specific x).",
+    "intuitive": "A variable that's \"on its own\" — not owned by any quantifier. If you say \"x is tall\" without specifying which x, that's a free variable. It's like using a pronoun without saying who you mean."
+  },
+  {
+    "id": "implication",
+    "term": "Implication (→)",
+    "key": "I",
+    "definition": "The logical 'if…then'. `(-> p q)` means 'p implies q' or 'if p then q'. To prove an implication, use →-intro: temporarily assume p, derive q, then discharge the assumption. To use one, apply →-elim (modus ponens): from p → q and p, conclude q.",
+    "intuitive": "\"If this, then that.\" The arrow → means if the left side is true, the right side must also be true. Not causation — just a promise: whenever p happens, q follows."
+  },
+  {
+    "id": "inference-rule",
+    "term": "Inference rule",
+    "key": "I",
+    "definition": "A rule that derives a new judgement from one or more existing judgements. Written as a fraction: premises above the line, conclusion below. Each command in the REPL (like `(->-intro F N)`) corresponds to applying one inference rule.",
+    "intuitive": "A step in the proof game. Each rule tells you: if you already have these things (above the line), you may now claim this new thing (below the line)."
+  },
+  {
+    "id": "introduction-rule",
+    "term": "Introduction rule",
+    "key": "I",
+    "definition": "A rule for proving a formula whose main connective is the one being introduced. Example: to prove p → q, use →-intro — assume p, derive q, then discharge. Each connective has its own introduction rule.",
+    "intuitive": "A rule for building and proving something new. If you want to prove \"A and B\", the introduction rule says: prove A, prove B separately, then put them together. You're constructing, not unpacking."
+  },
+  {
+    "id": "judgement",
+    "term": "Judgement (Γ ⊢ p)",
+    "key": "J",
+    "definition": "The assertion that formula p follows from the assumptions in context Γ. The ⊢ symbol is called a 'turnstile' and reads as 'proves' or 'entails'. Every step in a natural deduction proof is a judgement.",
+    "intuitive": "A claim backed by evidence. Writing \"Γ ⊢ p\" is like saying \"from what I know (Γ), I can conclude p.\" The turnstile ⊢ is the word \"therefore\" — it separates your evidence from your conclusion."
+  },
+  {
+    "id": "modus-ponens",
+    "term": "Modus ponens",
+    "key": "M",
+    "definition": "The →-elim rule: if you have proved p → q and you have proved p, you may conclude q. One of the oldest and most fundamental rules of logic. The name is Latin for 'mode that affirms'.",
+    "intuitive": "The most natural reasoning step: if you know \"if A then B\" and you know A is true, then B must be true. Like: \"if it rains, the ground gets wet\" + \"it's raining\" → \"the ground is wet.\""
+  },
+  {
+    "id": "natural-deduction",
+    "term": "Natural deduction",
+    "key": "N",
+    "definition": "A proof system where each logical connective has introduction rules (how to prove a statement with that connective) and elimination rules (how to use a statement with that connective). Proofs are built step-by-step by applying these rules, working forward from assumptions toward the goal.",
+    "intuitive": "A way of doing proofs that mimics how people actually think. You introduce assumptions when needed, work forward, and discharge them at the end. No complicated machinery — just step-by-step reasoning."
+  },
+  {
+    "id": "negation",
+    "term": "Negation (¬)",
+    "key": "N",
+    "definition": "The logical 'not'. `(not p)` is true exactly when p is false. To prove ¬p, use ¬-intro (assume p, derive a contradiction). To use ¬p, apply ¬-elim to convert it to p → ⊥. You can also eliminate double negations with `(dne N)`.",
+    "intuitive": "\"Not.\" The ¬ symbol flips the truth value: if something was true, ¬ makes it false, and vice versa. Like putting \"it is not the case that\" in front of a statement."
+  },
+  {
+    "id": "predicate",
+    "term": "Predicate",
+    "key": "P",
+    "definition": "A symbol (uppercase letter) that represents a property or relation. A predicate applied to a term, written `(App P x)`, forms a formula — for example, `(App Human Socrates)` means 'Socrates is human'. Predicates can take multiple arguments via nested application: `(App (App Loves x) y)`.",
+    "intuitive": "A property or relation. \"Is tall\" is a predicate — it's incomplete until you fill in who is tall. In `(App Tall x)`, `Tall` is the predicate and `x` is who we're talking about."
+  },
+  {
+    "id": "premise",
+    "term": "Premise",
+    "key": "P",
+    "definition": "A formula given as true at the start of a proof. Premises appear in the initial context and can be used without justification. The goal is to derive the conclusion from the premises alone.",
+    "intuitive": "A starting fact you're given for free. Like the clues in a mystery novel — you don't need to prove them; they're the raw material you work with to reach the conclusion."
+  },
+  {
+    "id": "proposition",
+    "term": "Proposition",
+    "key": "P",
+    "definition": "A statement that is either true or false. In propositional logic, uppercase letters (P, Q, R…) stand for arbitrary propositions. Connectives combine propositions into more complex ones.",
+    "intuitive": "A statement that is either true or false — no ambiguity, no \"maybe.\" \"The sky is blue\" is a proposition (it's either true or false). \"Hello!\" is not — it's not claiming anything."
+  },
+  {
+    "id": "quantifier",
+    "term": "Quantifier",
+    "key": "Q",
+    "definition": "A symbol that specifies how many things a statement applies to. The two quantifiers in first-order logic are ∀ (universal, 'for all') and ∃ (existential, 'there exists'). Quantifiers bind variables, turning an open formula like 'x is human' into a closed statement like 'everything is human' or 'something is human'.",
+    "intuitive": "A word that says how many things we're talking about. ∀ means \"all of them\" and ∃ means \"at least one.\" Without quantifiers, logic can only talk about specific named things."
+  },
+  {
+    "id": "reductio-ad-absurdum",
+    "term": "Reductio ad absurdum",
+    "key": "R",
+    "definition": "Proof by contradiction via ¬-intro: assume p, derive both q and ¬q (a contradiction), then conclude ¬p. The name is Latin for 'reduction to absurdity'. This is the standard way to prove a negation.",
+    "intuitive": "Proof by showing the opposite would be ridiculous. Assume the opposite of what you want to prove, find that it leads to nonsense (a contradiction), and conclude your original statement must be true. Latin for \"reduction to absurdity.\""
+  },
+  {
+    "id": "s-expression",
+    "term": "S-expression",
+    "key": "S",
+    "definition": "Short for 'symbolic expression'. A notation where everything is written in parentheses with the operator first: `(and p q)` instead of `p ∧ q`. Plato uses s-expressions for both formulas and commands. For example, 'p → q' is written `(-> p q)`, and the modus ponens command is `(->-elim N M)`.",
+    "intuitive": "A way of writing where the operator always comes first in parentheses. Instead of \"A + B\" you write \"(+ A B)\". It looks odd at first but it's completely unambiguous — no need for order-of-operations rules."
+  },
+  {
+    "id": "substitution",
+    "term": "Substitution",
+    "key": "S",
+    "definition": "Replacing an atom with a formula throughout a proof step. The `(subst N (A F)...)` command substitutes atom A with formula F uniformly in step N. Useful for instantiating schematic patterns with concrete formulas.",
+    "intuitive": "Replace-all. If something is true for P, and you swap every P with some other formula, the truth is preserved. Like finding-and-replacing every \"cat\" with \"dog\" in a sentence — the grammatical structure stays the same."
+  },
+  {
+    "id": "term",
+    "term": "Term",
+    "key": "T",
+    "definition": "A name for an individual object in first-order logic. Lowercase letters (x, y, t, a, b…) are term variables. Terms appear as arguments to predicates via `(App P t)`, and are bound by quantifiers in formulas like `(forall x …)`.",
+    "intuitive": "A name for a specific thing. Like \"Alice\" or \"42\" — terms are the objects that predicates describe. In \"Alice is tall,\" Alice is the term."
+  },
+  {
+    "id": "universal-generalisation",
+    "term": "Universal generalisation",
+    "key": "U",
+    "definition": "The ∀-intro rule: if you can prove φ for an arbitrary variable x (with no other assumptions about x), then ∀x.φ holds. 'If it works for any x, it works for all x.' Use the `(forall-intro x N)` command — the variable x must not appear free in other assumptions.",
+    "intuitive": "\"If it works for an arbitrary example, it works for everything.\" Prove something for a generic, unspecified x (with no special assumptions about it), and you've proved it for all x."
+  },
+  {
+    "id": "universal-quantifier",
+    "term": "Universal quantifier (∀)",
+    "key": "U",
+    "definition": "Written ∀ and typed as `forall`. The formula ∀x.φ reads 'for all x, φ holds'. To prove it, use ∀-intro (generalise from an arbitrary variable). To use it, apply ∀-elim: from ∀x.φ, you can conclude φ[t/x] for any term t.",
+    "intuitive": "\"For all\" or \"for every.\" Like saying \"everyone in this room speaks French\" — you're making a claim about every single person, with no exceptions."
+  },
+  {
+    "id": "witness",
+    "term": "Witness",
+    "key": "W",
+    "definition": "A specific term used to instantiate an existential quantifier. In ∃-intro, you provide a witness term t: from φ[t/x], conclude ∃x.φ. In ∃-elim, you introduce a fresh witness variable, prove your goal under it, and then discharge it — the witness must not appear free in the final conclusion.",
+    "intuitive": "A concrete example that proves something exists. If you claim \"there is a prime number between 10 and 20,\" showing the number 13 is your witness — it's the specific thing that makes the claim true."
+  }
+]

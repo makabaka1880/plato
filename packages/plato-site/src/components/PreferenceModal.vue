@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences'
+
+const { t, locale } = useI18n()
 
 const emit = defineEmits<{ close: [] }>()
 
@@ -28,16 +31,23 @@ onUnmounted(() => {
 <template>
   <div class="backdrop" @click.self="emit('close')">
     <div class="modal">
-      <div class="title">Preferences</div>
+      <div class="title">{{ t('preferences.title') }}</div>
 
       <div class="row">
-        <span>Proof Output</span>
+        <span>{{ t('preferences.proofOutput') }}</span>
         <button class="toggle" @click="prefs.toggleViewMode()">
-          {{ prefs.viewMode === 'tex' ? 'TeX' : 'Text' }}
+          {{ prefs.viewMode === 'tex' ? t('preferences.tex') : t('preferences.text') }}
         </button>
       </div>
 
-      <button ref="doneBtn" class="done-btn" @click="emit('close')">Done</button>
+      <div class="row">
+        <span>{{ t('preferences.language') }}</span>
+        <button class="toggle" @click="locale = locale === 'en' ? 'zh' : 'en'">
+          {{ locale === 'en' ? 'English' : '中文' }}
+        </button>
+      </div>
+
+      <button ref="doneBtn" class="done-btn" @click="emit('close')">{{ t('common.done') }}</button>
     </div>
   </div>
 </template>

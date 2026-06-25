@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Hint } from '@/types'
 import InlineLatex from './InlineLatex.vue'
+
+const { t } = useI18n()
 
 const props = defineProps<{ guide: Hint }>()
 
 const emit = defineEmits<{
     insert: [tactic: string]
     dismiss: []
+    glossaryClick: [term: string]
 }>()
 
 const okBtn = ref<HTMLButtonElement | null>(null)
@@ -19,12 +23,12 @@ onMounted(() => {
 
 <template>
     <div class="card">
-        <InlineLatex :text="guide.text" />
+        <InlineLatex :text="guide.text" @glossary-click="emit('glossaryClick', $event)" />
         <br>
         <button v-if="guide.tactic" class="tactic" @click="emit('insert', guide.tactic!)">
             {{ guide.tactic }}
         </button>
-        <button v-else ref="okBtn" class="ok" @click="emit('dismiss')">OK</button>
+        <button v-else ref="okBtn" class="ok" @click="emit('dismiss')">{{ t('common.ok') }}</button>
     </div>
 </template>
 

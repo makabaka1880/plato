@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { problems } from '@/data/problems'
+import { useI18n } from 'vue-i18n'
+import { loadProblems } from '@/data'
 import { useProgressStore } from '@/stores/progress'
 import HomeView from '@/views/HomeView.vue'
 import ProblemView from '@/views/ProblemView.vue'
+
+const { t, locale } = useI18n()
 
 const progress = useProgressStore()
 
@@ -13,13 +16,10 @@ type Page =
 
 const page = ref<Page>({ type: 'home' })
 
+const problems = computed(() => loadProblems(locale.value))
+
 const problemIdx = computed(() =>
     page.value.type === 'problem' ? page.value.idx : 0
-)
-
-/** Unique key that changes every time the page changes, for transition. */
-const pageKey = computed(() =>
-    page.value.type === 'home' ? 'home' : `problem-${page.value.idx}`
 )
 
 function goHome() {
@@ -32,14 +32,14 @@ function onStart() {
 }
 
 function onContinue() {
-    const idx = Math.min(progress.highestSolved + 1, problems.length - 1)
+    const idx = Math.min(progress.highestSolved + 1, problems.value.length - 1)
     page.value = { type: 'problem', idx }
 }
 
 function onNext() {
     if (page.value.type === 'problem') {
         const next = page.value.idx + 1
-        if (next < problems.length) {
+        if (next < problems.value.length) {
             page.value = { type: 'problem', idx: next }
         }
     }
@@ -56,27 +56,15 @@ function onPrev() {
     <div class="app">
         <div class="main">
             <Transition name="page" mode="out-in">
-              <HomeView
-                v-if="page.type === 'home'"
-                :key="pageKey"
-                :has-progress="progress.highestSolved >= 0"
-                @start="onStart"
-                @continue="onContinue"
-              />
-              <ProblemView
-                v-else
-                :key="pageKey"
-                :problem-idx="problemIdx"
-                :problems="problems"
-                @next="onNext"
-                @prev="onPrev"
-                @home="goHome"
-              />
+                <HomeView v-if="page.type === 'home'" :has-progress="progress.highestSolved >= 0"
+                    @start="onStart" @continue="onContinue" />
+                <ProblemView v-else :problem-idx="problemIdx" :problems="problems" @next="onNext"
+                    @prev="onPrev" @home="goHome" />
             </Transition>
         </div>
         <footer class="footer">
-            All Rights Reserved
-            <a href="https://blog.makabaka1880.xyz" target="_blank">Makabaka1880</a>
+            {{ t('footer.rights') }}
+            <a href="https://blog.makabaka1880.xyz" target="_blank">{{ t('footer.author') }}</a>
             &copy; 2026
         </footer>
     </div>

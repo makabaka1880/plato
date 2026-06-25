@@ -344,6 +344,44 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
     }
 }
 
+impl Command {
+    /// Returns (canonical_name, [(param_key, param_value)]).
+    /// All values are strings: step numbers, LaTeX for formulas, raw atoms for variables.
+    pub fn meta(&self) -> (String, Vec<(String, String)>) {
+        match self {
+            Command::Formula(f) => ("parse".into(), vec![("F".into(), f.latex())]),
+            Command::Assume(f) => ("assume".into(), vec![("F".into(), f.latex())]),
+            Command::Var(n, f) => ("var".into(), vec![("n".into(), n.to_string()), ("F".into(), f.latex())]),
+            Command::AndIntro(n, m) => ("and-intro".into(), vec![("n".into(), n.to_string()), ("m".into(), m.to_string())]),
+            Command::AndElimL(n) => ("and-elim-l".into(), vec![("n".into(), n.to_string())]),
+            Command::AndElimR(n) => ("and-elim-r".into(), vec![("n".into(), n.to_string())]),
+            Command::OrIntroL(n, f) => ("or-intro-l".into(), vec![("n".into(), n.to_string()), ("F".into(), f.latex())]),
+            Command::OrIntroR(n, f) => ("or-intro-r".into(), vec![("n".into(), n.to_string()), ("F".into(), f.latex())]),
+            Command::OrElim(n, m, k) => ("or-elim".into(), vec![("n".into(), n.to_string()), ("m".into(), m.to_string()), ("k".into(), k.to_string())]),
+            Command::ImpIntro(f, n) => ("->-intro".into(), vec![("F".into(), f.latex()), ("n".into(), n.to_string())]),
+            Command::ImpElim(n, m) => ("->-elim".into(), vec![("n".into(), n.to_string()), ("m".into(), m.to_string())]),
+            Command::ImpInto(n) => ("->-into".into(), vec![("n".into(), n.to_string())]),
+            Command::NotIntro(f, n, m) => ("not-intro".into(), vec![("F".into(), f.latex()), ("n".into(), n.to_string()), ("m".into(), m.to_string())]),
+            Command::NotElim(n) => ("not-elim".into(), vec![("n".into(), n.to_string())]),
+            Command::DNegElim(n) => ("dne".into(), vec![("n".into(), n.to_string())]),
+            Command::ExFalso(n, f) => ("ex-falso".into(), vec![("n".into(), n.to_string()), ("F".into(), f.latex())]),
+            Command::Show(n) => ("show".into(), vec![("n".into(), n.to_string())]),
+            Command::Subst(n, _pairs) => {
+                // For substitution, emit the step number. The frontend doesn't enumerate all pairs.
+                ("subst".into(), vec![("n".into(), n.to_string())])
+            }
+            Command::Fix(f) => {
+                let x = format!("{}", f); // simple Display
+                ("fix".into(), vec![("x".into(), x)])
+            }
+            Command::ForallIntro(x, n) => ("forall-intro".into(), vec![("x".into(), x.clone()), ("n".into(), n.to_string())]),
+            Command::ForallElim(n, t) => ("forall-elim".into(), vec![("n".into(), n.to_string()), ("t".into(), t.clone())]),
+            Command::ExistsIntro(n, t, x) => ("exists-intro".into(), vec![("n".into(), n.to_string()), ("t".into(), t.clone()), ("x".into(), x.clone())]),
+            Command::ExistsElim(n, m, x) => ("exists-elim".into(), vec![("n".into(), n.to_string()), ("m".into(), m.to_string()), ("x".into(), x.clone())]),
+        }
+    }
+}
+
 /// Parse an input string into a command.
 pub fn parse_input(s: &str) -> Result<Command, String> {
     let s = s.trim();

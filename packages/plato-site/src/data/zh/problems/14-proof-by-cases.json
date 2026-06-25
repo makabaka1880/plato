@@ -1,0 +1,47 @@
+{
+  "description": "殊途同归。",
+  "goal": "(-> (or A B) (or B A))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "这次用一种新的推理模式：分情况证明（proof by cases），对应的规则叫 `or-elim`。",
+      "tactic": null
+    },
+    {
+      "text": "[disjunction|析取] $A \\lor B$ 告诉你\"要么 $A$，要么 $B$\"。如果不管哪一种情况都能推出同一个结论，那这个结论就必然成立——无论实际上走了哪条路。",
+      "tactic": "(assume (or A B))"
+    },
+    {
+      "text": "目标：$(A \\to C) \\to ((B \\to C) \\to (A \\lor B \\to C))$。看着复杂，但它只是用形式语言说了一条简单的道理：\"如果你有从 $A$ 到 $C$ 的路，也有从 $B$ 到 $C$ 的路，那遇到 $A \\lor B$ 这个岔路口时，你一定能走到 $C$。\" 我们有三个[implication|蕴含]——一层一层来。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "先假设 $A \\to C$。这是你从 $A$ 走到 $C$ 的\"地图\"。",
+      "tactic": "(or-intro-r 2 B)"
+    },
+    {
+      "text": "再假设 $B \\to C$。这是另一条\"地图\"——从 $B$ 走到 $C$。两条路通向同一个目的地。",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "再假设 $A \\lor B$。现在[context|上下文]里有三条假设：两张地图和一个岔路口。要推出 $C$。$A \\lor B$ 本身不是一个确定的命题——它是说\"两条路中有一条是对的\"，但没说是哪一条。",
+      "tactic": "(or-intro-l 4 A)"
+    },
+    {
+      "text": "用 `or-elim` 分情况。它要三个参数：包含[disjunction|析取]的步骤号，以及两个子证明——第一个从假设 $A$ 推出 $C$，第二个从假设 $B$ 推出 $C$。",
+      "tactic": "(or-elim 1 3 5)"
+    },
+    {
+      "text": "在 $A$ 的情况：用 $A \\to C$ 和 $A$ 做 `->-elim` 推出 $C$。在 $B$ 的情况同理。不管实际是哪种情况——两条路都通 $C$。",
+      "tactic": "(->-intro (or A B) 6)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "∨-elim",
+      "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}",
+      "description": "从 $p \\lor q$ 和两个分别从 $p$、$q$ 推出 $r$ 的子证明，你可以确切地得出 $r$——无论走哪条路。"
+    }
+  ]
+}

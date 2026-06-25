@@ -1,0 +1,29 @@
+{
+  "description": "\"或\"不挑方向。",
+  "goal": "(-> B (or A B))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "目标：$A \\to B \\lor A$。跟上一题很像，但这次\"或\"的右边是 $A$ 自己——用右边引入。",
+      "tactic": null
+    },
+    {
+      "text": "先 [assumption|假设] $A$。接下来走[implication|蕴含]的路子。",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "用 `or-intro-r`。第一个参数是证明某[formula|公式]的步骤号，第二个是你想加在前面的东西。这里：从 $A$（步骤 1）构造 $B \\lor A$。",
+      "tactic": null
+    },
+    {
+      "text": "\"我有 $A$ 成立，所以 '随便什么东西 或者 $A$' 也成立\"——逻辑对析取的左右两边是一视同仁的。",
+      "tactic": "(or-intro-r 1 A)"
+    },
+    {
+      "text": "[assumption|消去] $A$，得 $A \\to B \\lor A$。两边引入你都学会了。",
+      "tactic": "(->-intro B 2)"
+    }
+  ],
+  "unlocks": []
+}

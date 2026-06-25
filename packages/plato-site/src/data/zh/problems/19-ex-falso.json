@@ -1,0 +1,31 @@
+{
+  "description": "太阳打西边出来了。",
+  "goal": "(-> _|_ A)",
+  "premise": [],
+  "guides": [
+    {
+      "text": "$\\bot$——读作\"底\"或\"荒谬\"——是一个永远不成立的[formula|公式]。它代表[contradiction|矛盾]的终极形态。一旦你的逻辑系统里出现了 $\\bot$，整个系统就\"炸\"了——任何命题都变成可证的。这听起来像 bug，但它是经典逻辑的核心特性。",
+      "tactic": null
+    },
+    {
+      "text": "目标：$\\bot \\to A$。这个定理叫\"[ex-falso|爆炸原理]\"——拉丁文 *ex falso quodlibet*：\"从谬误中可以推出任意命题\"。",
+      "tactic": "(assume _|_)"
+    },
+    {
+      "text": "假设 $\\bot$，然后……我们已经有 $\\bot$ 了。`ex-falso` 规则说：由矛盾可以推出任意[formula|公式]。它的第一个参数是 $\\bot$ 所在的步骤号，第二个是你想推出的公式——随便写什么，逻辑都认。",
+      "tactic": "(ex-falso 1 A)"
+    },
+    {
+      "text": "用 `ex-falso` 从步骤 1（$\\bot$）推出 $A$。$A$ 可以是任何命题——爆炸原理一视同仁。",
+      "tactic": "(->-intro _|_ 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "ex-falso",
+      "rule": "\\frac{\\Gamma \\vdash \\bot}{\\Gamma \\vdash p}",
+      "description": "从 $\\bot$ 出发，你想到哪就到哪——任何公式都可以。因为在一个自相矛盾的宇宙里，什么话都是对的。"
+    }
+  ]
+}

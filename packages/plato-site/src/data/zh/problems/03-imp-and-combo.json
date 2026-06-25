@@ -1,0 +1,24 @@
+{
+  "description": "知己者，更知知己者。",
+  "goal": "(-> A (and A A))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "目标是一个嵌套的 [implication|蕴含式]：外面套着 $A \\to B$，里面还嵌着两层箭头。别慌——一层一层来，这是证明嵌套蕴含的基本功。先假设最外层 $A \\to B$。"
+    },
+    {
+      "text": "现在外面又有一层箭头。再破一次：假设 $A \\to C$。你的[context|上下文]里已经有两个假设了。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "再破一层：假设 $A$。现在上下文里已经有了三个假设，越来越热闹了。目标已经很近——我们要 $A \\to (B \\land C)$。",
+      "tactic": "(and-intro 1 1)"
+    },
+    {
+      "text": "从 $A \\to B$ 和 $A$ 出发，用 `->-elim`（也就是 [modus-ponens|肯定前件]）推出 $B$。同样，从 $A \\to C$ 和 $A$ 推出 $C$。现在你既有 $B$ 也有 $C$ 了。",
+      "tactic": "(->-intro A 2)"
+    }
+  ],
+  "unlocks": []
+}

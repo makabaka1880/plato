@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useTacticsStore } from '@/stores/tactics'
 import TacticCard from './TacticCard.vue'
+
+const { t } = useI18n()
 
 const store = useTacticsStore()
 const items = computed(() => store.all)
@@ -21,7 +24,7 @@ watch(items, (next) => {
 
 <template>
   <!-- narrow: floating button -->
-  <button class="toggle-btn" @click="open = true" title="tactics">
+  <button class="toggle-btn" @click="open = true" :title="t('tactics.toggle')">
     📋
     <span v-if="items.length" class="badge">{{ items.length }}</span>
   </button>
@@ -32,7 +35,7 @@ watch(items, (next) => {
       <div v-if="open" class="backdrop" @click.self="open = false">
         <div class="overlay">
           <div class="overlay-header">
-            <span class="title">Tactics Collected</span>
+            <span class="title">{{ t('tactics.title') }}</span>
             <button class="close-btn" @click="open = false">&times;</button>
           </div>
           <TransitionGroup name="list" tag="div">
@@ -43,7 +46,7 @@ watch(items, (next) => {
             />
           </TransitionGroup>
           <div v-if="items.length === 0" class="empty">
-            Solve problems to collect tactics
+            {{ t('tactics.empty') }}
           </div>
         </div>
       </div>
@@ -52,7 +55,7 @@ watch(items, (next) => {
 
   <!-- wide: inline sidebar -->
   <div class="sidebar">
-    <div class="title">Tactics Collected</div>
+    <div class="title">{{ t('tactics.title') }}</div>
     <TransitionGroup name="list" tag="div">
       <TacticCard
         v-for="t in items" :key="t.name"

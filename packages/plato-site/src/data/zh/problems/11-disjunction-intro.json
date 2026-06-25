@@ -1,0 +1,36 @@
+{
+  "description": "门外有两棵树，一棵是枣树，另一棵也是枣树——或者一只恐龙。",
+  "goal": "(-> A (or A B))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "我们迎来一个新的连接词：$\\lor$，叫做\"[disjunction|析取]\"或者\"或\"。$p \\lor q$ 的意思就是 \"$p$ 和 $q$ 至少有一个成立\"。",
+      "tactic": null
+    },
+    {
+      "text": "要证明一个析取式，你不需要把两边都证出来——证其中一边就够了。规则叫做 `or-intro-l`（从左边引入）和 `or-intro-r`（从右边引入）。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "目标：$A \\to A \\lor B$。先假设 $A$。这是 [implication|蕴含式] 的标准开局。",
+      "tactic": "(or-intro-l 1 B)"
+    },
+    {
+      "text": "我们手上有 $A$。要得到 $A \\lor B$，用 `or-intro-l`：第一个参数是证明 $A$ 的步骤号，第二个参数是你要加进去的那个公式——这里就是 $B$。\"我有 $A$ 成立，所以 $A$ 或随便什么东西也成立\"。",
+      "tactic": "(->-intro A 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "∨-intro-l",
+      "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}",
+      "description": "从 $p$ 推出 $p \\lor q$——给一个真命题加一个\"或\"的尾巴。"
+    },
+    {
+      "name": "∨-intro-r",
+      "rule": "\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}",
+      "description": "从 $q$ 推出 $p \\lor q$——从右边构造析取。"
+    }
+  ]
+}

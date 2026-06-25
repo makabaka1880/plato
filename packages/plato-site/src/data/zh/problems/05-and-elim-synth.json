@@ -1,0 +1,29 @@
+{
+  "description": "同理，取右半句也没问题。",
+  "goal": "(-> (and A B) B)",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "这次没有分步指导了——全靠你自己。目标是：从 $A \\land B$ 推出 $B$。跟上一题很像，只不过你用的是右消除规则。",
+      "tactic": null
+    },
+    {
+      "text": "两条 [conjunction|合取] [elimination-rule|消除规则] 是对称的：`and-elim-l` 拆左半，`and-elim-r` 拆右半。",
+      "tactic": "(assume (and A B))"
+    },
+    {
+      "text": "先 [assumption|假设] $A \\land B$。",
+      "tactic": null
+    },
+    {
+      "text": "用合适的消除规则取出 $B$。提示：它的名字带 `-r`，不是左，是右。",
+      "tactic": "(and-elim-r 1)"
+    },
+    {
+      "text": "消去假设，完成 [implication|蕴含]。",
+      "tactic": "(->-intro (and A B) 2)"
+    }
+  ],
+  "unlocks": []
+}

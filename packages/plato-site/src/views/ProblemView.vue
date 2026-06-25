@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Problem } from '@/types'
 import { useProblemLatex } from '@/composables/useProblemLatex'
 import { useVictory } from '@/composables/useVictory'
@@ -9,6 +10,8 @@ import InlineLatex from '@/components/InlineLatex.vue'
 import ProofRepl from '@/components/ProofRepl.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
 import TacticSidebar from '@/components/TacticSidebar.vue'
+
+const { t } = useI18n()
 
 const props = defineProps<{
     problemIdx: number
@@ -21,10 +24,12 @@ const emit = defineEmits<{
     home: []
 }>()
 
+const progress = useProgressStore()
+
 const problem = computed(() => props.problems[props.problemIdx] ?? null)
 const hasNext = computed(() =>
-  props.problemIdx < props.problems.length - 1 &&
-  props.problemIdx < progress.highestSolved + 1
+    props.problemIdx < props.problems.length - 1 &&
+    props.problemIdx < progress.highestSolved + 1
 )
 const hasPrev = computed(() => props.problemIdx > 0)
 
@@ -35,10 +40,12 @@ const victory = useVictory()
 const prefsOpen = ref(false)
 const agreed = ref(false)
 const showRepl = ref(false)
+const proofLines = ref<string[]>([])
 
 watch(() => props.problemIdx, () => {
     agreed.value = false
     showRepl.value = false
+    proofLines.value = []
     victory.solved.value = false
     updateLatex()
 })
@@ -49,9 +56,8 @@ async function onAgree() {
     setTimeout(() => { showRepl.value = true }, 500)
 }
 
-const progress = useProgressStore()
-
-function onSolved() {
+function onSolved(lines: string[]) {
+    proofLines.value = lines
     if (problem.value) {
         victory.fire(problem.value.unlocks)
         progress.markSolved(props.problemIdx)
@@ -61,17 +67,17 @@ function onSolved() {
 
 <template>
     <div v-if="!problem" class="not-found">
-        Problem not found.
+        {{ t('problem.notFound') }}
     </div>
     <div v-else class="root-row">
         <div class="root">
             <div class="header">
-                <button class="logo" @click="emit('home')">Plato</button>
+                <button class="logo" @click="emit('home')">{{ t('problem.logo') }}</button>
                 <span class="sep">/</span>
                 <span>{{ props.problemIdx + 1 }} / {{ props.problems.length }}</span>
                 <span class="spacer"></span>
                 <span class="goal-chip">{{ problem.goal }}</span>
-                <button class="gear-btn" @click="prefsOpen = true" title="preferences">⚙</button>
+                <button class="gear-btn" @click="prefsOpen = true" :title="t('problem.preferences')">⚙</button>
             </div>
 
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
@@ -79,21 +85,21 @@ function onSolved() {
             <div class="body">
                 <Transition name="fade-up">
                     <div v-if="!agreed" class="prompt">
-                        <div class="prove-label">MAKE ME BELIEVE</div>
+                        <div class="prove-label">{{ t('problem.makeMeBelieve') }}</div>
                         <div class="prove-desc">
                             <InlineLatex :text="problem.description" />
                         </div>
                         <div class="goal-line">
-                            <span v-if="problem.premise.length" class="premise-label">PREMISE</span>
+                            <span v-if="problem.premise.length" class="premise-label">{{ t('problem.premise') }}</span>
                             <span v-if="problem.premise.length" class="premise-katex">
                                 <Katex :expr="premiseLatex" />
                             </span>
-                            <span class="goal-label">GOAL</span>
+                            <span class="goal-label">{{ t('problem.goal') }}</span>
                             <span class="goal-katex">
                                 <Katex :expr="goalLatex" />
                             </span>
                         </div>
-                        <button class="agree-btn" @click="onAgree">Agree</button>
+                        <button class="agree-btn" @click="onAgree">{{ t('problem.agree') }}</button>
                     </div>
                 </Transition>
 
@@ -106,12 +112,17 @@ function onSolved() {
                 <Transition name="fade-in">
                     <div v-if="victory.solved.value" class="victory-overlay">
                         <div class="victory">
-                            <div class="victory-text">I Believe You.</div>
+                            <div class="victory-text">{{ t('problem.victory') }}</div>
+                            <div v-if="proofLines.length" class="proof-scroll">
+                                <div v-for="(line, i) in proofLines" :key="i" class="proof-line">
+                                    <InlineLatex :text="line" />
+                                </div>
+                            </div>
                             <button v-if="hasNext" class="victory-btn" @click="emit('next')">
-                                Next Problem &rarr;
+                                {{ t('problem.nextProblem') }}
                             </button>
                             <button v-else class="victory-btn" @click="emit('home')">
-                                Back Home
+                                {{ t('problem.backHome') }}
                             </button>
                         </div>
                     </div>
@@ -119,9 +130,9 @@ function onSolved() {
             </div>
 
             <div class="footer">
-                <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">&larr; Prev</button>
+                <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">{{ t('problem.prev') }}</button>
                 <span class="spacer"></span>
-                <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">Next &rarr;</button>
+                <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">{{ t('problem.next') }}</button>
             </div>
         </div>
 
@@ -310,7 +321,23 @@ function onSolved() {
 .victory-text {
     font-size: clamp(28px, 5vw, 48px);
     font-weight: 400;
-    margin-bottom: 28px;
+    margin-bottom: 16px;
+}
+
+.proof-scroll {
+    max-height: 40vh;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 13px;
+    line-height: 2;
+    color: var(--color-subtle);
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    background: var(--color-subtle-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    max-width: 560px;
+    white-space: pre-wrap;
 }
 
 .victory-btn {

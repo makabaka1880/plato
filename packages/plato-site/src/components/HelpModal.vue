@@ -1,12 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useTacticsStore } from '@/stores/tactics'
+import { loadGlossary, type GlossaryEntry } from '@/data'
 import Katex from './Katex.vue'
+
+const props = defineProps<{ glossaryTerm?: string }>()
 
 const emit = defineEmits<{ close: [] }>()
 
+const { t, locale } = useI18n()
+
+const glossaryData = computed(() => loadGlossary(locale.value))
+
 const store = useTacticsStore()
 const backdrop = ref<HTMLDivElement | null>(null)
+const bodyRef = ref<HTMLDivElement | null>(null)
+const activeTab = ref<'commands' | 'notations' | 'glossary'>('commands')
+
+function scrollToAlpha(letter: string) {
+  const el = document.getElementById('gloss-key-' + letter)
+  const body = bodyRef.value
+  if (!el || !body) return
+  const elTop = el.offsetTop
+  const navHeight = (body.querySelector('.alpha-nav') as HTMLElement)?.offsetHeight ?? 0
+  body.scrollTo({ top: elTop - navHeight - 8, behavior: 'smooth' })
+}
 
 function onDocKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
@@ -15,177 +34,69 @@ function onDocKeydown(e: KeyboardEvent) {
   }
 }
 
-onMounted(async () => {
-  await nextTick()
-  backdrop.value?.focus()
-  document.addEventListener('keydown', onDocKeydown)
-})
-
 onUnmounted(() => {
   document.removeEventListener('keydown', onDocKeydown)
 })
 
+// ── Commands tab ───────────────────────────────────────────────────
+
 interface CommandEntry {
   syntax: string
-  description: string
+  i18nKey: string
   unlocked: boolean
   rule?: string
 }
 
-const groups: { label: string; entries: CommandEntry[] }[] = [
+const groups: { i18nGroup: string; entries: CommandEntry[] }[] = [
   {
-    label: 'Basics',
+    i18nGroup: 'help.groups.basics',
     entries: [
-      {
-        syntax: '(assume F)',
-        description: 'Assume a formula, adds {F} ⊢ F',
-        unlocked: store.collected.has('assume'),
-        rule: '\\frac{}{\\{p\\} \\vdash p}',
-      },
-      {
-        syntax: '(show N)',
-        description: 'Re-print step N',
-        unlocked: true,
-      },
-      {
-        syntax: '(fix x)',
-        description: 'Introduce a term variable {x} ⊢ x (like assume, but for terms)',
-        unlocked: true,
-      },
-      {
-        syntax: '(subst N (A F)...)',
-        description: 'Substitute atoms with formulas uniformly in step N',
-        unlocked: store.collected.has('subst'),
-        rule: '\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}',
-      },
-      {
-        syntax: '(show N)',
-        description: 'Re-print step N',
-        unlocked: true,
-      },
-      {
-        syntax: 'F',
-        description: 'Parse a formula (prints its structure)',
-        unlocked: true,
-      },
+      { syntax: '(assume F)', i18nKey: 'help.commands.assume', unlocked: store.collected.has('assume'), rule: '\\frac{}{\\{p\\} \\vdash p}' },
+      { syntax: '(fix x)', i18nKey: 'help.commands.fix', unlocked: true },
+      { syntax: '(subst N (A F)...)', i18nKey: 'help.commands.subst', unlocked: store.collected.has('subst'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}' },
+      { syntax: '(show N)', i18nKey: 'help.commands.show', unlocked: true },
+      { syntax: 'F', i18nKey: 'help.commands.parse', unlocked: true },
     ],
   },
   {
-    label: 'Implication (→)',
+    i18nGroup: 'help.groups.implication',
     entries: [
-      {
-        syntax: '(->-intro F N)',
-        description: 'Discharge formula F from step N to form an implication',
-        unlocked: store.collected.has('→-intro'),
-        rule: '\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}',
-      },
-      {
-        syntax: '(->-elim N M)',
-        description: 'Modus ponens — from p → q and p, derive q',
-        unlocked: store.collected.has('→-elim'),
-        rule: '\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}',
-      },
+      { syntax: '(->-intro F N)', i18nKey: 'help.commands.->-intro', unlocked: store.collected.has('→-intro'), rule: '\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}' },
+      { syntax: '(->-elim N M)', i18nKey: 'help.commands.->-elim', unlocked: store.collected.has('→-elim'), rule: '\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}' },
     ],
   },
   {
-    label: 'Conjunction (∧)',
+    i18nGroup: 'help.groups.conjunction',
     entries: [
-      {
-        syntax: '(and-intro N M)',
-        description: 'Combine steps N and M into a conjunction',
-        unlocked: store.collected.has('∧-intro'),
-        rule: '\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}',
-      },
-      {
-        syntax: '(and-elim-l N)',
-        description: 'Extract the left half of a conjunction',
-        unlocked: store.collected.has('∧-elim-l'),
-        rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}',
-      },
-      {
-        syntax: '(and-elim-r N)',
-        description: 'Extract the right half of a conjunction',
-        unlocked: store.collected.has('∧-elim-r'),
-        rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}',
-      },
+      { syntax: '(and-intro N M)', i18nKey: 'help.commands.and-intro', unlocked: store.collected.has('∧-intro'), rule: '\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}' },
+      { syntax: '(and-elim-l N)', i18nKey: 'help.commands.and-elim-l', unlocked: store.collected.has('∧-elim-l'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}' },
+      { syntax: '(and-elim-r N)', i18nKey: 'help.commands.and-elim-r', unlocked: store.collected.has('∧-elim-r'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}' },
     ],
   },
   {
-    label: 'Disjunction (∨)',
+    i18nGroup: 'help.groups.disjunction',
     entries: [
-      {
-        syntax: '(or-intro-l N F)',
-        description: 'From step N (proves p), form p ∨ F',
-        unlocked: store.collected.has('∨-intro-l'),
-        rule: '\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}',
-      },
-      {
-        syntax: '(or-intro-r N F)',
-        description: 'From step N (proves q), form F ∨ q',
-        unlocked: store.collected.has('∨-intro-r'),
-        rule: '\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}',
-      },
-      {
-        syntax: '(or-elim N M K)',
-        description: 'Proof by cases — from p ∨ q and two subproofs reaching r, conclude r',
-        unlocked: store.collected.has('∨-elim'),
-        rule: '\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}',
-      },
+      { syntax: '(or-intro-l N F)', i18nKey: 'help.commands.or-intro-l', unlocked: store.collected.has('∨-intro-l'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}' },
+      { syntax: '(or-intro-r N F)', i18nKey: 'help.commands.or-intro-r', unlocked: store.collected.has('∨-intro-r'), rule: '\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}' },
+      { syntax: '(or-elim N M K)', i18nKey: 'help.commands.or-elim', unlocked: store.collected.has('∨-elim'), rule: '\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}' },
     ],
   },
   {
-    label: 'Negation (¬)',
+    i18nGroup: 'help.groups.negation',
     entries: [
-      {
-        syntax: '(not-intro F N M)',
-        description: 'Reductio ad absurdum — from assuming F you reach a contradiction, so ¬F',
-        unlocked: store.collected.has('¬-intro'),
-        rule: '\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}',
-      },
-      {
-        syntax: '(not-elim N)',
-        description: 'From ¬p derive p → ⊥',
-        unlocked: store.collected.has('¬-elim'),
-      },
-      {
-        syntax: '(dne N)',
-        description: 'Double negation elimination — from ¬¬p derive p',
-        unlocked: store.collected.has('¬¬-elim'),
-      },
-      {
-        syntax: '(ex-falso N F)',
-        description: 'From ⊥ derive anything (principle of explosion)',
-        unlocked: store.collected.has('ex-falso'),
-      },
+      { syntax: '(not-intro F N M)', i18nKey: 'help.commands.not-intro', unlocked: store.collected.has('¬-intro'), rule: '\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}' },
+      { syntax: '(not-elim N)', i18nKey: 'help.commands.not-elim', unlocked: store.collected.has('¬-elim') },
+      { syntax: '(dne N)', i18nKey: 'help.commands.dne', unlocked: store.collected.has('¬¬-elim') },
+      { syntax: '(ex-falso N F)', i18nKey: 'help.commands.ex-falso', unlocked: store.collected.has('ex-falso') },
     ],
   },
   {
-    label: 'Quantifiers (∀, ∃)',
+    i18nGroup: 'help.groups.quantifiers',
     entries: [
-      {
-        syntax: '(forall-intro x N)',
-        description: 'Universal generalisation — discharge x from step N (x must not be free in other assumptions)',
-        unlocked: store.collected.has('∀-intro'),
-        rule: '\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}',
-      },
-      {
-        syntax: '(forall-elim N t)',
-        description: 'Universal instantiation — from ∀x.φ, get φ[t/x]',
-        unlocked: store.collected.has('∀-elim'),
-        rule: '\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}',
-      },
-      {
-        syntax: '(exists-intro N t x)',
-        description: 'Existential generalisation — from φ(t), form ∃x.φ (generalise term t to variable x)',
-        unlocked: store.collected.has('∃-intro'),
-        rule: '\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}',
-      },
-      {
-        syntax: '(exists-elim N M x)',
-        description: 'Witness elimination — step N is ∃x.φ, step M proves ψ under witness x, x not free in conclusion',
-        unlocked: store.collected.has('∃-elim'),
-        rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}',
-      },
+      { syntax: '(forall-intro x N)', i18nKey: 'help.commands.forall-intro', unlocked: store.collected.has('∀-intro'), rule: '\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}' },
+      { syntax: '(forall-elim N t)', i18nKey: 'help.commands.forall-elim', unlocked: store.collected.has('∀-elim'), rule: '\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}' },
+      { syntax: '(exists-intro N t x)', i18nKey: 'help.commands.exists-intro', unlocked: store.collected.has('∃-intro'), rule: '\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}' },
+      { syntax: '(exists-elim N M x)', i18nKey: 'help.commands.exists-elim', unlocked: store.collected.has('∃-elim'), rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}' },
     ],
   },
 ]
@@ -194,20 +105,80 @@ const unlockedCount = groups.reduce(
   (n, g) => n + g.entries.filter(e => e.unlocked).length,
   0,
 )
+
+// ── Notations tab ──────────────────────────────────────────────────
+
+interface SymbolEntry {
+  symbol: string
+  input: string
+}
+
+const symbols: SymbolEntry[] = [
+  { symbol: '\\to', input: '->' },
+  { symbol: '\\lnot', input: 'not' },
+  { symbol: '\\forall', input: 'forall' },
+  { symbol: '\\exists', input: 'exists' },
+  { symbol: '\\bot', input: '_|_' },
+  { symbol: '\\land', input: 'and' },
+  { symbol: '\\lor', input: 'or' },
+]
+
+// ── Glossary tab ───────────────────────────────────────────────────
+
+// Group entries by their leading letter key
+const glossaryGroups = computed(() => {
+  const map = new Map<string, GlossaryEntry[]>()
+  for (const entry of glossaryData.value) {
+    const k = entry.key.toUpperCase()
+    if (!map.has(k)) map.set(k, [])
+    map.get(k)!.push(entry)
+  }
+  return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b))
+})
+
+// Unique sorted letter keys for the quick-nav bar
+const glossaryKeys = computed(() => glossaryGroups.value.map(([k]) => k))
+
+// Scroll to a specific glossary term after mount
+async function scrollToGlossaryTerm(termId: string) {
+  await nextTick()
+  const el = document.querySelector(`[data-glossary-id="${termId}"]`)
+  const body = bodyRef.value
+  if (!el || !body) return
+  const elTop = (el as HTMLElement).offsetTop
+  const navHeight = (body.querySelector('.alpha-nav') as HTMLElement)?.offsetHeight ?? 0
+  body.scrollTo({ top: elTop - navHeight - 8, behavior: 'smooth' })
+}
+
+// On mount: handle deep-link to a glossary term
+onMounted(async () => {
+  await nextTick()
+  backdrop.value?.focus()
+  document.addEventListener('keydown', onDocKeydown)
+  if (props.glossaryTerm) {
+    activeTab.value = 'glossary'
+    await scrollToGlossaryTerm(props.glossaryTerm)
+  }
+})
 </script>
 
 <template>
   <div ref="backdrop" class="backdrop" tabindex="-1" @keydown.esc="emit('close')" @click.self="emit('close')">
     <div class="modal">
       <div class="head">
-        <span class="title">Commands</span>
-        <span class="count">{{ unlockedCount }} Unlocked</span>
+        <div class="tabs">
+          <button class="tab" :class="{ active: activeTab === 'commands' }" @click="activeTab = 'commands'">{{ t('help.tabs.commands') }}</button>
+          <button class="tab" :class="{ active: activeTab === 'notations' }" @click="activeTab = 'notations'">{{ t('help.tabs.notations') }}</button>
+          <button class="tab" :class="{ active: activeTab === 'glossary' }" @click="activeTab = 'glossary'">{{ t('help.tabs.glossary') }}</button>
+        </div>
+        <span v-if="activeTab === 'commands'" class="count">{{ t('help.unlocked', { n: unlockedCount }) }}</span>
         <button class="close-btn" @click="emit('close')">&times;</button>
       </div>
 
-      <div class="body">
+      <!-- ═══ Commands tab ═══ -->
+      <div v-if="activeTab === 'commands'" class="body">
         <div v-for="group in groups" :key="group.label" class="group">
-          <div class="group-label">{{ group.label }}</div>
+          <div class="group-label">{{ t(group.i18nGroup) }}</div>
           <div
             v-for="cmd in group.entries"
             :key="cmd.syntax"
@@ -218,7 +189,7 @@ const unlockedCount = groups.reduce(
               <code class="syntax">{{ cmd.syntax }}</code>
               <span v-if="!cmd.unlocked" class="lock-icon">🔒</span>
             </div>
-            <div class="desc">{{ cmd.description }}</div>
+            <div class="desc">{{ t(cmd.i18nKey) }}</div>
             <div v-if="cmd.rule && cmd.unlocked" class="rule">
               <Katex :expr="cmd.rule" />
             </div>
@@ -226,8 +197,92 @@ const unlockedCount = groups.reduce(
         </div>
       </div>
 
+      <!-- ═══ Notations tab ═══ -->
+      <div v-if="activeTab === 'notations'" class="body">
+        <div class="group">
+          <div class="group-label">{{ t('help.notations.typingSymbols') }}</div>
+          <div class="sym-table">
+            <div v-for="s in symbols" :key="s.symbol" class="sym-row">
+              <span class="sym-render"><Katex :expr="s.symbol" /></span>
+              <code class="sym-code">{{ s.input }}</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-label">{{ t('help.notations.formulaSyntax') }}</div>
+          <div class="gloss-entry">
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <p v-html="t('help.notations.syntaxIntro')"></p>
+          </div>
+          <div class="sym-table">
+            <div class="sym-row">
+              <span class="sym-name">{{ t('help.notations.negation') }}</span>
+              <code class="sym-code">(not p)</code>
+            </div>
+            <div class="sym-row">
+              <span class="sym-name">{{ t('help.notations.implication') }}</span>
+              <code class="sym-code">(-> p q)</code>
+            </div>
+            <div class="sym-row">
+              <span class="sym-name">{{ t('help.notations.conjunction') }}</span>
+              <code class="sym-code">(and p q)</code>
+            </div>
+            <div class="sym-row">
+              <span class="sym-name">{{ t('help.notations.disjunction') }}</span>
+              <code class="sym-code">(or p q)</code>
+            </div>
+            <div class="sym-row">
+              <span class="sym-name">{{ t('help.notations.universal') }}</span>
+              <code class="sym-code">(forall x body)</code>
+            </div>
+            <div class="sym-row">
+              <span class="sym-name">{{ t('help.notations.existential') }}</span>
+              <code class="sym-code">(exists x body)</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-label">{{ t('help.notations.variablesTerms') }}</div>
+          <div class="gloss-entry">
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <p v-html="t('help.notations.varDesc')"></p>
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <p v-html="t('help.notations.predApp')" style="margin-top: 6px;"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Glossary tab ═══ -->
+      <div v-if="activeTab === 'glossary'" ref="bodyRef" class="body glossary-body">
+        <div v-if="glossaryKeys.length > 1" class="alpha-nav">
+          <button
+            v-for="letter in glossaryKeys"
+            :key="letter"
+            class="alpha-btn"
+            @click="scrollToAlpha(letter)"
+          >{{ letter }}</button>
+        </div>
+        <div v-for="[letter, entries] in glossaryGroups" :key="letter">
+          <div :id="'gloss-key-' + letter" class="group-label alpha-anchor">{{ letter }}</div>
+          <div
+            v-for="entry in entries"
+            :key="entry.id"
+            :data-glossary-id="entry.id"
+            class="gloss-entry"
+          >
+            <div class="gloss-term">{{ entry.term }}</div>
+            <div class="gloss-intuitive">{{ entry.intuitive }}</div>
+            <div class="gloss-def">{{ entry.definition }}</div>
+          </div>
+        </div>
+      </div>
+
       <div class="foot">
-        <span>Press <kbd>Esc</kbd> or click outside to close</span>
+        <i18n-t keypath="help.footer" tag="span">
+          <template #key><kbd>Esc</kbd></template>
+        </i18n-t>
       </div>
     </div>
   </div>
@@ -251,17 +306,35 @@ const unlockedCount = groups.reduce(
 }
 .head {
   display: flex; align-items: center; gap: 10px;
-  padding: 16px 20px 12px;
+  padding: 12px 20px;
   border-bottom: 1px solid var(--color-border);
 }
-.title {
-  font-size: 13px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase;
+.tabs {
+  display: flex; gap: 2px;
 }
-.count { font-size: 11px; color: var(--color-muted); }
+.tab {
+  font-family: inherit;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--color-muted);
+  background: none; border: none;
+  padding: 4px 10px; border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.tab:hover { color: var(--color-fg); }
+.tab.active {
+  color: var(--color-fg);
+  background: var(--color-subtle-bg);
+}
+.count {
+  font-size: 11px; color: var(--color-muted);
+  margin-left: auto;
+}
 .close-btn {
-  margin-left: auto; background: none; border: none;
+  background: none; border: none;
   font-size: 20px; cursor: pointer; color: var(--color-muted);
+  margin-left: 0;
 }
 .close-btn:hover { color: var(--color-primary-hover); }
 
@@ -275,6 +348,8 @@ const unlockedCount = groups.reduce(
   color: var(--color-muted); margin-bottom: 6px;
   padding-top: 4px;
 }
+
+/* ── Commands: cmd cards ──────────── */
 .cmd {
   padding: 6px 10px; margin-bottom: 4px;
   border-radius: 6px;
@@ -300,11 +375,103 @@ const unlockedCount = groups.reduce(
   padding: 4px 0;
 }
 
+/* ── Notations: symbol table ──────── */
+.sym-table {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.sym-row {
+  display: flex; align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+.sym-row:last-child { border-bottom: none; }
+.sym-render {
+  width: 48px; flex-shrink: 0;
+  font-size: 16px; text-align: center;
+  color: var(--color-fg);
+}
+.sym-name {
+  width: 110px; flex-shrink: 0;
+  font-size: 11px; color: var(--color-muted);
+}
+.sym-code {
+  font-family: inherit; font-size: 12px;
+  color: var(--color-primary-hover);
+}
+
+/* ── Glossary: alphabet nav ──────── */
+.glossary-body {
+  padding-top: 0;
+}
+.alpha-nav {
+  display: flex; flex-wrap: wrap; gap: 2px;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky; top: 0;
+  background: var(--color-bg);
+  z-index: 1;
+}
+.alpha-btn {
+  font-family: inherit; font-size: 11px; font-weight: 600;
+  line-height: 1;
+  color: var(--color-muted);
+  background: none; border: 1px solid transparent;
+  border-radius: 3px;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.alpha-btn:hover {
+  color: var(--color-fg);
+  border-color: var(--color-border);
+}
+.alpha-anchor {
+  scroll-margin-top: 8px;
+}
+
+/* ── Glossary: entry cards ────────── */
+.gloss-entry {
+  padding: 8px 10px; margin-bottom: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-subtle-bg);
+}
+.gloss-term {
+  font-size: 12px; font-weight: 600;
+  color: var(--color-fg); margin-bottom: 3px;
+}
+.gloss-intuitive {
+  font-size: 11px; color: var(--color-fg);
+  line-height: 1.65;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  background: var(--color-hint-bg);
+  border-left: 3px solid var(--color-hint-border);
+  border-radius: 0 4px 4px 0;
+}
+.gloss-def {
+  font-size: 11px; color: var(--color-muted);
+  line-height: 1.65;
+}
+.gloss-entry code,
+.gloss-def code {
+  font-family: inherit; font-size: 11px;
+  padding: 0 3px; border: 1px solid var(--color-border);
+  border-radius: 2px; background: var(--color-bg);
+}
+
 .foot {
   padding: 10px 20px 14px;
   font-size: 11px; color: var(--color-border-strong);
   border-top: 1px solid var(--color-border);
   text-align: center;
+  flex-shrink: 0;
 }
 kbd {
   font-family: inherit; font-size: 10px;
