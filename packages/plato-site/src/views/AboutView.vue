@@ -60,8 +60,8 @@ onUnmounted(() => {
         <div ref="scrollEl" class="scroll-container">
             <div class="content" v-html="html"></div>
         </div>
+        <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
     </div>
-    <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
 </template>
 
 <style scoped>

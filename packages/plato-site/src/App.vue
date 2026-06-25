@@ -7,9 +7,9 @@ const { t } = useI18n()
 <template>
     <div class="app">
         <div class="main">
-            <router-view v-slot="{ Component }">
+            <router-view v-slot="{ Component, route }">
                 <Transition name="page" mode="out-in">
-                    <component :is="Component" />
+                    <component :is="Component" :key="route.fullPath" />
                 </Transition>
             </router-view>
         </div>
