@@ -45,9 +45,11 @@ export function useProofSession(goal?: Ref<string | undefined>) {
     } catch { /* meta parse failure is non-fatal */ }
 
     try {
+      const prevLen: number = session.len()
       const result: string = session.execute(expr)
       const error = result.startsWith('Error:')
-      const step = error ? null : ++stepCount
+      const addedStep = session.len() > prevLen
+      const step = !error && addedStep ? ++stepCount : null
       // Patch the conclusion formula into meta after successful execution
       if (step !== null && meta) {
         const concl = session.stepFormulaLatex(step)
