@@ -1,0 +1,25 @@
+{
+    "description": "不必然不意味着可能——折叠回菱形。",
+    "goal": "(-> (not (box (not A))) (diamond A))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "反方向：如果 ¬A 不必然成立，那么 A 可能成立。这里用 `diamond-def-rev`。",
+            "tactic": null
+        },
+        {
+            "text": "假设 ¬□¬A。",
+            "tactic": "(assume (not (box (not A))))"
+        },
+        {
+            "text": "用 `diamond-def-rev` 将 ¬□¬A 折叠回 ◇A。",
+            "tactic": "(diamond-def-rev 1)"
+        },
+        {
+            "text": "消去假设。两个方向一起确立了 ◇A ↔ ¬□¬A。",
+            "tactic": "(->-intro (not (box (not A))) 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": []
+}

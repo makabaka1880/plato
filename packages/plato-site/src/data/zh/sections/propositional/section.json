@@ -1,0 +1,22 @@
+{
+    "nameI18nKey": "sections.propositional",
+    "logicMode": "pl",
+    "order": 0,
+    "allowedTactics": [
+        "assume",
+        "ex-falso",
+        "top-intro",
+        "subst",
+        "->-intro",
+        "->-elim",
+        "and-intro",
+        "and-elim-l",
+        "and-elim-r",
+        "or-intro-l",
+        "or-intro-r",
+        "or-elim",
+        "not-intro",
+        "not-elim",
+        "dne"
+    ]
+}

@@ -1,0 +1,49 @@
+{
+    "title": "真理的本质",
+    "lines": [
+        {
+            "speaker": "plato",
+            "text": "亚里士多德，我亲爱的朋友。让我们谈谈真理本身。你能想到的最简单的真理是什么？"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "事物即其自身，柏拉图。如果是马，就是马。如果是人，就是人。用你发明的语言：$I \\to I$。"
+        },
+        {
+            "speaker": "plato",
+            "text": "确实！但我们要如何**证明**它？不能只是宣称它为真——必须展示出来。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "我们先[assume|假设] $I$。从那个假设出发，$I$ 立即成立——我们刚刚说它是真的。然后我们[discharge|释放]这个假设，形成[implication|蕴含] $I \\to I$。"
+        },
+        {
+            "speaker": "plato",
+            "text": "太好了。这就是**[judgement|判断]**的本质：从假设的[context|上下文] $\\Gamma$ 出发，我们推导出[conclusion|结论] $p$。写作 $\\Gamma \\vdash p$。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "所以推演符号 $\\vdash$ 将我们假设的东西与我们证明的东西分开。证明中的每一行都是一个判断。"
+        },
+        {
+            "speaker": "plato",
+            "text": "正是。真理比单纯的同一性更加丰富。我们有**合取** $A \\land B$——两者同时成立。我们有**析取** $A \\lor B$——至少一个成立。我们有**否定** $\\lnot A$——某事为假。还有最重要的**蕴含** $A \\to B$——如果 $A$ 成立，那么 $B$ 必然成立。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "每个连接词都有规则：如何将其**引入**证明，以及如何将其**消去**——使用它断言的内容。"
+        },
+        {
+            "speaker": "plato",
+            "text": "是的！[introduction rule|引入规则]告诉我们如何**构建**一个公式。[elimination rule|消去规则]告诉我们如何**使用**已有的公式。这就是[natural deduction|自然演绎]的核心。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "所以证明就是这些规则应用的一棵树，每一步都由之前的步骤来证明？"
+        },
+        {
+            "speaker": "plato",
+            "text": "完全正确。在这里，你将把你的证明写成**s-表达式**——像 `(assume I)` 或 `(->-intro I 1)` 这样的命令。机器会检查每一步。现在，我们开始吧？"
+        }
+    ]
+}

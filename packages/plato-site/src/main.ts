@@ -6,7 +6,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import i18n from './i18n'
 import router from './router'
-import { loadProblems } from '@/data'
+import { loadSections } from '@/data'
 import { useProgressStore } from '@/stores/progress'
 
 const pinia = createPinia()
@@ -19,7 +19,11 @@ app.mount('#app')
 /* ── debug cheats (browser console) ────────────────────────────────── */
 ;(window as any).__plato_unlockAll__ = () => {
   const store = useProgressStore(pinia)
-  const problems = loadProblems(i18n.global.locale.value as string)
-  store.unlockAll(problems.length)
-  console.log(`[plato] all ${problems.length} problems unlocked`)
+  const sections = loadSections(i18n.global.locale.value as string)
+  let total = 0
+  for (const sec of sections) {
+    store.unlockAll(sec.id, sec.problems.length)
+    total += sec.problems.length
+  }
+  console.log(`[plato] all ${total} problems across ${sections.length} sections unlocked`)
 }

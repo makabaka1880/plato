@@ -1,0 +1,89 @@
+{
+    "description": "When neither this nor that, the menu might as well be blank.",
+    "goal": "(-> (and (not A) (not B)) (not (or A B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "This is the other direction of **De Morgan's law**: if $A$ is false and $B$ is false, then $A \\lor B$ cannot be true. You have $\\lnot A$ and $\\lnot B$ — each is shorthand for 'leads to $\\bot$' — and you must show that $A \\lor B$ leads straight to $\\bot$. The strategy: assume $A \\lor B$, then prove both cases explode. Start by assuming the [conjunction|conjunction] $\\lnot A \\land \\lnot B$.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $\\lnot A \\land \\lnot B$.",
+            "tactic": "(assume (and (not A) (not B)))"
+        },
+        {
+            "text": "Extract $\\lnot A$ from the left.",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Extract $\\lnot B$ from the right.",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "Unpack $\\lnot A$ into $A \\to \\bot$ with `not-elim`.",
+            "tactic": "(not-elim 2)"
+        },
+        {
+            "text": "Likewise unpack $\\lnot B$ into $B \\to \\bot$.",
+            "tactic": "(not-elim 3)"
+        },
+        {
+            "text": "Now to prove $\\lnot (A \\lor B)$ — which is just $(A \\lor B) \\to \\bot$ — assume $A \\lor B$.",
+            "tactic": "(assume (or A B))"
+        },
+        {
+            "text": "First case of the [disjunction|disjunction]: assume $A$.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "Merge $A$ with $A \\to \\bot$ (step 4) using `and-intro`. You need $A \\to \\bot$ visible in this [context|context].",
+            "tactic": "(and-intro 7 4)"
+        },
+        {
+            "text": "Pull $A$ from the [conjunction|conjunction].",
+            "tactic": "(and-elim-l 8)"
+        },
+        {
+            "text": "Pull $A \\to \\bot$ from the [conjunction|conjunction].",
+            "tactic": "(and-elim-r 8)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens] on $A \\to \\bot$ and $A$ — contradiction! $\\bot$.",
+            "tactic": "(->-elim 10 9)"
+        },
+        {
+            "text": "Second case: assume $B$.",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "Merge $B$ with $B \\to \\bot$ (step 5).",
+            "tactic": "(and-intro 12 5)"
+        },
+        {
+            "text": "Extract $B$.",
+            "tactic": "(and-elim-l 13)"
+        },
+        {
+            "text": "Extract $B \\to \\bot$.",
+            "tactic": "(and-elim-r 13)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens] on $B \\to \\bot$ and $B$ — $\\bot$ again.",
+            "tactic": "(->-elim 15 14)"
+        },
+        {
+            "text": "Use `or-elim` on step 6 with both cases (steps 11 and 16). Both $A$ and $B$ led to $\\bot$, so $A \\lor B$ leads to $\\bot$.",
+            "tactic": "(or-elim 6 11 16)"
+        },
+        {
+            "text": "[assumption|Discharge] $A \\lor B$ to get $(A \\lor B) \\to \\bot$ — that is, $\\lnot (A \\lor B)$.",
+            "tactic": "(->-intro (or A B) 17)"
+        },
+        {
+            "text": "[assumption|Discharge] the original [conjunction|conjunction]. The menu is blank.",
+            "tactic": "(->-intro (and (not A) (not B)) 18)"
+        }
+    ],
+    "unlocks": []
+}

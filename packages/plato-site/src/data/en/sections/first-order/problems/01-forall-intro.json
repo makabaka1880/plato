@@ -1,0 +1,56 @@
+{
+    "description": "Everything implies itself — even when we say it about everything.",
+    "goal": "(forall x (-> (App P x) (App P x)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "We're entering first-order logic. $\\forall$ is the **[universal-quantifier|universal quantifier]** — it says 'for all.' The goal $\\forall x.\\; P(x) \\to P(x)$ reads: for every $x$, $P(x)$ [implication|implies] itself. This is the identity theorem from problem 01, generalised to all possible things.",
+            "tactic": null
+        },
+        {
+            "text": "To prove a universal statement, we pick an arbitrary [witness|witness] — a fresh term variable — prove the statement for that witness without assuming anything special about it, then generalise. If it works for a nobody, it works for everybody.",
+            "tactic": null
+        },
+        {
+            "text": "The rule `fix` introduces a fresh term variable, like `assume` does for [proposition|propositions]. It gives us $\\{x\\} \\vdash x$ — an arbitrary $x$ to work with.",
+            "tactic": "(fix x)"
+        },
+        {
+            "text": "Now as if we're still in propositional logic: assume $P(x)$ and prove $P(x)$. The structure is identical to problem 01.",
+            "tactic": "(assume (App P x))"
+        },
+        {
+            "text": "These two live in separate contexts: $\\{x\\}$ and $\\{P(x)\\}$. Merge them with `and-intro` so we can use both.",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "Extract $P(x)$ from the merged context — this is our $P(x) \\to P(x)$ conclusion, still under the [witness|witness] $x$.",
+            "tactic": "(and-elim-r 3)"
+        },
+        {
+            "text": "[assumption|Discharge] $P(x)$ to get $P(x) \\to P(x)$. Context: just $\\{x\\}$.",
+            "tactic": "(->-intro (App P x) 4)"
+        },
+        {
+            "text": "The finale: `forall-intro` checks that $x$ is fresh (appears nowhere else in the context) and wraps the conclusion: $\\forall x.\\; P(x) \\to P(x)$. The proof stands for all $x$.",
+            "tactic": "(forall-intro x 5)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "fix",
+            "rule": "\\frac{}{\\{x\\} \\vdash x}",
+            "description": "Introduce a fresh term variable into the context — like assume, but for terms.",
+            "syntax": "(fix x)",
+            "example": "1. (fix x)  →  {x} ⊢ x"
+        },
+        {
+            "name": "∀-intro",
+            "rule": "\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}",
+            "description": "If you prove $\\varphi$ for an arbitrary $x$ not appearing elsewhere, the proof holds for all $x$. Universal generalisation.",
+            "syntax": "(forall-intro x N)",
+            "example": "1. (fix x)  →  {x} ⊢ x\n2. (assume (App P x))  →  {x, P(x)} ⊢ P(x)\n3. (->-intro (App P x) 2)  →  {x} ⊢ P(x) → P(x)\n4. (forall-intro x 3)  →  ⊢ ∀x. P(x) → P(x)"
+        }
+    ]
+}

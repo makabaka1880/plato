@@ -1,0 +1,55 @@
+{
+    "description": "必然蕴含在必然命题之间分配——K 公理。",
+    "goal": "(-> (box (-> A B)) (-> (box A) (box B)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "这是模态逻辑的**K 公理**：如果 A → B 必然成立，并且 A 必然成立，那么 B 也必然成立。全程在命题逻辑模式下——□ 运算符是我们的新原语。我们将它作为蕴含式来证明。",
+            "tactic": null
+        },
+        {
+            "text": "两层嵌套的蕴含。假设最外层：□(A → B)。",
+            "tactic": "(assume (box (-> A B)))"
+        },
+        {
+            "text": "现在证明内层蕴含 □A → □B。假设前件：□A。",
+            "tactic": "(assume (box A))"
+        },
+        {
+            "text": "第 1 步有 □(A → B)，第 2 步有 □A。规则 `box-elim` 是必然算子下的肯定前件——从 □(A → B) 和 □A 推出 □B。",
+            "tactic": "(box-elim 1 2)"
+        },
+        {
+            "text": "消去内层假设 □A，形成 □A → □B。",
+            "tactic": "(->-intro (box A) 3)"
+        },
+        {
+            "text": "消去外层假设 □(A → B)，完成 K 公理的证明。",
+            "tactic": "(->-intro (box (-> A B)) 4)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "box-intro",
+            "rule": "\\frac{\\emptyset \\vdash A}{\\emptyset \\vdash \\Box A}",
+            "description": "必然化 (NEC)：从 ∅ ⊢ A 推出 ∅ ⊢ □A。前提必须在空上下文中证明。",
+            "syntax": "(box-intro N)",
+            "example": "1. ⊢ A\n2. (box-intro 1)  →  ⊢ □A"
+        },
+        {
+            "name": "box-elim",
+            "rule": "\\frac{\\Gamma \\vdash \\Box (A \\to B) \\quad \\Delta \\vdash \\Box A}{\\Gamma \\cup \\Delta \\vdash \\Box B}",
+            "description": "K：从 □(A → B) 和 □A 推出 □B。必然算子下的肯定前件。",
+            "syntax": "(box-elim N M)",
+            "example": "1. ⊢ □(A → B)\n2. ⊢ □A\n3. (box-elim 1 2)  →  ⊢ □B"
+        },
+        {
+            "name": "diamond-def",
+            "rule": "\\frac{\\Gamma \\vdash \\Diamond A}{\\Gamma \\vdash \\lnot \\Box \\lnot A}",
+            "description": "◇-定义：从 ◇A 推出 ¬□¬A。将可能性展开为其对偶形式。",
+            "syntax": "(diamond-def N)",
+            "example": "1. ⊢ ◇A\n2. (diamond-def 1)  →  ⊢ ¬□¬A"
+        }
+    ]
+}

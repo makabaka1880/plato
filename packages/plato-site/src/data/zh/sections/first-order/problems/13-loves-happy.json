@@ -1,0 +1,41 @@
+{
+    "description": "如果爱一个人让你快乐，而 a 爱 b，那么 a 是快乐的。",
+    "goal": "(-> (forall x (forall y (-> (App (App Loves x) y) (App Happy x)))) (-> (App (App Loves a) b) (App Happy a)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "这道题在二元和一元 [predicate|谓词] 之间架起桥梁。$Loves(x,y)$ 是二元关系（'$x$ 爱 $y$'），写作 `(App (App Loves x) y)`。$Happy(x)$ 是一元性质，写作 `(App Happy x)`。前提说：对任何人 $x$，如果存在某个 $y$ 被 $x$ 所爱，那么 $x$ 是快乐的。已知 $a$ 爱 $b$，证明 $a$ 是快乐的。",
+            "tactic": null
+        },
+        {
+            "text": "假设一般原则：爱一个人让你快乐。这个公式同时包含二元 [predicate|谓词]（$Loves$）和一元谓词（$Happy$）。",
+            "tactic": "(assume (forall x (forall y (-> (App (App Loves x) y) (App Happy x)))))"
+        },
+        {
+            "text": "现在假设具体事实：$a$ 爱 $b$。写作嵌套的 `App`：`(App (App Loves a) b)`。",
+            "tactic": "(assume (App (App Loves a) b))"
+        },
+        {
+            "text": "用 $a$ 实例化一般原则（替换外层的 $x$）。得到：对所有 $y$，如果 $a$ 爱 $y$，则 $a$ 是快乐的。",
+            "tactic": "(forall-elim 1 a)"
+        },
+        {
+            "text": "用 $b$ 实例化（替换 $y$）。得到：如果 $a$ 爱 $b$，则 $a$ 是快乐的。",
+            "tactic": "(forall-elim 3 b)"
+        },
+        {
+            "text": "[modus-ponens|肯定前件]：$a$ 爱 $b$（第 2 步）加上条件句（第 4 步），得到 $Happy(a)$。",
+            "tactic": "(->-elim 4 2)"
+        },
+        {
+            "text": "[discharge|消去] 内部假设'$a$ 爱 $b$'，得到 $Loves(a,b) \\to Happy(a)$。",
+            "tactic": "(->-intro (App (App Loves a) b) 5)"
+        },
+        {
+            "text": "[discharge|消去] 一般原则，完成证明。注意二元谓词 $Loves(x,y)$ 和一元谓词 $Happy(x)$ 如何在同一证明中自然共存。",
+            "tactic": "(->-intro (forall x (forall y (-> (App (App Loves x) y) (App Happy x)))) 6)"
+        }
+    ],
+    "hints": [],
+    "unlocks": []
+}

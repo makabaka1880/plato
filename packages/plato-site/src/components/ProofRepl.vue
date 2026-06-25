@@ -25,6 +25,8 @@ const props = defineProps<{
     premise?: string[]
     guides: Hint[]
     hints: Hint[]
+    logicMode?: 'fol' | 'pl'
+    allowedTactics?: string[]
 }>()
 
 const emit = defineEmits<{ stepTaken: []; solved: [proofLines: string[]]; openPrefs: [] }>()
@@ -32,11 +34,12 @@ const emit = defineEmits<{ stepTaken: []; solved: [proofLines: string[]]; openPr
 const prefs = usePreferencesStore()
 const inpEl = ref<HTMLInputElement | null>(null)
 
+const logicModeRef = computed(() => props.logicMode ?? 'fol' as const)
 const {
     ready, input, entries, session,
     stepLatex, run: sessionRun, reset: sessionReset,
     insertTactic: _insertTactic, isGoalResolved, SessionClass,
-} = useProofSession()
+} = useProofSession(logicModeRef)
 
 const liveParse = useLiveParse(input, session, stepLatex)
 
@@ -147,7 +150,8 @@ const stepPreviews = computed(() => {
   }
   return map
 })
-const autocomplete = useAutocomplete(input, inpEl, stepPreviews)
+const allowedTacticsRef = computed(() => props.allowedTactics ?? null)
+const autocomplete = useAutocomplete(input, inpEl, stepPreviews, allowedTacticsRef)
 
 // ── command history ───────────────────────────────────────────────
 const history = ref<string[]>([])
@@ -339,7 +343,7 @@ defineExpose({ insertTactic })
             </div>
         </div>
 
-        <HelpModal v-if="showHelp" :glossary-term="glossaryTerm ?? undefined" @close="showHelp = false; glossaryTerm = null" />
+        <HelpModal v-if="showHelp" :glossary-term="glossaryTerm ?? undefined" :allowed-tactics="props.allowedTactics" @close="showHelp = false; glossaryTerm = null" />
     </div>
 </template>
 

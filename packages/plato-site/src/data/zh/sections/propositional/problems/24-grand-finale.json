@@ -1,0 +1,57 @@
+{
+    "description": "以其人之道还治其人之身。",
+    "goal": "(-> (and (-> A B) (not B)) (not A))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "命题逻辑部分的压轴题。目标：$(\\lnot A \\to A) \\to A$。这个定理看起来有点绕——\"如果 '非A' 能推出 A，那 A 必定成立\"。细想想：如果有样东西，连它的否定都替它说话，那它除了是真的还能是什么？",
+            "tactic": null
+        },
+        {
+            "text": "假设 $\\lnot A \\to A$。我们要从中推出 $A$。反向思维：先假设 $\\lnot A$，看看会发生什么。",
+            "tactic": "(assume (and (-> A B) (not B)))"
+        },
+        {
+            "text": "现在[context|上下文]里有 $\\lnot A \\to A$ 和 $\\lnot A$。用 `->-elim`——$\\lnot A \\to A$ 碰到 $\\lnot A$，推出 $A$。等一下——我们手上有 $A$ 又有 $\\lnot A$？这不是矛盾吗？",
+            "tactic": null
+        },
+        {
+            "text": "是的——从 $\\lnot A$ 我们推出了 $A$，又同时持有 $\\lnot A$。用 `not-elim` 把 $\\lnot A$ 变成 $A \\to \\bot$。配合 $A$ 推出 $\\bot$。$\\lnot A$ 自爆了。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "现在我们有 $\\lnot A$（假设）和 $\\bot$（推出的矛盾）。根据 `not-intro` 规则，这说明 $\\lnot A$ 这条假设撑不住——于是得出 $\\lnot \\lnot A$。",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "用 `dne` 从 $\\lnot \\lnot A$ 直接剥出 $A$。",
+            "tactic": "(not-elim 3)"
+        },
+        {
+            "text": "用 [modus-ponens|肯定前件] 配上 $A \\to B$（步骤 2）和你刚拿到的 $A$，得到 $B$。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "现在还需要另一个子证明，在 $A$ 的 [context|上下文] 里证明 $\\lnot B$。用 `and-intro` 把 $A$ 和 $\\lnot B$ 绑在一起。",
+            "tactic": "(->-elim 2 5)"
+        },
+        {
+            "text": "用 `and-elim-r` 从合并的 [context|上下文] 中提取 $\\lnot B$。现在你一边有证明 $B$ 的子证明，一边有证明 $\\lnot B$ 的子证明。",
+            "tactic": "(and-intro 5 3)"
+        },
+        {
+            "text": "两个子证明共享 $A$ 的 [context|上下文]，并且证明了矛盾的 [conclusion|结论]（$B$ 和 $\\lnot B$）。用 `not-intro` 消去 $A$，得出 $\\lnot A$。",
+            "tactic": "(and-elim-r 7)"
+        },
+        {
+            "text": "最后消去 $\\lnot A \\to A$。定理得证。这个定理在直觉主义逻辑里不可证——它等价于排中律的一种形式。经典逻辑的专属风景。",
+            "tactic": "(not-intro A 6 8)"
+        },
+        {
+            "text": "Discharge the original [conjunction|conjunction] [assumption|assumption] to finish the [implication|implication].",
+            "tactic": "(->-intro (and (-> A B) (not B)) 9)"
+        }
+    ],
+    "unlocks": []
+}

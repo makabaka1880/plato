@@ -60,6 +60,7 @@ export function useAutocomplete(
   input: Ref<string>,
   inpEl: Ref<HTMLInputElement | null>,
   stepPreviews: ComputedRef<Record<string, string>>,
+  allowedTactics?: Ref<string[] | null>,
 ) {
   const suggestions = ref<Suggestion[]>([])
   const activeIndex = ref(0)
@@ -83,6 +84,32 @@ export function useAutocomplete(
     const lower = raw.toLowerCase()
 
     let filtered = STATIC.filter(s => s.label.toLowerCase().startsWith(lower))
+
+    // Filter by allowed tactics if provided
+    if (allowedTactics?.value) {
+      const allowed = new Set(allowedTactics.value)
+      // Tactic name sets for connectives/formula constructs
+      const needsQuantifier = new Set(['forall', 'exists', 'App', 'fix'])
+      const needsModal = new Set(['box', 'diamond'])
+      filtered = filtered.filter(s => {
+        if (s.kind === 'command' || s.kind === 'atom') {
+          // For 'fix', check if it's in allowed tactics
+          if (s.label === 'fix') return allowed.has('fix')
+          // For other commands, check directly
+          return allowed.has(s.label)
+        }
+        if (s.kind === 'formula') {
+          // Gate formula connectives by tactic availability
+          if (needsQuantifier.has(s.label)) return allowed.has('forall-intro') || allowed.has('exists-intro')
+          if (needsModal.has(s.label)) return allowed.has('box-intro') || allowed.has('diamond-def')
+          // Propositional connectives are always available if assume is
+          return allowed.has('assume')
+        }
+        // Step suggestions are always shown
+        return true
+      })
+    }
+
     let activeIdx = 0
 
     // Single ASCII letter → prepend atom suggestion

@@ -1,0 +1,29 @@
+{
+    "description": "A part is just as 'or-some' as the whole.",
+    "goal": "(-> (and A B) (or A C))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "The goal is $(A \\land B) \\to (A \\lor C)$. You only need $A$ to make $A \\lor C$ true — $B$ and $C$ are along for the ride. The trick is to extract $A$ from the [conjunction|conjunction] first, then use $\\lor$-introduction.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $A \\land B$ to get started.",
+            "tactic": "(assume (and A B))"
+        },
+        {
+            "text": "Extract $A$ from the left side of the [conjunction|conjunction]. $B$ is true too, but we won't need it.",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Now you have $A$. Use `or-intro-l` to form $A \\lor C$ — slot $A$ on the left and let $C$ be whatever it wants on the right.",
+            "tactic": "(or-intro-l 2 C)"
+        },
+        {
+            "text": "Discharge the [assumption|assumption] to complete the [implication|implication].",
+            "tactic": "(->-intro (and A B) 3)"
+        }
+    ],
+    "unlocks": []
+}

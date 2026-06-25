@@ -1,0 +1,57 @@
+{
+    "title": "Beyond Propositions",
+    "lines": [
+        {
+            "speaker": "plato",
+            "text": "Aristotle, we have mastered the logic of propositions — of statements that are simply true or false. But the world is richer than this."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "You mean we must speak of **things** — of objects and their properties? A horse is not merely a true or false thing; it has qualities."
+        },
+        {
+            "speaker": "plato",
+            "text": "Precisely! Consider: 'All men are mortal. Socrates is a man. Therefore, Socrates is mortal.' This reasoning cannot be captured by propositional logic alone."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "Because 'all men are mortal' speaks of every man — it quantifies over the domain of men. We need a way to say **for all** $x$, something holds of $x$."
+        },
+        {
+            "speaker": "plato",
+            "text": "Yes! That is the **[universal quantifier|universal quantifier]** $\\forall x$. And its companion: **[existential quantifier|existential quantifier]** $\\exists x$ — 'there exists some $x$ such that...'."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "So we can say $\\forall x.\\; \\text{Man}(x) \\to \\text{Mortal}(x)$ — every man is mortal. And $\\text{Man}(\\text{Socrates})$ — Socrates is a man."
+        },
+        {
+            "speaker": "plato",
+            "text": "And from these, we derive $\\text{Mortal}(\\text{Socrates})$. This is **[universal instantiation|universal instantiation]** — what holds for all holds for any particular. The command is `(forall-elim N t)`."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "And the reverse? If I prove something about an arbitrary $x$, I can generalise to $\\forall x$?"
+        },
+        {
+            "speaker": "plato",
+            "text": "Exactly — **[universal generalisation|universal generalisation]**. But be careful: the variable must be **fresh** — not appearing free in any assumption. Otherwise you'd be proving something about a specific $x$ and claiming it holds for all."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "And for the existential $\\exists$? If I have a concrete example, I can say 'there exists something with this property' — [existential generalisation|existential generalisation]."
+        },
+        {
+            "speaker": "plato",
+            "text": "Yes. And the trickier one: if you know $\\exists x.\\; \\varphi$, you can **open a witness** — assume $\\varphi[y/x]$ for a fresh $y$, prove your goal, and [discharge|discharge] the witness. This is **[existential elimination|existential elimination]**."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "So first-order logic gives us predicates, terms, and quantifiers — a language rich enough to capture the [syllogism|syllogism] and much more."
+        },
+        {
+            "speaker": "plato",
+            "text": "Indeed. And you will need a new command: `(fix x)` introduces a fresh term variable, like `(assume F)` but for terms. Now, let us quantify."
+        }
+    ]
+}

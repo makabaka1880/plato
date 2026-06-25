@@ -1,0 +1,57 @@
+{
+    "description": "自己拽着自己的头发，把自己提起来。",
+    "goal": "(-> (-> (-> A B) A) A)",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "皮尔士律：$((A \\to B) \\to A) \\to A$。这公式看着像绕口令——\"如果 'A蕴含B' 蕴含A，那么 A 就是真的\"。直觉主义党不认这条，但柏拉图站经典派。",
+            "tactic": null
+        },
+        {
+            "text": "假设 $(A \\to B) \\to A$。要从中榨出 $A$。",
+            "tactic": "(assume (-> (-> A B) A))"
+        },
+        {
+            "text": "用 [reductio-ad-absurdum|归谬法]：假设 $\\lnot A$，试试能不能推出[contradiction|矛盾]。以子之矛陷子之盾。",
+            "tactic": "(assume (not A))"
+        },
+        {
+            "text": "从 $\\lnot A$ 推出 $A \\to \\bot$（not-elim）。\"非A\"就是\"A会炸\"。要推出矛盾，我们需要 $A$——但 $A$ 正是我们要证明的目标呀。好像循环了？别急，经典逻辑兜得回来。",
+            "tactic": "(not-elim 2)"
+        },
+        {
+            "text": "注意 $A \\to \\bot$ 其实就是 $A \\to B$ 的一种形式——把 $B$ 设为 $\\bot$。所以 $(A \\to B) \\to A$ 也可以用在 $B = \\bot$ 上：$(A \\to \\bot) \\to A$。配合你刚推出的 $A \\to \\bot$——肯定前件，$A$ 炸出来了！",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "现在[context|上下文]里同时有 $A$ 和 $\\lnot A$。这就是我们要的矛盾——$A$ 和它的否定同框，像正反物质湮灭。用 not-intro 消去 $\\lnot A$，得到 $\\lnot \\lnot A$。然后用 `dne` 得到 $A$。",
+            "tactic": "(->-elim 3 4)"
+        },
+        {
+            "text": "现在用上步骤 1 的大假设：$(A \\to B) \\to A$。配合你刚推出的 $A \\to B$，用 [modus-ponens|肯定前件]——$A$ 到手。大假设终于被喂饱了。",
+            "tactic": "(ex-falso 5 B)"
+        },
+        {
+            "text": "现在你有了 $A$（步骤 8）和 $\\lnot A$（步骤 2），两者共享 $\\lnot A$ 的 [context|上下文]——[contradiction|矛盾]！用 `not-intro` 消去 $\\lnot A$。",
+            "tactic": "(->-intro A 6)"
+        },
+        {
+            "text": "用 `dne` 剥掉 [double-negation|双重否定]，$A$ 出来了。",
+            "tactic": "(->-elim 1 7)"
+        },
+        {
+            "text": "消去最初的 [assumption|假设]。皮尔士律——经典逻辑的试金石——在柏拉图的地盘上稳稳立足。",
+            "tactic": "(not-intro (not A) 8 2)"
+        },
+        {
+            "text": "Strip the [double-negation|double negation] with `dne` to reveal $A$.",
+            "tactic": "(dne 9)"
+        },
+        {
+            "text": "[assumption|Discharge] the big hypothesis to finish Peirce's Law.",
+            "tactic": "(->-intro (-> (-> A B) A) 10)"
+        }
+    ],
+    "unlocks": []
+}

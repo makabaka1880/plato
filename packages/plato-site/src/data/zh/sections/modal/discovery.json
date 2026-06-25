@@ -1,0 +1,57 @@
+{
+    "title": "必然与可能",
+    "lines": [
+        {
+            "speaker": "plato",
+            "text": "亚里士多德，我们已经谈论了**是什么**。但**必须是什么**呢？**可能是什么**呢？"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "啊——你说的是真理的模态。有些事物是必然真的：三角形必须有三条边。其他的仅仅是偶然真的：我恰好坐着，但我可以站起来。"
+        },
+        {
+            "speaker": "plato",
+            "text": "正是。我们引入两个新算子：$\\Box A$——'$A$ 是**必然的**'——以及 $\\Diamond A$——'$A$ 是**可能的**'。这就是**模态逻辑**。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "那么支配它们的规则是什么？必然性似乎比单纯的真理性更强。"
+        },
+        {
+            "speaker": "plato",
+            "text": "我们将要使用的系统叫做**K系统**——以索尔·克里普克命名。其基石是**K公理**：$\\Box(A \\to B) \\to (\\Box A \\to \\Box B)$。必然性对蕴含分配。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "所以如果必然 $A$ 蕴含 $B$，并且必然 $A$，那么必然 $B$。这似乎合理。"
+        },
+        {
+            "speaker": "plato",
+            "text": "K公理是 $\\Box$ 的消去规则——命令 `(box-elim N M)`。我们还有一条**[necessitation|必然化]**规则——`(box-intro N)`——它说：如果你能在**没有假设**（空上下文）的情况下证明 $A$，那么 $\\Box A$ 成立。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "因为如果某物仅从逻辑本身得出——不依赖任何偶然假设——那么它必定是必然真的。这很优雅。"
+        },
+        {
+            "speaker": "plato",
+            "text": "那可能性 $\\Diamond$ 呢？它通过必然性来定义：$\\Diamond A$ 意味着 $\\lnot \\Box \\lnot A$——'$A$ 是可能的'意味着'$A$ 为假不是必然的'。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "所以我们可以用 `(diamond-def N)` 将 $\\Diamond A$ 展开为 $\\lnot \\Box \\lnot A$，并用 `(diamond-def-rev N)` 将其折叠回来。钻石是一个派生概念。"
+        },
+        {
+            "speaker": "plato",
+            "text": "注意一个重要的限制：**这里的模态逻辑是命题的**。你不能量化进入模态语境——没有 $\\forall x.\\; \\Box P(x)$。逻辑模式将设置为PL，屏蔽量词规则。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "明白了。模态算子 $\\Box$ 和 $\\Diamond$ 可用，但 $\\forall$ 和 $\\exists$ 不可用。这是纯粹形式的K系统。"
+        },
+        {
+            "speaker": "plato",
+            "text": "现在——必须被证明的，必须被证明。让我们探索必然性吧。"
+        }
+    ]
+}

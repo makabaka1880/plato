@@ -1,0 +1,57 @@
+{
+    "title": "超越命题",
+    "lines": [
+        {
+            "speaker": "plato",
+            "text": "亚里士多德，我们已经掌握了命题逻辑——关于简单地为真或为假的陈述。但世界比这更丰富。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "你是说我们必须谈论**事物**——对象及其属性？一匹马不仅仅是真或假的东西；它有性质。"
+        },
+        {
+            "speaker": "plato",
+            "text": "正是！想想看：'所有人都是有死的。苏格拉底是人。因此，苏格拉底是有死的。'这个推理无法仅用命题逻辑来捕捉。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "因为'所有人都是有死的'谈论的是每一个人——它量化了整个人的领域。我们需要一种方式来表达：**对于所有** $x$，某物对 $x$ 成立。"
+        },
+        {
+            "speaker": "plato",
+            "text": "是的！这就是**[universal quantifier|全称量词]** $\\forall x$。以及它的同伴：**[existential quantifier|存在量词]** $\\exists x$——'存在某个 $x$ 使得...'。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "所以我们可以说 $\\forall x.\\; \\text{人}(x) \\to \\text{有死}(x)$——所有人都是有死的。以及 $\\text{人}(\\text{苏格拉底})$——苏格拉底是人。"
+        },
+        {
+            "speaker": "plato",
+            "text": "然后从中推导出 $\\text{有死}(\\text{苏格拉底})$。这就是**[universal instantiation|全称实例化]**——对所有成立的东西对任何特定个体也成立。命令是 `(forall-elim N t)`。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "那反过来呢？如果我证明了对任意 $x$ 成立的东西，我可以推广到 $\\forall x$ 吗？"
+        },
+        {
+            "speaker": "plato",
+            "text": "完全正确——**[universal generalisation|全称推广]**。但要小心：变量必须是**新鲜的**——不在任何假设中自由出现。否则你会把关于特定 $x$ 的证明声称为对所有成立。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "那存在量词 $\\exists$ 呢？如果我有一个具体的例子，我可以说'存在具有此属性的某物'——[existential generalisation|存在推广]。"
+        },
+        {
+            "speaker": "plato",
+            "text": "是的。还有一个更棘手的：如果你知道 $\\exists x.\\; \\varphi$，你可以**打开一个见证**——为新鲜的 $y$ 假设 $\\varphi[y/x]$，证明你的目标，然后[discharge|释放]见证。这就是**[existential elimination|存在消去]**。"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "所以一阶逻辑给了我们谓词、项和量词——一种足够丰富的语言来捕捉[syllogism|三段论]乃至更多。"
+        },
+        {
+            "speaker": "plato",
+            "text": "确实。你还需要一个新命令：`(fix x)` 引入一个新鲜的项变量，就像 `(assume F)` 但用于项。现在，让我们量化吧。"
+        }
+    ]
+}

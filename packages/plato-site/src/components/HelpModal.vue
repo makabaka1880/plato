@@ -5,7 +5,10 @@ import { useTacticsStore } from '@/stores/tactics'
 import { loadGlossary, type GlossaryEntry } from '@/data'
 import Katex from './Katex.vue'
 
-const props = defineProps<{ glossaryTerm?: string }>()
+const props = defineProps<{
+    glossaryTerm?: string
+    allowedTactics?: string[]
+}>()
 
 const emit = defineEmits<{ close: [] }>()
 
@@ -14,6 +17,23 @@ const { t, locale } = useI18n()
 const glossaryData = computed(() => loadGlossary(locale.value))
 
 const store = useTacticsStore()
+const allowedSet = computed(() => props.allowedTactics ? new Set(props.allowedTactics) : null)
+
+// Filter groups: when section-scoped, hide unavailable groups
+const visibleGroups = computed(() => {
+    if (!allowedSet.value) return groups
+    return groups.filter(g => {
+        // Check if any entry in the group is in allowed tactics
+        return g.entries.some(e => {
+            // Entries without a specific tactic name (show, parse) are always shown
+            if (e.syntax === '(show N)' || e.syntax === 'F') return true
+            // Match by extracted tactic name from syntax
+            const tacticName = e.syntax.match(/^\(([a-z][-a-z0-9]*)/)?.[1]
+            if (!tacticName) return true
+            return allowedSet.value!.has(tacticName)
+        })
+    })
+})
 const backdrop = ref<HTMLDivElement | null>(null)
 const bodyRef = ref<HTMLDivElement | null>(null)
 const activeTab = ref<'commands' | 'notations' | 'glossary'>('commands')
@@ -101,12 +121,21 @@ const groups: { i18nGroup: string; entries: CommandEntry[] }[] = [
             { syntax: '(exists-elim N M x)', i18nKey: 'help.commands.exists-elim', unlocked: store.collected.includes('∃-elim'), rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}' },
         ],
     },
+    {
+        i18nGroup: 'help.groups.modal',
+        entries: [
+            { syntax: '(top-intro)', i18nKey: 'help.commands.top-intro', unlocked: store.collected.includes('top-intro'), rule: '\\frac{}{\\Gamma \\vdash \\top}' },
+            { syntax: '(box-intro N)', i18nKey: 'help.commands.box-intro', unlocked: store.collected.includes('box-intro'), rule: '\\frac{\\emptyset \\vdash A}{\\emptyset \\vdash \\Box A}' },
+            { syntax: '(box-elim N M)', i18nKey: 'help.commands.box-elim', unlocked: store.collected.includes('box-elim'), rule: '\\frac{\\Gamma \\vdash \\Box (A \\to B) \\quad \\Delta \\vdash \\Box A}{\\Gamma \\cup \\Delta \\vdash \\Box B}' },
+            { syntax: '(diamond-def N)', i18nKey: 'help.commands.diamond-def', unlocked: store.collected.includes('diamond-def'), rule: '\\diamond \\text{ definition}' },
+        ],
+    },
 ]
 
-const unlockedCount = groups.reduce(
+const unlockedCount = computed(() => visibleGroups.value.reduce(
     (n, g) => n + g.entries.filter(e => e.unlocked).length,
     0,
-)
+))
 
 // ── Notations tab ──────────────────────────────────────────────────
 
@@ -187,7 +216,7 @@ onMounted(async () => {
 
             <!-- ═══ Commands tab ═══ -->
             <div v-if="activeTab === 'commands'" class="body">
-                <div v-for="group in groups" :key="group.i18nGroup" class="group">
+                <div v-for="group in visibleGroups" :key="group.i18nGroup" class="group">
                     <div class="group-label">{{ t(group.i18nGroup) }}</div>
                     <div v-for="cmd in group.entries" :key="cmd.syntax" class="cmd" :class="{ locked: !cmd.unlocked }">
                         <div class="cmd-head">

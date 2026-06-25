@@ -1,0 +1,29 @@
+{
+    "description": "Currying our way into pairing things up.",
+    "goal": "(-> A (-> B (and A B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "The goal is $A \\to (B \\to A \\land B)$. Since the outermost [connective|connective] is an [implication|implication], our first move should be to assume its antecedent, $A$.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "We are currently under the [assumption|assumption] $A$. To prove the remaining [implication|implication] $B \\to A \\land B$, let's assume its antecedent, $B$.",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "Splendid. Now we have $A$ at step 1 and $B$ at step 2. Let's bundle them together into a [conjunction|conjunction] using `and-intro`.",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "With $A \\land B$ secured at step 3, we can now discharge our most recent [assumption|assumption], $B$, using `->-intro`.",
+            "tactic": "(->-intro B 3)"
+        },
+        {
+            "text": "Almost there! Step 4 gives us $B \\to A \\land B$. Discharge our original [assumption|assumption] $A$ with one last `->-intro` to cross the finish line.",
+            "tactic": "(->-intro A 4)"
+        }
+    ],
+    "unlocks": []
+}

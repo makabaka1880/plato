@@ -2,11 +2,12 @@
 import { computed, ref, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { loadProblems } from '@/data'
+import { getSection, getNextSection } from '@/data'
 import { useProblemLatex } from '@/composables/useProblemLatex'
 import { useVictory } from '@/composables/useVictory'
 import { useProgressStore } from '@/stores/progress'
 import { useRoadmapStore } from '@/stores/roadmap'
+import { useDiscoveryStore } from '@/stores/discovery'
 import Katex from '@/components/Katex.vue'
 import InlineLatex from '@/components/InlineLatex.vue'
 import ProofRepl from '@/components/ProofRepl.vue'
@@ -19,45 +20,96 @@ const router = useRouter()
 const { t, locale } = useI18n()
 
 const props = defineProps<{
+    sectionId: string
     problemIdx: number
 }>()
 
 const progress = useProgressStore()
 const roadmap = useRoadmapStore()
+const discovery = useDiscoveryStore()
 
-const problems = computed(() => loadProblems(locale.value))
-const problem = computed(() => problems.value[props.problemIdx] ?? null)
-const hasNext = computed(() =>
-    props.problemIdx < problems.value.length - 1 &&
-    props.problemIdx < progress.highestSolved + 1
+// ── Section & problem resolution ────────────────────────────────────
+const section = computed(() => getSection(props.sectionId, locale.value))
+const problem = computed(() => section.value?.problems[props.problemIdx] ?? null)
+const problems = computed(() => section.value?.problems ?? [])
+const sectionName = computed(() => {
+    if (!section.value) return ''
+    return t(section.value.meta.nameI18nKey)
+})
+
+// ── Locking guard ───────────────────────────────────────────────────
+watch(
+    () => [props.sectionId, props.problemIdx] as const,
+    ([sectionId, idx]) => {
+        const sec = getSection(sectionId, locale.value)
+        if (!sec) {
+            router.replace({ name: 'notFound' })
+            return
+        }
+        if (!Number.isFinite(idx) || idx < 0 || idx >= sec.problems.length) {
+            router.replace({ name: 'notFound' })
+            return
+        }
+        if (!progress.isUnlocked(sectionId, idx)) {
+            router.replace({
+                name: 'locked',
+                query: {
+                    section: sectionId,
+                    n: String(idx),
+                },
+            })
+            return
+        }
+    },
+    { immediate: true },
 )
-const hasPrev = computed(() => props.problemIdx > 0)
 
-// Guard: redirect locked / out-of-bounds problems
-watch(() => props.problemIdx, (idx) => {
-    const total = problems.value.length
-    if (!Number.isFinite(idx) || idx < 0 || idx >= total) {
-        router.replace({ name: 'notFound' })
-        return
-    }
-    if (idx > progress.highestSolved + 1) {
-        router.replace({ name: 'locked', query: { n: String(idx), closest: String(progress.highestSolved + 1) } })
-    }
-}, { immediate: true })
-
-// Re-check when locale changes (problems list may change)
+// Re-check when locale changes
 watch(problems, (list) => {
-    const idx = props.problemIdx
-    if (idx < 0 || idx >= list.length) {
+    if (props.problemIdx < 0 || props.problemIdx >= list.length) {
         router.replace({ name: 'notFound' })
     }
 })
 
-function goNext() {
-    router.push(`/problem/${props.problemIdx + 1}`)
-}
+// ── Discovery gate ──────────────────────────────────────────────────
+// Redirect to discovery if not yet viewed for this section
+watch(
+    () => props.sectionId,
+    (sectionId) => {
+        // Only gate on first problem (index 0) — if discovery not viewed,
+        // redirect. This also handles the case where user navigates directly
+        // to a section's first problem.
+        if (!discovery.isViewed(sectionId) && props.problemIdx === 0) {
+            router.replace(`/section/${sectionId}/discovery`)
+            return
+        }
+    },
+    { immediate: true },
+)
+
+// ── Navigation ──────────────────────────────────────────────────────
+const hasPrev = computed(() => props.problemIdx > 0)
+const hasNext = computed(() => {
+    if (!section.value) return false
+    return props.problemIdx < section.value.problems.length - 1
+})
+
 function goPrev() {
-    router.push(`/problem/${props.problemIdx - 1}`)
+    router.push(`/section/${props.sectionId}/problem/${props.problemIdx - 1}`)
+}
+
+function goNext() {
+    router.push(`/section/${props.sectionId}/problem/${props.problemIdx + 1}`)
+}
+
+// After solving the last problem of a section, check for next section
+function goNextSection() {
+    const next = getNextSection(props.sectionId, locale.value)
+    if (next) {
+        router.push(`/section/${next.id}/discovery`)
+    } else {
+        router.push('/')
+    }
 }
 
 const problemRef = computed(() => problem.value)
@@ -70,17 +122,22 @@ const showRepl = ref(false)
 const proofLines = ref<string[]>([])
 const roadmapOpen = ref(false)
 
-const sortedEntries = computed(() =>
-    [...roadmap.entries].sort((a, b) => a.idx - b.idx)
-)
-
-watch(() => props.problemIdx, () => {
-    agreed.value = false
-    showRepl.value = false
-    proofLines.value = []
-    victory.solved.value = false
-    updateLatex()
+const sectionEntries = computed(() => {
+    const bySection = roadmap.bySection
+    return (bySection[props.sectionId] ?? [])
+        .sort((a, b) => a.sectionIdx - b.sectionIdx)
 })
+
+watch(
+    () => [props.sectionId, props.problemIdx],
+    () => {
+        agreed.value = false
+        showRepl.value = false
+        proofLines.value = []
+        victory.solved.value = false
+        updateLatex()
+    },
+)
 
 async function onAgree() {
     agreed.value = true
@@ -92,26 +149,43 @@ function onSolved(lines: string[]) {
     proofLines.value = lines
     if (problem.value) {
         victory.fire(problem.value.unlocks)
-        progress.markSolved(props.problemIdx)
+        progress.markSolved(props.sectionId, props.problemIdx)
         roadmap.add({
-            idx: props.problemIdx,
+            sectionId: props.sectionId,
+            sectionIdx: props.problemIdx,
             description: problem.value.description,
             goal: problem.value.goal,
             proofLines: lines,
         })
+        // Auto-transition to next section if this was the last problem
+        if (section.value && props.problemIdx === section.value.problems.length - 1) {
+            const next = getNextSection(props.sectionId, locale.value)
+            if (next && !discovery.isViewed(next.id)) {
+                // Next section exists but discovery not viewed — auto-play it
+                router.push(`/section/${next.id}/discovery`)
+            }
+        }
     }
 }
 
+// ── Logic mode & allowed tactics ────────────────────────────────────
+const logicMode = computed(() =>
+    problem.value?.logicMode ?? section.value?.meta.logicMode ?? 'fol',
+)
+const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 </script>
 
 <template>
-    <div v-if="!problem" class="not-found">
+    <div v-if="!section" class="not-found">
+        {{ t('problem.notFound') }}
+    </div>
+    <div v-else-if="!problem" class="not-found">
         {{ t('problem.notFound') }}
     </div>
     <div v-else class="root-row">
         <div class="root">
             <NavBar @open-prefs="prefsOpen = true">
-                <span class="goal-chip">{{ problem.goal }}</span>
+                <span class="goal-chip">{{ sectionName }} · {{ problem.goal }}</span>
             </NavBar>
 
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
@@ -138,9 +212,19 @@ function onSolved(lines: string[]) {
                 </Transition>
 
                 <Transition name="fade-in">
-                    <ProofRepl v-if="agreed && showRepl" :goal-latex="goalLatex" :premise-latex="premiseLatex"
-                        :goal="problem.goal" :premise="problem.premise" :guides="problem.guides" :hints="problem.hints"
-                        @solved="onSolved" style="flex:1;overflow:hidden" />
+                    <ProofRepl
+                        v-if="agreed && showRepl"
+                        :goal-latex="goalLatex"
+                        :premise-latex="premiseLatex"
+                        :goal="problem.goal"
+                        :premise="problem.premise"
+                        :guides="problem.guides"
+                        :hints="problem.hints"
+                        :logic-mode="logicMode"
+                        :allowed-tactics="allowedTactics"
+                        @solved="onSolved"
+                        style="flex:1;overflow:hidden"
+                    />
                 </Transition>
 
                 <Transition name="fade-in">
@@ -152,11 +236,15 @@ function onSolved(lines: string[]) {
                                     <InlineLatex :text="line" />
                                 </div>
                             </div>
-                            <button v-if="hasNext" class="victory-btn" @click="goNext">
+                            <button
+                                v-if="hasNext"
+                                class="victory-btn"
+                                @click="goNext"
+                            >
                                 {{ t('problem.nextProblem') }}
                             </button>
-                            <button v-else class="victory-btn" @click="router.push('/')">
-                                {{ t('problem.backHome') }}
+                            <button v-else class="victory-btn" @click="goNextSection">
+                                {{ t('sections.nextSection') }}
                             </button>
                         </div>
                     </div>
@@ -167,9 +255,13 @@ function onSolved(lines: string[]) {
                 <button @click="goPrev" :disabled="!hasPrev" class="nav-btn">{{ t('problem.prev') }}</button>
                 <div class="footer-roadmap" @click="roadmapOpen = true">
                     <div class="mini-track">
-                        <div v-for="(entry, i) in sortedEntries" :key="entry.idx" class="mini-dot"
-                            :class="{ latest: i === sortedEntries.length - 1 }">
-                            <span class="mini-dot-num">{{ i + 1 }}</span>
+                        <div
+                            v-for="(entry, i) in sectionEntries"
+                            :key="entry.sectionIdx"
+                            class="mini-dot"
+                            :class="{ latest: i === sectionEntries.length - 1 }"
+                        >
+                            <span class="mini-dot-num">{{ entry.sectionIdx + 1 }}</span>
                         </div>
                     </div>
                 </div>
@@ -177,8 +269,12 @@ function onSolved(lines: string[]) {
             </div>
         </div>
 
-        <TacticSidebar />
-        <RoadmapModal v-if="roadmapOpen" :total-problems="problems.length" @close="roadmapOpen = false" />
+        <TacticSidebar :allowed-tactics="allowedTactics" />
+        <RoadmapModal
+            v-if="roadmapOpen"
+            :section-id="props.sectionId"
+            @close="roadmapOpen = false"
+        />
     </div>
 </template>
 
@@ -260,29 +356,12 @@ function onSolved(lines: string[]) {
     animation: dotAppear 0.4s ease both;
 }
 
-.mini-dot:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.mini-dot:nth-child(2) {
-    animation-delay: 0.05s;
-}
-
-.mini-dot:nth-child(3) {
-    animation-delay: 0.1s;
-}
-
-.mini-dot:nth-child(4) {
-    animation-delay: 0.15s;
-}
-
-.mini-dot:nth-child(5) {
-    animation-delay: 0.2s;
-}
-
-.mini-dot:nth-child(6) {
-    animation-delay: 0.25s;
-}
+.mini-dot:nth-child(1) { animation-delay: 0s; }
+.mini-dot:nth-child(2) { animation-delay: 0.05s; }
+.mini-dot:nth-child(3) { animation-delay: 0.1s; }
+.mini-dot:nth-child(4) { animation-delay: 0.15s; }
+.mini-dot:nth-child(5) { animation-delay: 0.2s; }
+.mini-dot:nth-child(6) { animation-delay: 0.25s; }
 
 .mini-dot.latest {
     background: var(--color-primary);
@@ -299,34 +378,17 @@ function onSolved(lines: string[]) {
     color: var(--color-primary-fg);
 }
 
-.mini-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--color-border-strong);
-}
-
 @keyframes dotAppear {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    60% {
-        transform: scale(1.15);
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .not-found {
     padding: 32px;
 }
 
-/* ── prompt ─────────────────────── */
+/* ── prompt ──────────── */
 .prompt {
     flex: 1;
     display: flex;
@@ -401,7 +463,7 @@ function onSolved(lines: string[]) {
     background: var(--color-primary-hover);
 }
 
-/* ── victory ───────────────────── */
+/* ── victory ─────────── */
 .victory-overlay {
     position: absolute;
     inset: 0;
@@ -457,38 +519,14 @@ function onSolved(lines: string[]) {
     background: var(--color-primary-hover);
 }
 
-/* ── transitions ────────────────── */
-.fade-up-enter-active {
-    transition: all 0.4s ease;
-}
+/* ── transitions ──────── */
+.fade-up-enter-active { transition: all 0.4s ease; }
+.fade-up-leave-active { transition: all 0.4s ease; }
+.fade-up-enter-from { opacity: 0; transform: translateY(12px); }
+.fade-up-leave-to { opacity: 0; transform: translateY(-12px); }
 
-.fade-up-leave-active {
-    transition: all 0.4s ease;
-}
-
-.fade-up-enter-from {
-    opacity: 0;
-    transform: translateY(12px);
-}
-
-.fade-up-leave-to {
-    opacity: 0;
-    transform: translateY(-12px);
-}
-
-.fade-in-enter-active {
-    transition: opacity 0.4s ease 0.3s;
-}
-
-.fade-in-leave-active {
-    transition: opacity 0.15s ease;
-}
-
-.fade-in-enter-from {
-    opacity: 0;
-}
-
-.fade-in-leave-to {
-    opacity: 0;
-}
+.fade-in-enter-active { transition: opacity 0.4s ease 0.3s; }
+.fade-in-leave-active { transition: opacity 0.15s ease; }
+.fade-in-enter-from { opacity: 0; }
+.fade-in-leave-to { opacity: 0; }
 </style>

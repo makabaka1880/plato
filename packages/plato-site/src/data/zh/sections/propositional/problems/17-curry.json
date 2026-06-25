@@ -1,0 +1,29 @@
+{
+    "description": "合久必分。",
+    "goal": "(-> A (-> B (and A B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "目标：$(A \\to B \\to C) \\to (A \\land B \\to C)$。这是柯里化的反方向——把\"一次接收一个参数\"变回\"一次接收两个参数\"。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "假设 $A \\to B \\to C$。这是一个[connective|连接词]堆起来的链条：先给 $A$，得到 $B \\to C$；再给 $B$，得到 $C$。两步触发。",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "再假设 $A \\land B$。你同时有 $A$ 和 $B$，但它们被捆在一个[conjunction|合取]里——需要先松绑。",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "用 `and-elim-l` 取出 $A$。用 $A$ 去喂 $A \\to B \\to C$——用 $\\to$-elim 得到 $B \\to C$。",
+            "tactic": "(->-intro B 3)"
+        },
+        {
+            "text": "用 `and-elim-r` 取出 $B$。现在 $B \\to C$ 和 $B$ 都在手上——再来一次 [modus-ponens|肯定前件]，得 $C$。",
+            "tactic": "(->-intro A 4)"
+        }
+    ],
+    "unlocks": []
+}

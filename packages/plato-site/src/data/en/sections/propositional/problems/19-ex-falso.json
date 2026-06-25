@@ -1,0 +1,33 @@
+{
+    "description": "From total catastrophe, anything at all.",
+    "goal": "(-> _|_ A)",
+    "premise": [],
+    "guides": [
+        {
+            "text": "The goal is $\\bot \\to A$. In words: if falsity holds, then $A$ is true. This sounds absurd — but that's the point. Classical logic takes the position that from a [contradiction|contradiction], **anything** follows. This is called *[ex-falso|ex falso quodlibet]* — 'from falsehood, whatever you please'. Its dual is $\\top$ (top, truth): from anything, truth follows. We'll prove that soon.",
+            "tactic": null
+        },
+        {
+            "text": "Assume the antecedent. The [formula|formula] for falsity is `_|_` — the engine also accepts `bottom` or `false`.",
+            "tactic": "(assume _|_)"
+        },
+        {
+            "text": "The rule `ex-falso` takes two arguments: a step number whose [conclusion|conclusion] is $\\bot$, and a [formula|formula] (any formula) you want to derive. We have $\\bot$ at step 1 — let's pull $A$ out of thin air.",
+            "tactic": "(ex-falso 1 A)"
+        },
+        {
+            "text": "Discharge the [assumption|assumption]. From $\\bot$, anything follows — and we've proved it.",
+            "tactic": "(->-intro _|_ 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "ex-falso",
+            "rule": "\\frac{\\Gamma \\vdash \\bot}{\\Gamma \\vdash p}",
+            "description": "From a contradiction ($\\bot$), you can derive any formula $p$. The principle of explosion — *ex falso quodlibet*.",
+            "syntax": "(ex-falso N F)",
+            "example": "1. ⊢ ⊥\n2. (ex-falso 1 Q)  →  ⊢ Q"
+        }
+    ]
+}

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { loadProblems } from '@/data'
+import { loadSections } from '@/data'
 import { useProgressStore } from '@/stores/progress'
+import { useDiscoveryStore } from '@/stores/discovery'
 import { useTacticsStore } from '@/stores/tactics'
 import { useRoadmapStore } from '@/stores/roadmap'
 import { usePreferencesStore } from '@/stores/preferences'
@@ -11,32 +12,86 @@ import { usePreferencesStore } from '@/stores/preferences'
 const router = useRouter()
 const { t, locale } = useI18n()
 const prefs = usePreferencesStore()
+const progress = useProgressStore()
+const discovery = useDiscoveryStore()
 
 function setLocale(loc: string) {
     locale.value = loc
     prefs.setLocale(loc)
 }
 
-const props = defineProps<{ hasProgress: boolean }>()
+// ── Section data ────────────────────────────────────────────────────
+const allSections = computed(() => loadSections(locale.value))
 
-function onStart() {
-    useProgressStore().reset()
+const visibleSections = computed(() =>
+    allSections.value.filter(s => progress.isSectionAccessible(s.id, allSections.value)),
+)
+
+const hasProgress = computed(() => {
+    for (const sec of allSections.value) {
+        if ((progress.highestSolved[sec.id] ?? -1) >= 0) return true
+    }
+    return false
+})
+
+// ── Continue target ─────────────────────────────────────────────────
+const continueTarget = computed(() =>
+    progress.continueTarget(allSections.value),
+)
+
+function goContinue() {
+    const tgt = continueTarget.value
+    if (!tgt) return
+    if (!discovery.isViewed(tgt.sectionId) && tgt.sectionIdx === 0) {
+        router.push(`/section/${tgt.sectionId}/discovery`)
+    } else {
+        router.push(`/section/${tgt.sectionId}/problem/${tgt.sectionIdx}`)
+    }
+}
+
+function onStartFresh() {
+    progress.reset()
+    discovery.reset()
     useTacticsStore().reset()
     useRoadmapStore().reset()
-    router.push('/problem/0')
+    const sorted = [...allSections.value].sort((a, b) => a.meta.order - b.meta.order)
+    if (sorted.length > 0) {
+        router.push(`/section/${sorted[0]!.id}/discovery`)
+    }
 }
 
-function onContinue() {
-    const problems = loadProblems(locale.value)
-    const idx = Math.min(useProgressStore().highestSolved + 1, problems.length - 1)
-    router.push(`/problem/${idx}`)
+// ── Section card interaction ────────────────────────────────────────
+function onSectionClick(sectionId: string) {
+    const sec = allSections.value.find(s => s.id === sectionId)
+    if (!sec) return
+    const highest = progress.highestSolved[sectionId] ?? -1
+    const nextIdx = highest + 1
+    if (nextIdx < sec.problems.length) {
+        if (!discovery.isViewed(sectionId) && nextIdx === 0) {
+            router.push(`/section/${sectionId}/discovery`)
+        } else {
+            router.push(`/section/${sectionId}/problem/${nextIdx}`)
+        }
+    }
 }
 
+function replayDiscovery(sectionId: string) {
+    router.push(`/section/${sectionId}/discovery`)
+}
+
+function isSectionComplete(sectionId: string): boolean {
+    const sec = allSections.value.find(s => s.id === sectionId)
+    if (!sec) return false
+    const highest = progress.highestSolved[sectionId] ?? -1
+    return highest + 1 >= sec.problems.length
+}
+
+// ── Focus ───────────────────────────────────────────────────────────
 const continueBtn = ref<HTMLButtonElement | null>(null)
 const startBtn = ref<HTMLButtonElement | null>(null)
 
 onMounted(() => {
-    if (props.hasProgress) continueBtn.value?.focus()
+    if (hasProgress.value) continueBtn.value?.focus()
     else startBtn.value?.focus()
 })
 </script>
@@ -48,18 +103,63 @@ onMounted(() => {
             <button :class="{ active: locale === 'zh' }" @click="setLocale('zh')">中文</button>
         </div>
         <h1>{{ t('home.title') }}</h1>
+
         <div class="actions">
-            <button v-if="props.hasProgress" ref="continueBtn" class="hero-btn" @click="onContinue">
+            <button
+                v-if="hasProgress"
+                ref="continueBtn"
+                class="hero-btn"
+                @click="goContinue"
+            >
                 {{ t('home.continue') }}
             </button>
-            <button ref="startBtn" class="hero-btn" :class="props.hasProgress ? 'secondary' : ''"
-                @click="onStart">
+            <button
+                ref="startBtn"
+                class="hero-btn"
+                :class="hasProgress ? 'secondary' : ''"
+                @click="onStartFresh"
+            >
                 {{ t('home.startFresh') }}
             </button>
             <button class="hero-btn custom-btn" @click="router.push('/custom')">
                 {{ t('home.customProblem') }}
             </button>
         </div>
+
+        <!-- Section cards -->
+        <div v-if="visibleSections.length > 0" class="sections">
+            <div
+                v-for="section in visibleSections"
+                :key="section.id"
+                class="section-card"
+                :class="{ complete: isSectionComplete(section.id) }"
+                @click="onSectionClick(section.id)"
+            >
+                <div class="section-name">{{ t(section.meta.nameI18nKey) }}</div>
+                <div class="section-progress">
+                    <span
+                        v-for="i in section.problems.length"
+                        :key="i"
+                        class="section-dot"
+                        :class="{ solved: (progress.highestSolved[section.id] ?? -1) >= i - 1 }"
+                    ></span>
+                </div>
+                <div class="section-meta">
+                    <span class="section-count">{{ t('sections.solved', {
+                        solved: Math.min((progress.highestSolved[section.id] ?? -1) + 1, section.problems.length),
+                        total: section.problems.length
+                    }) }}</span>
+                    <button
+                        v-if="discovery.isViewed(section.id)"
+                        class="replay-btn"
+                        @click.stop="replayDiscovery(section.id)"
+                    >
+                        {{ t('discovery.replay') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="sub-actions">
             <a href="https://github.com/makabaka1880/plato">{{ t('home.contribute') }}</a>
             <span class="sub-sep">·</span>
@@ -75,9 +175,10 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     height: 100%;
-    padding-top: 8vh;
+    padding-top: 6vh;
+    overflow-y: auto;
 }
 
 .lang-switch {
@@ -123,6 +224,7 @@ onMounted(() => {
     flex-direction: column;
     gap: 8px;
     align-items: center;
+    margin-bottom: 32px;
 }
 
 .hero-btn {
@@ -165,12 +267,91 @@ onMounted(() => {
     color: var(--color-primary-hover);
 }
 
+/* ── section cards ─────────────── */
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(320px, 80vw);
+    margin-bottom: 16px;
+}
+
+.section-card {
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.section-card:hover {
+    border-color: var(--color-primary-hover);
+    background: var(--color-subtle-bg);
+}
+
+.section-card.complete {
+    opacity: 0.7;
+}
+
+.section-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-fg);
+    margin-bottom: 8px;
+}
+
+.section-progress {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.section-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 100%;
+    background: var(--color-border);
+    transition: background 0.3s;
+}
+
+.section-dot.solved {
+    background: var(--color-primary);
+}
+
+.section-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.section-count {
+    font-size: 11px;
+    color: var(--color-muted);
+}
+
+.replay-btn {
+    font-family: inherit;
+    font-size: 11px;
+    padding: 2px 8px;
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    color: var(--color-muted);
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.replay-btn:hover {
+    color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
+
 .sub-actions {
     display: flex;
     gap: 0;
     align-items: center;
     justify-content: center;
-    margin-top: 72px;
+    margin-top: 16px;
     font-size: 12px;
     color: var(--color-border-strong);
 }

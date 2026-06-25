@@ -8,9 +8,21 @@ import TacticCard from './TacticCard.vue'
 
 const { t, locale } = useI18n()
 
+const props = defineProps<{
+    allowedTactics?: string[]
+}>()
+
 const store = useTacticsStore()
+
+const allowedSet = computed(() =>
+    props.allowedTactics ? new Set(props.allowedTactics) : null,
+)
+
 const items = computed(() =>
-  store.collected.map(n => lookupTactic(n, locale.value)).filter((t): t is Tactic => t !== null)
+    store.collected
+        .filter(n => !allowedSet.value || allowedSet.value.has(n))
+        .map(n => lookupTactic(n, locale.value))
+        .filter((t): t is Tactic => t !== null)
 )
 
 const open = ref(false)

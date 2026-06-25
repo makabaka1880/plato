@@ -6,6 +6,8 @@ export interface Problem {
     guides: Hint[]
     hints: Hint[]
     unlocks: Tactic[]
+    /** Logic mode override. If absent, the section default governs. */
+    logicMode?: 'fol' | 'pl'
 }
 
 export interface Hint {
@@ -24,4 +26,34 @@ export interface Tactic {
     syntax: string
     /** A short worked example, e.g. "From $A$ we proved $B$, so we get $A \\to B$." */
     example: string
+}
+
+// ── Section types ──────────────────────────────────────────────────────
+
+/** Metadata about a section, loaded from section.json */
+export interface SectionMeta {
+    nameI18nKey: string
+    logicMode: 'pl' | 'fol'
+    allowedTactics: string[]
+    order: number
+}
+
+/** A single line in a discovery dialogue */
+export interface DiscoveryLine {
+    speaker: 'plato' | 'aristotle'
+    text: string
+}
+
+/** Structure of a discovery.json file */
+export interface DiscoveryData {
+    title: string
+    lines: DiscoveryLine[]
+}
+
+/** Fully assembled section at runtime */
+export interface Section {
+    id: string
+    meta: SectionMeta
+    problems: Problem[]
+    discovery: DiscoveryData
 }

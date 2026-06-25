@@ -1,0 +1,57 @@
+{
+    "title": "Necessity and Possibility",
+    "lines": [
+        {
+            "speaker": "plato",
+            "text": "Aristotle, we have spoken of what **is**. But what of what **must be**? What of what **could be**?"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "Ah — you speak of the modes of truth. Some things are necessarily true: a triangle must have three sides. Others are merely contingently true: I happen to be sitting, but I could stand."
+        },
+        {
+            "speaker": "plato",
+            "text": "Exactly. We introduce two new operators: $\\Box A$ — '$A$ is **necessary**' — and $\\Diamond A$ — '$A$ is **possible**'. This is **modal logic**."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "And what are the rules governing these? Necessity seems stronger than mere truth."
+        },
+        {
+            "speaker": "plato",
+            "text": "The system we shall use is called **System K** — after Saul Kripke. Its cornerstone is the **K axiom**: $\\Box(A \\to B) \\to (\\Box A \\to \\Box B)$. Necessity distributes over implication."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "So if it's necessary that $A$ implies $B$, and it's necessary that $A$, then it's necessary that $B$. That seems reasonable."
+        },
+        {
+            "speaker": "plato",
+            "text": "The K axiom is our elimination rule for $\\Box$ — the command `(box-elim N M)`. And we have a rule of **[necessitation|necessitation]** — `(box-intro N)` — which says: if you can prove $A$ with **no assumptions** (empty context), then $\\Box A$ holds."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "Because if something follows from logic alone — from no contingent assumptions — then it must be necessarily true. That is elegant."
+        },
+        {
+            "speaker": "plato",
+            "text": "And what of possibility $\\Diamond$? It is defined in terms of necessity: $\\Diamond A$ means $\\lnot \\Box \\lnot A$ — '$A$ is possible' means 'it is not necessary that $A$ is false'."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "So we can unfold $\\Diamond A$ to $\\lnot \\Box \\lnot A$ with `(diamond-def N)`, and fold it back with `(diamond-def-rev N)`. The diamond is a derived notion."
+        },
+        {
+            "speaker": "plato",
+            "text": "Note an important restriction: **modal logic here is propositional**. You cannot quantify into modal contexts — no $\\forall x.\\; \\Box P(x)$. The logic mode will be set to PL, gating the quantifier rules."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "Understood. The modal operators $\\Box$ and $\\Diamond$ are available, but $\\forall$ and $\\exists$ are not. This is System K in its pure form."
+        },
+        {
+            "speaker": "plato",
+            "text": "Now — what must be, must be proved. Let us explore necessity."
+        }
+    ]
+}

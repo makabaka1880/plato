@@ -1,0 +1,49 @@
+{
+    "description": "Everything relates to itself — even with two variables.",
+    "goal": "(forall x (forall y (-> (App (App R x) y) (App (App R x) y))))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "So far all our [predicate|predicates] have taken a single argument: $P(x)$. But [predicate|predicates] can express **relations** between things too. A binary predicate $R(x, y)$ is written `(App (App R x) y)` — nested `App`. This goal says: for all $x$ and $y$, if $R(x,y)$ then $R(x,y)$. The two-variable version of identity.",
+            "tactic": null
+        },
+        {
+            "text": "Same strategy as problem 34, but with two variables. First, introduce a fresh [witness|witness] $x$ with `fix` — 'take any $x$.'",
+            "tactic": "(fix x)"
+        },
+        {
+            "text": "Now introduce a second fresh [witness|witness] $y$ — 'take any $y$.' We're building a proof that works for arbitrary $x$ and $y$.",
+            "tactic": "(fix y)"
+        },
+        {
+            "text": "The two witnesses live in separate [context|contexts]: $\\{x\\}$ and $\\{y\\}$. Merge them with `and-intro` so we have both $x$ and $y$ available.",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "Now the familiar pattern: assume the [antecedent|antecedent] $R(x, y)$ — written as nested `App`: `(App (App R x) y)`.",
+            "tactic": "(assume (App (App R x) y))"
+        },
+        {
+            "text": "Merge the witness context (step 3, containing $x$ and $y$) with the assumption (step 4, containing $R(x,y)$). All three are now in one place.",
+            "tactic": "(and-intro 3 4)"
+        },
+        {
+            "text": "Extract $R(x, y)$ from the merged context — the goal under our witnesses and assumption.",
+            "tactic": "(and-elim-r 5)"
+        },
+        {
+            "text": "[discharge|Discharge] $R(x,y)$ to form the [implication|implication] $R(x,y) \\to R(x,y)$. Context: $\\{x, y\\}$.",
+            "tactic": "(->-intro (App (App R x) y) 6)"
+        },
+        {
+            "text": "Generalise over $y$ with `forall-intro`. Since $y$ is fresh in the remaining context ($\\{x\\}$), the generalisation is sound. We now have $\\forall y.\\; R(x,y) \\to R(x,y)$.",
+            "tactic": "(forall-intro y 7)"
+        },
+        {
+            "text": "Generalise over $x$ to finish: $\\forall x.\\; \\forall y.\\; R(x,y) \\to R(x,y)$. The proof stands for every possible pair.",
+            "tactic": "(forall-intro x 8)"
+        }
+    ],
+    "hints": [],
+    "unlocks": []
+}

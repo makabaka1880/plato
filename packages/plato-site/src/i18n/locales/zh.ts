@@ -74,6 +74,7 @@ export default {
             disjunction: '析取 (∨)',
             negation: '否定 (¬)',
             quantifiers: '量词 (∀, ∃)',
+            modal: '模态 (□, ◇)',
         },
 
         commands: {
@@ -98,6 +99,10 @@ export default {
             'forall-elim': '全称实例化 — 由 ∀x.φ 得到 φ[t/x]',
             'exists-intro': '存在引入 — 由 φ(t) 构造 ∃x.φ（将项 t 泛化为变量 x）',
             'exists-elim': '见证消除 — 步骤 N 证明 ∃x.φ，步骤 M 在见证 x 下证明 ψ，x 不在结论中自由出现',
+            'top-intro': '真引入 — 公理：⊤ 总是可证的',
+            'box-intro': '必然化（NEC）— 由 ∅ ⊢ A 推出 ∅ ⊢ □A（上下文必须为空）',
+            'box-elim': '盒消除（K 公理）— 由 □(A → B) 和 □A 推出 □B',
+            'diamond-def': '◇-定义 — 由 ◇A 推出 ¬□¬A，反之亦然',
         },
 
         notations: {
@@ -153,5 +158,21 @@ export default {
         subtitle: '问题 {n} 尚未解锁。',
         hint: '请先完成前面的问题。',
         back: '返回',
+    },
+
+    sections: {
+        propositional: '命题逻辑',
+        firstOrder: '一阶逻辑',
+        modal: '模态逻辑',
+        locked: '请先完成当前章节。',
+        solved: '{solved} / {total}',
+    },
+
+    discovery: {
+        skip: '跳过',
+        begin: '开始',
+        replay: '重播',
+        plato: '柏拉图',
+        aristotle: '亚里士多德',
     },
 }

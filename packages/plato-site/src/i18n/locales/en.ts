@@ -74,6 +74,7 @@ export default {
             disjunction: 'Disjunction (∨)',
             negation: 'Negation (¬)',
             quantifiers: 'Quantifiers (∀, ∃)',
+            modal: 'Modal (□, ◇)',
         },
 
         commands: {
@@ -98,6 +99,10 @@ export default {
             'forall-elim': 'Universal instantiation — from ∀x.φ, get φ[t/x]',
             'exists-intro': 'Existential generalisation — from φ(t), form ∃x.φ (generalise term t to variable x)',
             'exists-elim': 'Witness elimination — N proves ∃x.φ, M proves ψ under witness x, x not free in conclusion',
+            'top-intro': 'Top introduction — axiom: ⊤ is always provable',
+            'box-intro': 'Necessitation (NEC) — from ∅ ⊢ A derive ∅ ⊢ □A (context must be empty)',
+            'box-elim': 'Box elimination (K axiom) — from □(A → B) and □A derive □B',
+            'diamond-def': '◇-definition — from ◇A derive ¬□¬A, and vice versa',
         },
 
         notations: {
@@ -153,5 +158,21 @@ export default {
         subtitle: 'Problem {n} is not yet unlocked.',
         hint: 'Solve the previous problems to unlock it.',
         back: 'Back',
+    },
+
+    sections: {
+        propositional: 'Propositional Logic',
+        firstOrder: 'First-Order Logic',
+        modal: 'Modal Logic',
+        locked: 'Complete the current section to continue.',
+        solved: '{solved} / {total}',
+    },
+
+    discovery: {
+        skip: 'Skip',
+        begin: 'Begin',
+        replay: 'Replay',
+        plato: 'Plato',
+        aristotle: 'Aristotle',
     },
 }

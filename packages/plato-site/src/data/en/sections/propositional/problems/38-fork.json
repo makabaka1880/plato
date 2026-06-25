@@ -1,0 +1,49 @@
+{
+    "description": "One arrow, two bullseyes.",
+    "goal": "(-> (and (-> A B) (-> A C)) (-> A (and B C)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "If $A$ [implication|implies] $B$ and $A$ also implies $C$, then $A$ implies the [conjunction|conjunction] $B \\land C$. You have two arrows leaving the same bow — they'll hit their targets together. Start by assuming the pair of [implication|implications].",
+            "tactic": null
+        },
+        {
+            "text": "Assume $(A \\to B) \\land (A \\to C)$.",
+            "tactic": "(assume (and (-> A B) (-> A C)))"
+        },
+        {
+            "text": "Extract the first arrow: $A \\to B$.",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Extract the second arrow: $A \\to C$.",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "Now prove $A \\to B \\land C$. Assume $A$.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens] on $A \\to B$ (step 2) and $A$ (step 4) — first target hit: $B$.",
+            "tactic": "(->-elim 2 4)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens] on $A \\to C$ (step 3) and $A$ (step 4) — second target hit: $C$.",
+            "tactic": "(->-elim 3 4)"
+        },
+        {
+            "text": "Bundle $B$ and $C$ with `and-intro`. Both targets in one quiver.",
+            "tactic": "(and-intro 5 6)"
+        },
+        {
+            "text": "[assumption|Discharge] $A$ to form $A \\to B \\land C$.",
+            "tactic": "(->-intro A 7)"
+        },
+        {
+            "text": "[assumption|Discharge] the original pair. One arrow, two bullseyes.",
+            "tactic": "(->-intro (and (-> A B) (-> A C)) 8)"
+        }
+    ],
+    "unlocks": []
+}

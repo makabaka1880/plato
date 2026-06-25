@@ -1,0 +1,57 @@
+{
+    "description": "If the implication of A from A-implies-B implies A, then A must be true.",
+    "goal": "(-> (-> (-> A B) A) A)",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "This is **Peirce's Law**: $((A \\to B) \\to A) \\to A$. It's a classical tautology — not provable in intuitionistic logic. The key is to assume $\\lnot A$, derive a [contradiction|contradiction], and then use `dne`. Start by assuming the antecedent: $(A \\to B) \\to A$.",
+            "tactic": null
+        },
+        {
+            "text": "Assume the hypothesis: if $A \\to B$ holds, then $A$ holds.",
+            "tactic": "(assume (-> (-> A B) A))"
+        },
+        {
+            "text": "To reach $A$ via [double-negation|double negation], assume $\\lnot A$ and derive a [contradiction|contradiction]. Start: assume $\\lnot A$.",
+            "tactic": "(assume (not A))"
+        },
+        {
+            "text": "Convert $\\lnot A$ to $A \\to \\bot$ with `not-elim`.",
+            "tactic": "(not-elim 2)"
+        },
+        {
+            "text": "From $A \\to \\bot$ you can derive $A \\to B$: assume $A$, get $\\bot$ via [modus-ponens|modus ponens], then explode to $B$. First, assume $A$.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "Apply $A \\to \\bot$ (step 3) to your fresh $A$ to reach $\\bot$.",
+            "tactic": "(->-elim 3 4)"
+        },
+        {
+            "text": "From $\\bot$, derive any [formula|formula] — in particular, $B$ — using `ex-falso`.",
+            "tactic": "(ex-falso 5 B)"
+        },
+        {
+            "text": "[assumption|Discharge] $A$: you've proved that from $A$ follows $B$, i.e. $A \\to B$.",
+            "tactic": "(->-intro A 6)"
+        },
+        {
+            "text": "Now use the big hypothesis from step 1: $(A \\to B) \\to A$. Apply [modus-ponens|modus ponens] with your freshly-derived $A \\to B$ (step 7) to get $A$.",
+            "tactic": "(->-elim 1 7)"
+        },
+        {
+            "text": "You now have $A$ (step 8) and $\\lnot A$ (step 2), both with $\\lnot A$ in [context|context] — the [contradiction|contradiction]. Apply `not-intro (not A)` to get $\\lnot \\lnot A$.",
+            "tactic": "(not-intro (not A) 8 2)"
+        },
+        {
+            "text": "Strip the [double-negation|double negation] with `dne` to reveal $A$.",
+            "tactic": "(dne 9)"
+        },
+        {
+            "text": "[assumption|Discharge] the big hypothesis to finish Peirce's Law.",
+            "tactic": "(->-intro (-> (-> A B) A) 10)"
+        }
+    ],
+    "unlocks": []
+}

@@ -1,0 +1,49 @@
+{
+    "title": "The Nature of Truth",
+    "lines": [
+        {
+            "speaker": "plato",
+            "text": "Aristotle, my dear friend. Let us speak of truth itself. What is the simplest truth you can think of?"
+        },
+        {
+            "speaker": "aristotle",
+            "text": "That a thing is itself, Plato. If it is a horse, it is a horse. If it is a man, it is a man. In the language you have devised: $I \\to I$."
+        },
+        {
+            "speaker": "plato",
+            "text": "Indeed! And how would one **prove** such a thing? We cannot simply declare it true — we must demonstrate it."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "We begin by assuming $I$. From that [assumption|assume], $I$ follows immediately — we just said it was true. Then we [discharge|discharge] the assumption, forming the [implication|implication] $I \\to I$."
+        },
+        {
+            "speaker": "plato",
+            "text": "Excellent. This is the essence of a **[judgement|judgement]**: from a [context|context] of assumptions $\\Gamma$, we derive a [conclusion|conclusion] $p$. We write this as $\\Gamma \\vdash p$."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "So the turnstile $\\vdash$ divides what we assume from what we prove. Every line in a proof is a judgement."
+        },
+        {
+            "speaker": "plato",
+            "text": "Precisely. Now, truth is richer than mere identity. We have **conjunction** $A \\land B$ — both things hold together. We have **disjunction** $A \\lor B$ — at least one holds. We have **negation** $\\lnot A$ — the thing is false. And we have the grand **implication** $A \\to B$ — if $A$ holds, then $B$ must follow."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "And for each connective, there are rules: how to **introduce** it into a proof, and how to **eliminate** it — to use what it asserts."
+        },
+        {
+            "speaker": "plato",
+            "text": "Yes! The [introduction rule|introduction rule] tells us how to **build** a formula. The [elimination rule|elimination rule] tells us how to **use** a formula we already have. This is the heart of [natural deduction|natural deduction]."
+        },
+        {
+            "speaker": "aristotle",
+            "text": "So a proof is a tree of these rule applications, each step justified by the steps before it?"
+        },
+        {
+            "speaker": "plato",
+            "text": "Exactly. And here, you will write your proofs as **s-expressions** — commands like `(assume I)` or `(->-intro I 1)`. The machine will check each step. Now, shall we begin?"
+        }
+    ]
+}

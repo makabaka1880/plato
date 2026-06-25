@@ -1,0 +1,57 @@
+{
+    "description": "A truth and a choice make a choice of truths.",
+    "goal": "(-> (and A (or B C)) (or (and A B) (and A C)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "This is the **distributive law**: $A \\land (B \\lor C)$ is equivalent to $(A \\land B) \\lor (A \\land C)$. You have $A$ and a choice between $B$ and $C$ — either way, $A$ comes with. Start by assuming $A \\land (B \\lor C)$.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $A \\land (B \\lor C)$.",
+            "tactic": "(assume (and A (or B C)))"
+        },
+        {
+            "text": "Peel off $A$ from the left.",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Peel off $B \\lor C$ from the right.",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "Now [proof-by-cases|proof by cases] on the [disjunction|disjunction]. First, assume $B$.",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "Pair $A$ (step 2) with $B$ (step 4) to get $A \\land B$.",
+            "tactic": "(and-intro 2 4)"
+        },
+        {
+            "text": "Slot $A \\land B$ on the left of the target [disjunction|disjunction] with `or-intro-l`, $A \\land C$ on the right.",
+            "tactic": "(or-intro-l 5 (and A C))"
+        },
+        {
+            "text": "Second case: assume $C$.",
+            "tactic": "(assume C)"
+        },
+        {
+            "text": "Pair $A$ (step 2) with $C$ (step 7) to get $A \\land C$.",
+            "tactic": "(and-intro 2 7)"
+        },
+        {
+            "text": "Slot $A \\land C$ on the right with `or-intro-r`, $A \\land B$ on the left.",
+            "tactic": "(or-intro-r 8 (and A B))"
+        },
+        {
+            "text": "Both cases led to $(A \\land B) \\lor (A \\land C)$. Use `or-elim` on the $B \\lor C$ from step 3.",
+            "tactic": "(or-elim 3 6 9)"
+        },
+        {
+            "text": "[assumption|Discharge] the [conjunction|conjunction] to finish. Truth distributed, frosting chosen.",
+            "tactic": "(->-intro (and A (or B C)) 10)"
+        }
+    ],
+    "unlocks": []
+}

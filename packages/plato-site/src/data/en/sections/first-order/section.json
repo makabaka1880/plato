@@ -1,0 +1,27 @@
+{
+    "nameI18nKey": "sections.firstOrder",
+    "logicMode": "fol",
+    "order": 1,
+    "allowedTactics": [
+        "assume",
+        "ex-falso",
+        "top-intro",
+        "subst",
+        "fix",
+        "->-intro",
+        "->-elim",
+        "and-intro",
+        "and-elim-l",
+        "and-elim-r",
+        "or-intro-l",
+        "or-intro-r",
+        "or-elim",
+        "not-intro",
+        "not-elim",
+        "dne",
+        "forall-intro",
+        "forall-elim",
+        "exists-intro",
+        "exists-elim"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "description": "万法归真。",
+    "goal": "(-> A T)",
+    "premise": [],
+    "guides": [
+        {
+            "text": "目标：$A \\to \\top$。不管 $A$ 是什么，真理总成立。对比第 19 题：$\\bot \\to A$ 说「从谬推出一切」。这里 $A \\to \\top$ 说「从一切推出真理」。两者互为对偶——逻辑的两个书挡。",
+            "tactic": null
+        },
+        {
+            "text": "[implication|蕴含式]目标意味着先假设左边。假设 $A$。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "在假设 $A$ 下，用 `(top-intro 1)` 证明 $\\top$。可选参数让它继承第 1 步的上下文——这样 $\\top$ 带着 $A$ 一起被证明，得到 $\\{A\\} \\vdash \\top$。",
+            "tactic": "(top-intro 1)"
+        },
+        {
+            "text": "[discharge|消去] $A$，得到 $A \\to \\top$。从任何起点出发，真理这个终点总是可以到达的。",
+            "tactic": "(->-intro A 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": []
+}

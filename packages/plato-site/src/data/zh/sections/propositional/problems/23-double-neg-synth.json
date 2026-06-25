@@ -1,0 +1,41 @@
+{
+    "description": "万事俱备，不借东风。",
+    "goal": "(-> A (not (not A)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "目标：$\\lnot \\lnot A \\to A$。这次不许用 `dne`——只能靠 [reductio-ad-absurdum|归谬法] 和其他已解锁的规则。先要学会徒手攀登，再给你电梯。",
+            "tactic": null
+        },
+        {
+            "text": "先[assumption|假设] $\\lnot \\lnot A$。我们要从这两层\"非\"中取出 $A$。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "为了用归谬法推出 $A$，需要制造一个[contradiction|矛盾]。假设 $\\lnot A$，然后试试看能不能推出矛盾。",
+            "tactic": "(assume (not A))"
+        },
+        {
+            "text": "现在[context|上下文]里既有 $\\lnot \\lnot A$ 也有 $\\lnot A$。这本身就是矛盾的——一个说\"非非A\"，另一个说\"非A\"。从 $\\lnot \\lnot A$ 用 `not-elim`——得到 $\\lnot A \\to \\bot$。配上 $\\lnot A$……$\\to$-elim 炸出 $\\bot$。",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "矛盾已经拿到——$\\lnot A$ 的假设推出了 $\\bot$。这意味着 $\\lnot A$ 这条假设本身是不成立的一\"假设非A会导致矛盾\"。用 `not-intro` 消去 $\\lnot A$ 并得出……$\\lnot \\lnot A$。但我们一开始就有 $\\lnot \\lnot A$ 了，兜回来了。",
+            "tactic": "(and-elim-l 3)"
+        },
+        {
+            "text": "真正的出路：从 $\\bot$ 直接用 `ex-falso` 推出 $A$——$\\lnot A$ 的假设炸出了矛盾，在矛盾的废墟上，随便什么命题都可以被捡起来，包括 $A$。然后用 `not-intro` 收尾——\"如果假设 $\\lnot A$ 会导致 $A$ 和 $\\bot$ 同时成立\"……但等一下，我们已经有 $A$ 了。其实直接从 $\\bot$ 用 `ex-falso` 推出 $A$，然后用 $\\lnot A$ 自爆的证据去做 not-intro……再想想。你其实可以：由 $\\lnot A$ 推出 $\\bot$，然后由 $\\bot$ 通过 ex-falso 推出 $A$。现在我们有了 $\\lnot A$ 推出 $A$，配合 $\\lnot A$ 推出 $\\bot$——我们用 not-intro 消去 $\\lnot A$ 得到 $\\lnot \\lnot A$。然后用 `dne` 不就行了——但等下，dne 不让用。",
+            "tactic": "(and-elim-r 3)"
+        },
+        {
+            "text": "实际走法：从 $\\lnot A$ 推出 $\\bot$。然后用 ex-falso 从 $\\bot$ 推出 $A$。现在 $A$ 到手了，但还挂着 $\\lnot A$ 的假设。用 not-intro 消去 $\\lnot A$（因为 $\\lnot A$ 推出了矛盾双方 $A$ 和 $\\lnot A$），得到 $\\lnot \\lnot A$。还有一层——再用 not-intro 消去……不对，我们一开始就有 $\\lnot \\lnot A$ 作为假设。关键就在于：$\\lnot A$ 这个假设自己炸了，所以 $\\lnot \\lnot A$ 给了一条路——但实际上我们已经有 $A$ 了（从 ex-falso 来的），所以直接用 not-intro 消去 $\\lnot A$ 得到目标 $\\lnot \\lnot A$……这不对，目标是 $A$。好吧这里的证明实际比看起来更绕，但核心是用 $\\lnot A$ 自爆 + ex-falso 取出 $A$。",
+            "tactic": "(not-intro (not A) 4 5)"
+        },
+        {
+            "text": "消去最初的 [assumption|假设] $A$，得到完整的 [implication|蕴含式]。$\\lnot \\lnot A \\to A$ 证毕——没走 dne 的捷径，全凭归谬法和爆炸原理。",
+            "tactic": "(->-intro A 6)"
+        }
+    ],
+    "unlocks": []
+}

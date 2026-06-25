@@ -1,0 +1,25 @@
+{
+    "description": "可能意味着不必然不——展开菱形。",
+    "goal": "(-> (diamond A) (not (box (not A))))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "在模态逻辑中，◇A 定义为 ¬□¬A。这道题证明了这个等价关系的一个方向。如果 A 是可能的，那么 ¬A 不可能是必然的。",
+            "tactic": null
+        },
+        {
+            "text": "假设可能性：◇A。",
+            "tactic": "(assume (diamond A))"
+        },
+        {
+            "text": "用 `diamond-def` 将 ◇A 展开为 ¬□¬A。",
+            "tactic": "(diamond-def 1)"
+        },
+        {
+            "text": "消去假设，得到 ◇A → ¬□¬A。菱形的定义，三步证明。",
+            "tactic": "(->-intro (diamond A) 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": []
+}
