@@ -1,5 +1,5 @@
 import 'katex/dist/katex.min.css'
-import './style.css'
+import './style.scss'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

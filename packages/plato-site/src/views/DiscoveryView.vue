@@ -37,7 +37,7 @@ function onSkip() {
     />
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .not-found {
     padding: 32px;
     text-align: center;

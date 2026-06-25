@@ -58,7 +58,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .backdrop {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.15);

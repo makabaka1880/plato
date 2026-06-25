@@ -347,7 +347,7 @@ defineExpose({ insertTactic })
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .loading {
     padding: 32px;
     font-size: 13px;

@@ -21,7 +21,7 @@ const { t } = useI18n()
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .app {
     display: flex;
     flex-direction: column;

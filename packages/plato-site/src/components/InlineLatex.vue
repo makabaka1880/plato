@@ -49,7 +49,7 @@ function renderSeg(seg: Segment) {
   </template>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .inline-code {
   font-family: inherit;
   background: var(--color-border);

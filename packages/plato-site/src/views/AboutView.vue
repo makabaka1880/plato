@@ -64,7 +64,7 @@ onUnmounted(() => {
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .about-root {
     display: flex;
     flex-direction: column;

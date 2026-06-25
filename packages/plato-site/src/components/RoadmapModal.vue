@@ -85,7 +85,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .rm-backdrop {
     position: fixed; inset: 0; z-index: 400;
     background: rgba(0,0,0,0.3);

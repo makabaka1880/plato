@@ -21,7 +21,7 @@ const emit = defineEmits<{
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .header {
     display: flex;
     align-items: center;

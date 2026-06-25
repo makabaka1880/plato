@@ -85,7 +85,7 @@ watch(items, (next) => {
   </div>
 </template>
 
-<style>
+<style lang="scss">
 /* un-scoped so Teleported backdrop matches */
 .backdrop {
   position: fixed; inset: 0; z-index: 200;
@@ -113,7 +113,7 @@ watch(items, (next) => {
 .slide-leave-active .overlay { transition: transform 0.15s ease; }
 </style>
 
-<style scoped>
+<style lang="scss" scoped>
 .toggle-btn {
   display: none;
   position: fixed; bottom: 16px; right: 16px; z-index: 50;

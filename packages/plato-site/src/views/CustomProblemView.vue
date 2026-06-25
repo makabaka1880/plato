@@ -335,7 +335,7 @@ function stop() {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .root-row {
   display: flex;
   flex-direction: row;

@@ -25,7 +25,7 @@ const emit = defineEmits<{
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .card {
     width: 100%;
     min-width: 0;

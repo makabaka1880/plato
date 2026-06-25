@@ -170,7 +170,7 @@ onMounted(() => {
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .hero {
     display: flex;
     flex-direction: column;

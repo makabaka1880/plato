@@ -35,7 +35,7 @@ function onTactic(tactic: string) {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .card {
   position: relative; width: min(80vw, 520px);
   padding: 10px 14px; margin-bottom: 6px;

@@ -16,7 +16,7 @@ const { t } = useI18n()
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .root {
   display: flex;
   align-items: center;

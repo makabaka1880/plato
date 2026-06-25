@@ -85,7 +85,7 @@ function speakerLabel(speaker: string): string {
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .discovery-dialog {
     display: flex;
     flex-direction: column;

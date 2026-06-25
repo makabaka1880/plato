@@ -62,7 +62,7 @@ const detailOpen = ref(false)
   </Teleport>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .card {
   padding: 12px 14px; background: var(--color-card-bg);
   border-radius: 8px; border: 1px solid var(--color-border);
@@ -95,7 +95,7 @@ const detailOpen = ref(false)
 }
 </style>
 
-<style>
+<style lang="scss">
 /* un-scoped so Teleported backdrop styles work */
 .tactic-backdrop {
   position: fixed; inset: 0; z-index: 300;

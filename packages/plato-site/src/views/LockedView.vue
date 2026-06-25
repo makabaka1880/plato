@@ -40,7 +40,7 @@ function goContinue() {
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .root {
     display: flex;
     align-items: center;
