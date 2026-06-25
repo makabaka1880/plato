@@ -11,7 +11,7 @@
       "tactic": null
     },
     {
-      "text": "两条[premise|前提] 已经躺在[context|上下文]里了。$A \\to B$ 在步骤 1，$A$ 在步骤 2。不需要 `assume`——前提是开局就送给你的。",
+      "text": "用 `assume` 把 [premise|前提] $A$ 收进 [context|上下文] 里。这和证明[implication|蕴含式] 时的 `assume` 不同 —— 我们不需要在后面用 `->-intro` 来 [discharge|消去] 它，只是把前提搬到上下文中备用。",
       "tactic": "(assume A)"
     },
     {

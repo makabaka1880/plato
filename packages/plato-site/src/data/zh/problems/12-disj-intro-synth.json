@@ -21,7 +21,7 @@
       "tactic": "(or-intro-r 1 A)"
     },
     {
-      "text": "[assumption|消去] $A$，得 $A \\to B \\lor A$。两边引入你都学会了。",
+      "text": "[discharge|消去] $A$，得 $A \\to B \\lor A$。两边引入你都学会了。",
       "tactic": "(->-intro B 2)"
     }
   ],

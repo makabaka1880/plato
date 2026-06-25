@@ -33,7 +33,7 @@
       "tactic": "(->-elim 2 5)"
     },
     {
-      "text": "[assumption|消去] $P(y)$，得到 $P(y) \\to \\bot$——即 $\\lnot P(y)$。",
+      "text": "[discharge|消去] $P(y)$，得到 $P(y) \\to \\bot$——即 $\\lnot P(y)$。",
       "tactic": "(->-intro (App P y) 6)"
     },
     {
@@ -41,7 +41,7 @@
       "tactic": "(forall-intro y 7)"
     },
     {
-      "text": "[assumption|消去]左边，完成[implication|蕴含]。世间本无事。",
+      "text": "[discharge|消去]左边，完成[implication|蕴含]。世间本无事。",
       "tactic": "(->-intro (not (exists x (App P x))) 8)"
     }
   ],

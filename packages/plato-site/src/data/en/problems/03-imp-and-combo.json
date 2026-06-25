@@ -16,7 +16,7 @@
       "tactic": "(and-intro 1 1)"
     },
     {
-      "text": "You've proven $A \\land A$ while assuming $A$. Now use `->-intro` to discharge that [assumption|assumption] and wrap everything into the [implication|implication] you need.",
+      "text": "You've proven $A \\land A$ while assuming $A$. Now use `->-intro` to [discharge|discharge] that [assumption|assumption] and wrap everything into the [implication|implication] you need.",
       "tactic": "(->-intro A 2)"
     }
   ],

@@ -25,7 +25,7 @@
       "tactic": "(and-elim-r 1)"
     },
     {
-      "text": "依次 [assumption|消去] $B$，$A$，和 $A \\land B \\to C$。",
+      "text": "依次 [discharge|消去] $B$，$A$，和 $A \\land B \\to C$。",
       "tactic": "(assume A)"
     },
     {

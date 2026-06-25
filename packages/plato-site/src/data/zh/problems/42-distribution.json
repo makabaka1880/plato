@@ -49,7 +49,7 @@
       "tactic": "(or-elim 3 6 9)"
     },
     {
-      "text": "[assumption|消去]合取。真者自真，何患无途。",
+      "text": "[discharge|消去]合取。真者自真，何患无途。",
       "tactic": "(->-intro (and A (or B C)) 10)"
     }
   ],

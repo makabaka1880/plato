@@ -28,11 +28,11 @@
             "tactic": "(and-elim-r 4)"
         },
         {
-            "text": "见证被[assumption|消去]了。$y$ 完成了它的使命——替存在声明当了一次代理，然后从历史舞台上退场。最后用 `->-intro` 消去 $\\exists x.\\; P(x)$ 的假设。定理得证。",
+            "text": "见证被[discharge|消去]了。$y$ 完成了它的使命——替存在声明当了一次代理，然后从历史舞台上退场。最后用 `->-intro` 消去 $\\exists x.\\; P(x)$ 的假设。定理得证。",
             "tactic": "(exists-intro 5 y y)"
         },
         {
-            "text": "现在 `exists-elim` [assumption|消去] 一切。它接收存在式（步骤 1）、[witness|见证] 子证明（步骤 6）和见证变量名。见证被消去，干干净净。",
+            "text": "现在 `exists-elim` [discharge|消去] 一切。它接收存在式（步骤 1）、[witness|见证] 子证明（步骤 6）和见证变量名。见证被消去，干干净净。",
             "tactic": "(exists-elim 1 6 y)"
         },
         {

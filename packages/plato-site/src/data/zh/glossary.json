@@ -63,6 +63,13 @@
     "definition": "逻辑「或」。析取 `(or p q)` 当 p 和 q 至少有一个为真时为真。要证明析取，使用 ∨-intro-l 或 ∨-intro-r（选一边并证明它）。要使用析取，应用 ∨-elim（分情况证明）：证明无论哪种情况目标都成立。"
   },
   {
+    "id": "discharge",
+    "term": "消去（Discharge）",
+    "key": "D",
+    "intuitive": "归还你借用的东西。你临时假设某个命题，使用它，然后在证明结束前归还。就像借图书馆的书——借阅期间你可以使用，但必须在离开前还回去。",
+    "definition": "从上下文中移除一个假设，关闭依赖它的子证明。引入规则（如 →-intro、¬-intro、∀-intro、∃-elim）会消去假设：→-intro 将命题假设变成蕴含的前件从而消去它；¬-intro 通过推出其否定来消去；∀-intro 和 ∃-elim 消去变量假设。当所有假设都被消去时，证明完成——只有前提可以保留。"
+  },
+  {
     "id": "double-negation",
     "term": "双重否定（Double negation ¬¬）",
     "key": "D",

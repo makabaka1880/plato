@@ -33,11 +33,11 @@
       "tactic": "(->-elim 5 4)"
     },
     {
-      "text": "[assumption|消去] $A \\land B$，形成[implication|蕴含]。",
+      "text": "[discharge|消去] $A \\land B$，形成[implication|蕴含]。",
       "tactic": "(->-intro (and A B) 6)"
     },
     {
-      "text": "[assumption|消去]最外层那条链。万涓归海，大功告成。",
+      "text": "[discharge|消去]最外层那条链。万涓归海，大功告成。",
       "tactic": "(->-intro (-> A (-> B C)) 7)"
     }
   ],

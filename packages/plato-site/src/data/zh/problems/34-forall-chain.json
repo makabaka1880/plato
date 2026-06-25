@@ -25,7 +25,7 @@
             "tactic": "(->-elim 3 2)"
         },
         {
-            "text": "[assumption|消去] 假设。用 `forall-intro` 把 $y$ 泛化——因为我们对 $y$ 没有任何特殊假设，推广到全称是合法的。再消去两个量词前提。",
+            "text": "[discharge|消去] 假设。用 `forall-intro` 把 $y$ 泛化——因为我们对 $y$ 没有任何特殊假设，推广到全称是合法的。再消去两个量词前提。",
             "tactic": "(->-intro (App P a) 4)"
         },
         {

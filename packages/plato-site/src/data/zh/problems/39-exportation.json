@@ -29,15 +29,15 @@
       "tactic": "(->-elim 1 4)"
     },
     {
-      "text": "[assumption|消去] $B$，收拢内层[implication|蕴含]。",
+      "text": "[discharge|消去] $B$，收拢内层[implication|蕴含]。",
       "tactic": "(->-intro B 5)"
     },
     {
-      "text": "[assumption|消去] $A$，收拢中层[implication|蕴含]。",
+      "text": "[discharge|消去] $A$，收拢中层[implication|蕴含]。",
       "tactic": "(->-intro A 6)"
     },
     {
-      "text": "最后，[assumption|消去]最外层的 $A \\land B \\to C$。合则两利，分则独行。",
+      "text": "最后，[discharge|消去]最外层的 $A \\land B \\to C$。合则两利，分则独行。",
       "tactic": "(->-intro (-> (and A B) C) 7)"
     }
   ],

@@ -33,11 +33,11 @@
       "tactic": "(and-elim-r 5)"
     },
     {
-      "text": "[assumption|消去] $\\lnot B$，得到 $\\lnot B \\to \\lnot A$。",
+      "text": "[discharge|消去] $\\lnot B$，得到 $\\lnot B \\to \\lnot A$。",
       "tactic": "(not-intro A 4 6)"
     },
     {
-      "text": "[assumption|消去] $A \\to B$，逆否命题完成。注意：这个方向（$(A \\to B) \\to (\\lnot B \\to \\lnot A)$）在经典逻辑和直觉主义逻辑中都成立——不需要双重否定消除。反方向则需要经典逻辑撑腰。",
+      "text": "[discharge|消去] $A \\to B$，逆否命题完成。注意：这个方向（$(A \\to B) \\to (\\lnot B \\to \\lnot A)$）在经典逻辑和直觉主义逻辑中都成立——不需要双重否定消除。反方向则需要经典逻辑撑腰。",
       "tactic": "(->-intro (not B) 7)"
     },
     {

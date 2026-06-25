@@ -1,78 +1,17 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { loadProblems } from '@/data'
-import { useProgressStore } from '@/stores/progress'
-import { useTacticsStore } from '@/stores/tactics'
-import { useRoadmapStore } from '@/stores/roadmap'
-import HomeView from '@/views/HomeView.vue'
-import ProblemView from '@/views/ProblemView.vue'
-import CustomProblemView from '@/views/CustomProblemView.vue'
 
-const { t, locale } = useI18n()
-
-const progress = useProgressStore()
-const tactics = useTacticsStore()
-
-type Page =
-    | { type: 'home' }
-    | { type: 'problem'; idx: number }
-    | { type: 'custom' }
-
-const page = ref<Page>({ type: 'home' })
-
-const problems = computed(() => loadProblems(locale.value))
-
-const problemIdx = computed(() =>
-    page.value.type === 'problem' ? page.value.idx : 0
-)
-
-function goHome() {
-    page.value = { type: 'home' }
-}
-
-function goCustom() {
-    page.value = { type: 'custom' }
-}
-
-function onStart() {
-    progress.reset()
-    tactics.reset()
-    useRoadmapStore().reset()
-    page.value = { type: 'problem', idx: 0 }
-}
-
-function onContinue() {
-    const idx = Math.min(progress.highestSolved + 1, problems.value.length - 1)
-    page.value = { type: 'problem', idx }
-}
-
-function onNext() {
-    if (page.value.type === 'problem') {
-        const next = page.value.idx + 1
-        if (next < problems.value.length) {
-            page.value = { type: 'problem', idx: next }
-        }
-    }
-}
-
-function onPrev() {
-    if (page.value.type === 'problem' && page.value.idx > 0) {
-        page.value = { type: 'problem', idx: page.value.idx - 1 }
-    }
-}
+const { t } = useI18n()
 </script>
 
 <template>
     <div class="app">
         <div class="main">
-            <Transition name="page" mode="out-in">
-                <HomeView v-if="page.type === 'home'" :has-progress="progress.highestSolved >= 0"
-                    @start="onStart" @continue="onContinue" @go-custom="goCustom" />
-                <ProblemView v-else-if="page.type === 'problem'" :problem-idx="problemIdx" :problems="problems" @next="onNext"
-                    @prev="onPrev" @home="goHome" />
-                <CustomProblemView v-else @home="goHome" />
-            </Transition>
+            <router-view v-slot="{ Component }">
+                <Transition name="page" mode="out-in">
+                    <component :is="Component" />
+                </Transition>
+            </router-view>
         </div>
         <footer class="footer">
             {{ t('footer.rights') }}

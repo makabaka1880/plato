@@ -4,7 +4,7 @@
   "premise": [],
   "guides": [
     {
-      "text": "The goal is $\\exists x.\\; P(x) \\to \\exists y.\\; P(y)$. This should be trivially true — if something is $P$, then something is $P$, regardless of the variable name. But to prove it, we need `exists-elim`: from the existential claim, we open a [witness|witness], prove the [conclusion|conclusion] under that witness, then [assumption|discharge].",
+      "text": "The goal is $\\exists x.\\; P(x) \\to \\exists y.\\; P(y)$. This should be trivially true — if something is $P$, then something is $P$, regardless of the variable name. But to prove it, we need `exists-elim`: from the existential claim, we open a [witness|witness], prove the [conclusion|conclusion] under that witness, then [discharge|discharge].",
       "tactic": null
     },
     {

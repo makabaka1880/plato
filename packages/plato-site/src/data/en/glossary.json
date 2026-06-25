@@ -63,6 +63,13 @@
     "intuitive": "\"At least one of these is true (maybe both).\" When you say \"I'll have tea OR coffee,\" in everyday English you usually mean one or the other. In logic, ∨ means at least one is true — both being true is fine too."
   },
   {
+    "id": "discharge",
+    "term": "Discharge",
+    "key": "D",
+    "definition": "To remove an assumption from the context, closing off the subproof that depended on it. Introduction rules (like →-intro, ¬-intro, ∀-intro, ∃-elim) discharge assumptions: →-intro discharges a propositional assumption by turning it into the antecedent of an implication; ¬-intro discharges by concluding its negation; ∀-intro and ∃-elim discharge variable assumptions. A proof is complete when all assumptions have been discharged — only premises may remain.",
+    "intuitive": "Returning what you borrowed. You temporarily assume something, use it, then give it back before the proof ends. Think of it like checking out a library book — you can use it while you have it, but you must return it before you leave."
+  },
+  {
     "id": "double-negation",
     "term": "Double negation (¬¬)",
     "key": "D",

@@ -4,7 +4,7 @@
   "premise": [],
   "guides": [
     {
-      "text": "The goal is $(A \\land B) \\to (A \\land B)$. You could prove this from scratch — assume the [conjunction|conjunction], then [assumption|discharge]. Three steps. Or you could prove it in **two** — by using a proof you already have and substituting.",
+      "text": "The goal is $(A \\land B) \\to (A \\land B)$. You could prove this from scratch — assume the [conjunction|conjunction], then [discharge|discharge]. Three steps. Or you could prove it in **two** — by using a proof you already have and substituting.",
       "tactic": null
     },
     {

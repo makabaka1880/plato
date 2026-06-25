@@ -37,7 +37,7 @@
       "tactic": "(->-intro A 6)"
     },
     {
-      "text": "Finally, [assumption|discharge] the big $A \\land B \\to C$ to finish. Two promises, delivered one at a time.",
+      "text": "Finally, [discharge|discharge] the big $A \\land B \\to C$ to finish. Two promises, delivered one at a time.",
       "tactic": "(->-intro (-> (and A B) C) 7)"
     }
   ],

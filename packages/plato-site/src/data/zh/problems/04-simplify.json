@@ -16,7 +16,7 @@
       "tactic": "(and-elim-l 1)"
     },
     {
-      "text": "最后，[assumption|消去] 假设。`->-intro` 把\"假设合取，推出左边\"这套操作变成我们要的[formula|公式]。$A \\land B \\to A$ 证毕。",
+      "text": "最后，消去 [assumption|假设]。`->-intro` 把\"假设合取，推出左边\"这套操作变成我们要的[formula|公式]。$A \\land B \\to A$ 证毕。",
       "tactic": "(->-intro (and A B) 2)"
     }
   ],

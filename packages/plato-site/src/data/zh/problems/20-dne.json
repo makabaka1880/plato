@@ -16,7 +16,7 @@
       "tactic": "(dne 1)"
     },
     {
-      "text": "[assumption|消去] 假设。[double-negation|双重否定]没了，留下一个干净的[implication|蕴含式]。负负得正。",
+      "text": "[discharge|消去] 假设。[double-negation|双重否定]没了，留下一个干净的[implication|蕴含式]。负负得正。",
       "tactic": "(->-intro (not (not A)) 2)"
     }
   ],

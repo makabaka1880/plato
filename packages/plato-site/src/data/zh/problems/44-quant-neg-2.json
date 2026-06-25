@@ -33,15 +33,15 @@
       "tactic": "(->-elim 5 4)"
     },
     {
-      "text": "用 `exists-elim` 关闭存在量词：存在（第2步）、[witness|见证]子证明（第6步）、见证变量 $y$。引擎会[assumption|消去]见证[atom|原子]和 $P(y)$。",
+      "text": "用 `exists-elim` 关闭存在量词：存在（第2步）、[witness|见证]子证明（第6步）、见证变量 $y$。引擎会[discharge|消去]见证[atom|原子]和 $P(y)$。",
       "tactic": "(exists-elim 2 6 y)"
     },
     {
-      "text": "[assumption|消去]存在，得到 $\\exists x. P(x) \\to \\bot$——即 $\\lnot \\exists x. P(x)$。",
+      "text": "[discharge|消去]存在，得到 $\\exists x. P(x) \\to \\bot$——即 $\\lnot \\exists x. P(x)$。",
       "tactic": "(->-intro (exists x (App P x)) 7)"
     },
     {
-      "text": "[assumption|消去]全称。万马齐喑，无一声可闻。",
+      "text": "[discharge|消去]全称。万马齐喑，无一声可闻。",
       "tactic": "(->-intro (forall x (not (App P x))) 8)"
     }
   ],

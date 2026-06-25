@@ -21,7 +21,7 @@
       "tactic": "(or-intro-l 2 C)"
     },
     {
-      "text": "[assumption|消去] 假设，[implication|蕴含]成立。$A \\land B \\to A \\lor B$——一个所有人都会接受的常识。",
+      "text": "[discharge|消去] 假设，[implication|蕴含]成立。$A \\land B \\to A \\lor B$——一个所有人都会接受的常识。",
       "tactic": "(->-intro (and A B) 3)"
     }
   ],

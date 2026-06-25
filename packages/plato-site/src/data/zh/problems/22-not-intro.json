@@ -24,7 +24,7 @@
       "tactic": "(not-intro (and A (not A)) 2 3)"
     },
     {
-      "text": "最后[assumption|消去] $A$。$A \\to \\lnot \\lnot A$ 证毕。一个基本事实：真的事情不会是假的。",
+      "text": "最后[discharge|消去] $A$。$A \\to \\lnot \\lnot A$ 证毕。一个基本事实：真的事情不会是假的。",
       "tactic": null
     }
   ],

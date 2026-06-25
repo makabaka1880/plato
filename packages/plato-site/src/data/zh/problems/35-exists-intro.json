@@ -16,7 +16,7 @@
             "tactic": "(exists-intro 1 a x)"
         },
         {
-            "text": "[assumption|消去] 假设和 $x$。定理得证：如果每一个 $x$ 都有性质 $P$，那存在一个 $x$ 有性质 $P$。",
+            "text": "[discharge|消去] 假设和 $x$。定理得证：如果每一个 $x$ 都有性质 $P$，那存在一个 $x$ 有性质 $P$。",
             "tactic": "(->-intro (App P a) 2)"
         }
     ],

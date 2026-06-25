@@ -14,6 +14,9 @@ export default {
         continue: '继续',
         startFresh: '→ 重新开始',
         customProblem: '→ 自定义题目',
+        contribute: '参与贡献',
+        about: '关于',
+        story: '幕后',
     },
 
     custom: {
@@ -137,5 +140,18 @@ export default {
     footer: {
         rights: '版权所有',
         author: 'Makabaka1880',
+    },
+
+    notFound: {
+        title: '404',
+        subtitle: '此页面不存在。',
+        back: '带我回家',
+    },
+
+    locked: {
+        title: '未解锁',
+        subtitle: '问题 {n} 尚未解锁。',
+        hint: '请先完成前面的问题。',
+        back: '返回',
     },
 }

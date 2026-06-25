@@ -37,11 +37,11 @@
       "tactic": "(and-intro 5 6)"
     },
     {
-      "text": "[assumption|消去] $A$，形成 $A \\to B \\land C$。",
+      "text": "[discharge|消去] $A$，形成 $A \\to B \\land C$。",
       "tactic": "(->-intro A 7)"
     },
     {
-      "text": "[assumption|消去]最初那对[implication|蕴含]。一箭双雕，不在话下。",
+      "text": "[discharge|消去]最初那对[implication|蕴含]。一箭双雕，不在话下。",
       "tactic": "(->-intro (and (-> A B) (-> A C)) 8)"
     }
   ],

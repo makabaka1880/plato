@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { loadProblems } from '@/data'
+import { useProgressStore } from '@/stores/progress'
+import { useTacticsStore } from '@/stores/tactics'
+import { useRoadmapStore } from '@/stores/roadmap'
 import { usePreferencesStore } from '@/stores/preferences'
 
+const router = useRouter()
 const { t, locale } = useI18n()
 const prefs = usePreferencesStore()
 
@@ -13,11 +19,18 @@ function setLocale(loc: string) {
 
 const props = defineProps<{ hasProgress: boolean }>()
 
-const emit = defineEmits<{
-    start: []
-    continue: []
-    goCustom: []
-}>()
+function onStart() {
+    useProgressStore().reset()
+    useTacticsStore().reset()
+    useRoadmapStore().reset()
+    router.push('/problem/0')
+}
+
+function onContinue() {
+    const problems = loadProblems(locale.value)
+    const idx = Math.min(useProgressStore().highestSolved + 1, problems.length - 1)
+    router.push(`/problem/${idx}`)
+}
 
 const continueBtn = ref<HTMLButtonElement | null>(null)
 const startBtn = ref<HTMLButtonElement | null>(null)
@@ -36,16 +49,23 @@ onMounted(() => {
         </div>
         <h1>{{ t('home.title') }}</h1>
         <div class="actions">
-            <button v-if="props.hasProgress" ref="continueBtn" class="hero-btn" @click="emit('continue')">
+            <button v-if="props.hasProgress" ref="continueBtn" class="hero-btn" @click="onContinue">
                 {{ t('home.continue') }}
             </button>
             <button ref="startBtn" class="hero-btn" :class="props.hasProgress ? 'secondary' : ''"
-                @click="emit('start')">
+                @click="onStart">
                 {{ t('home.startFresh') }}
             </button>
-            <button class="hero-btn custom-btn" @click="emit('goCustom')">
+            <button class="hero-btn custom-btn" @click="router.push('/custom')">
                 {{ t('home.customProblem') }}
             </button>
+        </div>
+        <div class="sub-actions">
+            <a href="https://github.com/makabaka1880/plato">{{ t('home.contribute') }}</a>
+            <span class="sub-sep">·</span>
+            <router-link to="/about">{{ t('home.about') }}</router-link>
+            <span class="sub-sep">·</span>
+            <a href="https://blog.makabaka1880.xyz/articles/260625-building-plato">{{ t('home.story') }}</a>
         </div>
     </div>
 </template>
@@ -57,6 +77,7 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     height: 100%;
+    padding-top: 8vh;
 }
 
 .lang-switch {
@@ -142,5 +163,32 @@ onMounted(() => {
     background: var(--color-subtle-bg);
     border-color: var(--color-primary-hover);
     color: var(--color-primary-hover);
+}
+
+.sub-actions {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    justify-content: center;
+    margin-top: 72px;
+    font-size: 12px;
+    color: var(--color-border-strong);
+}
+
+.sub-actions a {
+    color: inherit;
+    text-decoration: none;
+    padding: 2px 6px;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.sub-actions a:hover {
+    color: var(--color-muted);
+}
+
+.sub-actions .sub-sep {
+    color: var(--color-border);
+    user-select: none;
 }
 </style>

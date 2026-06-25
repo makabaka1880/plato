@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch, nextTick, onMounted } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import type { Problem } from '@/types'
+import { loadProblems } from '@/data'
 import { useProblemLatex } from '@/composables/useProblemLatex'
 import { useVictory } from '@/composables/useVictory'
 import { useProgressStore } from '@/stores/progress'
@@ -12,29 +13,52 @@ import ProofRepl from '@/components/ProofRepl.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
 import TacticSidebar from '@/components/TacticSidebar.vue'
 import RoadmapModal from '@/components/RoadmapModal.vue'
+import NavBar from '@/components/NavBar.vue'
 
-const { t } = useI18n()
+const router = useRouter()
+const { t, locale } = useI18n()
 
 const props = defineProps<{
     problemIdx: number
-    problems: Problem[]
-}>()
-
-const emit = defineEmits<{
-    next: []
-    prev: []
-    home: []
 }>()
 
 const progress = useProgressStore()
 const roadmap = useRoadmapStore()
 
-const problem = computed(() => props.problems[props.problemIdx] ?? null)
+const problems = computed(() => loadProblems(locale.value))
+const problem = computed(() => problems.value[props.problemIdx] ?? null)
 const hasNext = computed(() =>
-    props.problemIdx < props.problems.length - 1 &&
+    props.problemIdx < problems.value.length - 1 &&
     props.problemIdx < progress.highestSolved + 1
 )
 const hasPrev = computed(() => props.problemIdx > 0)
+
+// Guard: redirect locked / out-of-bounds problems
+watch(() => props.problemIdx, (idx) => {
+    const total = problems.value.length
+    if (!Number.isFinite(idx) || idx < 0 || idx >= total) {
+        router.replace({ name: 'notFound' })
+        return
+    }
+    if (idx > progress.highestSolved + 1) {
+        router.replace({ name: 'locked', query: { n: String(idx), closest: String(progress.highestSolved + 1) } })
+    }
+}, { immediate: true })
+
+// Re-check when locale changes (problems list may change)
+watch(problems, (list) => {
+    const idx = props.problemIdx
+    if (idx < 0 || idx >= list.length) {
+        router.replace({ name: 'notFound' })
+    }
+})
+
+function goNext() {
+    router.push(`/problem/${props.problemIdx + 1}`)
+}
+function goPrev() {
+    router.push(`/problem/${props.problemIdx - 1}`)
+}
 
 const problemRef = computed(() => problem.value)
 const { goalLatex, premiseLatex, updateLatex } = useProblemLatex(problemRef)
@@ -86,15 +110,9 @@ function onSolved(lines: string[]) {
     </div>
     <div v-else class="root-row">
         <div class="root">
-            <div class="header">
-                <button class="logo" @click="emit('home')">{{ t('problem.logo') }}</button>
-                <span class="spacer"></span>
+            <NavBar @open-prefs="prefsOpen = true">
                 <span class="goal-chip">{{ problem.goal }}</span>
-                <span class="spacer"></span>
-                <a class="gh-link" href="https://github.com/makabaka1880/plato" target="_blank"
-                    title="GitHub">GitHub</a>
-                <button class="prefs-link" @click="prefsOpen = true">{{ t('problem.preferences') }}</button>
-            </div>
+            </NavBar>
 
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
 
@@ -134,10 +152,10 @@ function onSolved(lines: string[]) {
                                     <InlineLatex :text="line" />
                                 </div>
                             </div>
-                            <button v-if="hasNext" class="victory-btn" @click="emit('next')">
+                            <button v-if="hasNext" class="victory-btn" @click="goNext">
                                 {{ t('problem.nextProblem') }}
                             </button>
-                            <button v-else class="victory-btn" @click="emit('home')">
+                            <button v-else class="victory-btn" @click="router.push('/')">
                                 {{ t('problem.backHome') }}
                             </button>
                         </div>
@@ -146,7 +164,7 @@ function onSolved(lines: string[]) {
             </div>
 
             <div class="footer">
-                <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">{{ t('problem.prev') }}</button>
+                <button @click="goPrev" :disabled="!hasPrev" class="nav-btn">{{ t('problem.prev') }}</button>
                 <div class="footer-roadmap" @click="roadmapOpen = true">
                     <div class="mini-track">
                         <div v-for="(entry, i) in sortedEntries" :key="entry.idx" class="mini-dot"
@@ -155,7 +173,7 @@ function onSolved(lines: string[]) {
                         </div>
                     </div>
                 </div>
-                <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">{{ t('problem.next') }}</button>
+                <button @click="goNext" :disabled="!hasNext" class="nav-btn">{{ t('problem.next') }}</button>
             </div>
         </div>
 
@@ -179,68 +197,9 @@ function onSolved(lines: string[]) {
     overflow: hidden;
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--color-border);
-    font-size: 15px;
-}
-
-.logo {
-    text-decoration: none;
-    font-weight: 600;
-    color: inherit;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: inherit;
-    padding: 0;
-}
-
-.sep {
-    color: var(--color-border-strong);
-}
-
-.spacer {
-    flex: 1;
-}
-
 .goal-chip {
     font-size: 13px;
     color: var(--color-muted);
-}
-
-.prefs-link {
-    font-family: inherit;
-    font-size: 13px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--color-muted);
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.prefs-link:hover {
-    color: var(--color-fg);
-    background: var(--color-subtle-bg);
-}
-
-.gh-link {
-    font-family: inherit;
-    font-size: 13px;
-    color: var(--color-muted);
-    text-decoration: none;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.gh-link:hover {
-    color: var(--color-fg);
-    background: var(--color-subtle-bg);
 }
 
 .body {

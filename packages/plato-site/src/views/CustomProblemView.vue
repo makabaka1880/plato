@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import type { Problem, Hint } from '@/types'
 import { useProblemLatex } from '@/composables/useProblemLatex'
@@ -10,11 +11,8 @@ import ProofRepl from '@/components/ProofRepl.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
 import TacticSidebar from '@/components/TacticSidebar.vue'
 
+const router = useRouter()
 const { t } = useI18n()
-
-const emit = defineEmits<{
-  home: []
-}>()
 
 // ── Setup state ─────────────────────────────────────────────────────
 const urlInput = ref('')
@@ -202,7 +200,7 @@ function stop() {
     <div class="root">
       <!-- Header -->
       <div class="header">
-        <button class="logo" @click="emit('home')">Plato</button>
+        <button class="logo" @click="router.push('/')">Plato</button>
         <span class="spacer"></span>
         <span v-if="problem" class="goal-chip">{{ problem.goal }}</span>
         <span v-else-if="loadedMsg" class="loaded-chip">{{ loadedMsg }}</span>
@@ -254,7 +252,7 @@ function stop() {
           <!-- Spec & Back -->
           <div class="back-row">
             <a class="spec-link" href="https://github.com/makabaka1880/plato/blob/main/CREATING-PROBLEMS.md" target="_blank">{{ t('custom.viewSpec') }}</a>
-            <button class="back-btn" @click="emit('home')">{{ t('custom.back') }}</button>
+            <button class="back-btn" @click="router.push('/')">{{ t('custom.back') }}</button>
           </div>
         </div>
       </div>
@@ -314,7 +312,7 @@ function stop() {
                 <button v-if="hasNext" class="victory-btn" @click="onNext">
                   {{ t('problem.nextProblem') }}
                 </button>
-                <button v-else class="victory-btn" @click="emit('home')">
+                <button v-else class="victory-btn" @click="router.push('/')">
                   {{ t('problem.backHome') }}
                 </button>
               </div>

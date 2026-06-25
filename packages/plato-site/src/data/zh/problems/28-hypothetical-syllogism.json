@@ -17,7 +17,7 @@
       "tactic": null
     },
     {
-      "text": "三次[assumption|消去] 假设：$A$，$B \\to C$，$A \\to B$。顺序是从里往外。",
+      "text": "三次[discharge|消去] 假设：$A$，$B \\to C$，$A \\to B$。顺序是从里往外。",
       "tactic": "(and-elim-l 1)"
     },
     {
@@ -33,11 +33,11 @@
       "tactic": "(->-elim 2 4)"
     },
     {
-      "text": "[assumption|消去] $A$，得到 $A \\to C$。",
+      "text": "[discharge|消去] $A$，得到 $A \\to C$。",
       "tactic": "(->-elim 3 5)"
     },
     {
-      "text": "[assumption|消去] 那个 [conjunction|合取]，收工。假言三段论——亚里士多德在《前分析篇》里就写下了，今天你用自然演绎亲手推导了一遍。",
+      "text": "[discharge|消去] 那个 [conjunction|合取]，收工。假言三段论——亚里士多德在《前分析篇》里就写下了，今天你用自然演绎亲手推导了一遍。",
       "tactic": "(->-intro A 6)"
     },
     {

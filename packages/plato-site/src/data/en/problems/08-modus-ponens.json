@@ -23,7 +23,7 @@
       "tactic": "(->-elim 2 1)"
     },
     {
-      "text": "And $B$ is yours. The proof ends here — no [implication|implication] to [assumption|discharge], because the [premise|premises] were given, not assumed for the sake of argument. Just a clean [conclusion|conclusion].",
+      "text": "And $B$ is yours. The proof ends here — no [implication|implication] to [discharge|discharge], because the [premise|premises] were given, not assumed for the sake of argument. Just a clean [conclusion|conclusion].",
       "tactic": null
     }
   ],

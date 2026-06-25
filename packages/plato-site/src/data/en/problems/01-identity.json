@@ -24,7 +24,7 @@
       "tactic": null
     },
     {
-      "text": "Now, '$A$ [implication|implies] $B$' **means** that $B$ follows from assuming $A$. We already have $\\{I\\} \\vdash I$ at step 1. Use `->-intro` to discharge the [assumption|assumption] $I$ and close the proof. Its first argument is the [formula|formula] you want to discharge and the second is the step number:",
+      "text": "Now, '$A$ [implication|implies] $B$' **means** that $B$ follows from assuming $A$. We already have $\\{I\\} \\vdash I$ at step 1. Use `->-intro` to [discharge|discharge] the [assumption|assumption] $I$ and close the proof. Its first argument is the [formula|formula] you want to [discharge|discharge] and the second is the step number:",
       "tactic": "(->-intro I 1)"
     }
   ],

@@ -24,7 +24,7 @@
       "tactic": null
     },
     {
-      "text": "'$A$ [implication|蕴含] $B$' 的**意思**就是：假设 $A$ 成立, 能推出 $B$。在第 1 步我们已经有了 $\\{I\\} \\vdash I$。现在用 `->-intro` 来 [assumption|消去] $I$ 这个假设, 证明就可以结束了。它的第一个参数是你要消去的[formula|公式], 第二个是步骤号：",
+      "text": "'$A$ [implication|蕴含] $B$' 的**意思**就是：假设 $A$ 成立, 能推出 $B$。在第 1 步我们已经有了 $\\{I\\} \\vdash I$。现在用 `->-intro` 来 [discharge|消去] $I$ 这个假设, 证明就可以结束了。它的第一个参数是你要消去的[formula|公式], 第二个是步骤号：",
       "tactic": "(->-intro I 1)"
     }
   ],
