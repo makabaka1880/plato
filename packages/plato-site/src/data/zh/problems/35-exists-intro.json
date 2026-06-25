@@ -1,33 +1,33 @@
 {
-  "description": "一叶知秋。",
-  "goal": "(-> (App P a) (exists x (App P x)))",
-  "premise": [],
-  "guides": [
-    {
-      "text": "另一个量词：$\\exists$，\"存在\"或\"至少有一个\"。和 $\\forall$ 互补——一个说\"都有\"，一个说\"至少有一个\"。目标：$\\forall x.\\; ((App P x) \\to \\exists x.\\; (App P x))$。\"如果每个 $x$ 都有性质 $P$，那至少存在一个 $x$ 有性质 $P$\"。废话？对，但要走一遍形式。[existential-generalisation|存在引入] 是这一步的核心。",
-      "tactic": null
-    },
-    {
-      "text": "用 `fix x` 抓任意项。假设 $(App P x)$。目标：$\\exists x.\\; (App P x)$——\"存在至少一个 $x$ 使得 $P(x)$ 成立\"。我们已经有了一个活生生的 $x$ 满足 $P(x)$，所以\"存在\"是板上钉钉的事——你都把证据举到法官面前了。",
-      "tactic": "(assume (App P a))"
-    },
-    {
-      "text": "用 `exists-intro` 推出 $\\exists x.\\; (App P x)$。参数：包含具体[witness|见证] $(App P x)$ 的步骤号、见证项本身和要被泛化的变量名。这里是把具体的 $x$ 泛化为存在量词约束的 $x$。\"我手里有一个满足 $P$ 的东西，所以我宣布——存在满足 $P$ 的东西。\"",
-      "tactic": "(exists-intro 1 a x)"
-    },
-    {
-      "text": "[assumption|消去] 假设和 $x$。定理得证：如果每一个 $x$ 都有性质 $P$，那存在一个 $x$ 有性质 $P$。",
-      "tactic": "(->-intro (App P a) 2)"
-    }
-  ],
-  "hints": [],
-  "unlocks": [
-    {
-      "name": "∃-intro",
-      "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}",
-      "description": "从 $\\varphi(t)$ 推出 $\\exists x.\\; \\varphi$——有一个具体的例子，就足以断定存在。",
-      "syntax": "(exists-intro N t x)",
-      "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)"
-    }
-  ]
+    "description": "一叶知秋。",
+    "goal": "(-> (App P a) (exists x (App P x)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "另一个量词：$\\exists$，\"存在\"或\"至少有一个\"。和 $\\forall$ 互补——一个说\"都有\"，一个说\"至少有一个\"。目标：$\\forall x.\\; (P(x) \\to \\exists x.\\; P(x))$。\"如果每个 $x$ 都有性质 $P$，那至少存在一个 $x$ 有性质 $P$\"。废话？对，但要走一遍形式。[existential-generalisation|存在引入] 是这一步的核心。",
+            "tactic": null
+        },
+        {
+            "text": "用 `fix x` 抓任意项。假设 $P(x)$。目标：$\\exists x.\\; P(x)$——\"存在至少一个 $x$ 使得 $P(x)$ 成立\"。我们已经有了一个活生生的 $x$ 满足 $P(x)$，所以\"存在\"是板上钉钉的事——你都把证据举到法官面前了。",
+            "tactic": "(assume (App P a))"
+        },
+        {
+            "text": "用 `exists-intro` 推出 $\\exists x.\\; P(x)$。参数：包含具体[witness|见证] $P(x)$ 的步骤号、见证项本身和要被泛化的变量名。这里是把具体的 $x$ 泛化为存在量词约束的 $x$。\"我手里有一个满足 $P$ 的东西，所以我宣布——存在满足 $P$ 的东西。\"",
+            "tactic": "(exists-intro 1 a x)"
+        },
+        {
+            "text": "[assumption|消去] 假设和 $x$。定理得证：如果每一个 $x$ 都有性质 $P$，那存在一个 $x$ 有性质 $P$。",
+            "tactic": "(->-intro (App P a) 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "∃-intro",
+            "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}",
+            "description": "从 $\\varphi(t)$ 推出 $\\exists x.\\; \\varphi$——有一个具体的例子，就足以断定存在。",
+            "syntax": "(exists-intro N t x)",
+            "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)"
+        }
+    ]
 }

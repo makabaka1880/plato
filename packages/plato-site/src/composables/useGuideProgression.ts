@@ -5,7 +5,7 @@ export function useGuideProgression(guides: () => Hint[]) {
   const guideIdx = ref(0)
   const visibleGuide: ComputedRef<Hint | null> = computed(() => {
     const gs = guides()
-    return guideIdx.value < gs.length ? gs[guideIdx.value] : null
+    return guideIdx.value < gs.length ? (gs[guideIdx.value] ?? null) : null
   })
 
   function advanceGuide() {

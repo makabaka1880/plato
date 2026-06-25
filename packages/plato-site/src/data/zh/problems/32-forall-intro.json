@@ -1,52 +1,52 @@
 {
-  "description": "推己及人。",
-  "goal": "(forall x (-> (App P x) (App P x)))",
-  "premise": [],
-  "guides": [
-    {
-      "text": "我们进入了 [quantifier|一阶逻辑]。$\\forall$（\"对所有\"）是一个量词。目标：$\\forall x.\\; P(x) \\to P(x)$——\"对所有 $x$，如果 $P(x)$ 那么 $P(x)$\"。一目了然，但我们需要用到全称引入规则来证明它。",
-      "tactic": null
-    },
-    {
-      "text": "核心概念：我们要对一个\"任意的\" $x$ 做推理，而且不能给 $x$ 附加任何特殊条件。用小写字母 `x` 表示一个随便什么样的项。[witness|这里没有见证]——见证是存在量词用的，全称是反过来的：你要从一个\"无害的任意对象\"出发，一般性地证明，然后推广到所有的对象。",
-      "tactic": "(fix x)"
-    },
-    {
-      "text": "用 `fix x` 引入这个任意变量。它跟 `assume` 很像，但用于[context|上下文]里的项而不是[proposition|命题]。你现在有一个\"随便抓来的 $x$\"可以借用。",
-      "tactic": "(assume (App P x))"
-    },
-    {
-      "text": "[assumption|假设] $(App P x)$——即\"$x$ 满足谓词 $P$\"。这跟命题逻辑里证 $P \\to P$ 一模一样，只不过现在 $P$ 是带参数的——它需要一个项来\"激活\"。结构不变，元素升级了。",
-      "tactic": "(and-intro 1 2)"
-    },
-    {
-      "text": "[assumption|消去] $(App P x)$——得 $(App P x) \\to (App P x)$。注意：现在[context|上下文]里还挂着 $x$ 这个变量。要引入全称量词，$x$ 不能在[context|上下文]中作为[assumption|假设]出现——它必须是\"干净的\"，没有特殊身份。但我们在推理过程中没用到 $x$ 的任何特殊性质（我们连 $x$ 是啥都不知道），所以它是干净的。",
-      "tactic": "(and-elim-r 3)"
-    },
-    {
-      "text": "用 `forall-intro x` 把 $x$ 变成全称量词约束的变量。[conclusion|结论]：$\\forall x.\\; ((App P x) \\to (App P x))$。从\"随便一个 $x$ 身上成立\"跳到了\"对所有 $x$ 成立\"。这个跳跃之所以合法，是因为论证没依赖 $x$ 的任何特殊身份——$x$ 是匿名的，所以结论适用于众生。",
-      "tactic": "(->-intro (App P x) 4)"
-    },
-    {
-      "text": "全称引入的哲学：如果你能对一个人证明一件事，而且没用到这个人的任何个人信息（姓名、年龄、职业），那这条证明对所有人成立。形式系统把这个直觉变成了铁律。",
-      "tactic": "(forall-intro x 5)"
-    }
-  ],
-  "hints": [],
-  "unlocks": [
-    {
-      "name": "fix",
-      "rule": "\\frac{}{\\{x\\} \\vdash x}",
-      "description": "向上下文中引入一个新鲜的项变量——类似于 assume，但用来做\"任取一个\"。全称引入的前置准备。",
-      "syntax": "(fix x)",
-      "example": "1. (fix x)  →  {x} ⊢ x"
-    },
-    {
-      "name": "∀-intro",
-      "rule": "\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}",
-      "description": "如果推论对任意变量 $x$ 成立，且没有其他假设依赖 $x$——那推论对所有的 $x$ 成立。从\"任意\"跳到\"所有\"。",
-      "syntax": "(forall-intro x N)",
-      "example": "1. (fix x)  →  {x} ⊢ x\n2. (assume (App P x))  →  {x, P(x)} ⊢ P(x)\n3. (->-intro (App P x) 2)  →  {x} ⊢ P(x) → P(x)\n4. (forall-intro x 3)  →  ⊢ ∀x. P(x) → P(x)"
-    }
-  ]
+    "description": "推己及人。",
+    "goal": "(forall x (-> (App P x) (App P x)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "我们进入了 [quantifier|一阶逻辑]。$\\forall$（\"对所有\"）是一个量词。目标：$\\forall x.\\; P(x) \\to P(x)$——\"对所有 $x$，如果 $P(x)$ 那么 $P(x)$\"。一目了然，但我们需要用到全称引入规则来证明它。",
+            "tactic": null
+        },
+        {
+            "text": "核心概念：我们要对一个\"任意的\" $x$ 做推理，而且不能给 $x$ 附加任何特殊条件。用小写字母 `x` 表示一个随便什么样的项。[witness|这里没有见证]——见证是存在量词用的，全称是反过来的：你要从一个\"无害的任意对象\"出发，一般性地证明，然后推广到所有的对象。",
+            "tactic": "(fix x)"
+        },
+        {
+            "text": "用 `fix x` 引入这个任意变量。它跟 `assume` 很像，但用于[context|上下文]里的项而不是[proposition|命题]。你现在有一个\"随便抓来的 $x$\"可以借用。",
+            "tactic": "(assume (App P x))"
+        },
+        {
+            "text": "[assumption|假设] $P(x)$——即\"$x$ 满足谓词 $P$\"。这跟命题逻辑里证 $P \\to P$ 一模一样，只不过现在 $P$ 是带参数的——它需要一个项来\"激活\"。结构不变，元素升级了。",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "[assumption|消去] $P(x)$——得 $P(x) \\to P(x)$。注意：现在[context|上下文]里还挂着 $x$ 这个变量。要引入全称量词，$x$ 不能在[context|上下文]中作为[assumption|假设]出现——它必须是\"干净的\"，没有特殊身份。但我们在推理过程中没用到 $x$ 的任何特殊性质（我们连 $x$ 是啥都不知道），所以它是干净的。",
+            "tactic": "(and-elim-r 3)"
+        },
+        {
+            "text": "用 `forall-intro x` 把 $x$ 变成全称量词约束的变量。[conclusion|结论]：$\\forall x.\\; (P(x) \\to P(x))$。从\"随便一个 $x$ 身上成立\"跳到了\"对所有 $x$ 成立\"。这个跳跃之所以合法，是因为论证没依赖 $x$ 的任何特殊身份——$x$ 是匿名的，所以结论适用于众生。",
+            "tactic": "(->-intro (App P x) 4)"
+        },
+        {
+            "text": "全称引入的哲学：如果你能对一个人证明一件事，而且没用到这个人的任何个人信息（姓名、年龄、职业），那这条证明对所有人成立。形式系统把这个直觉变成了铁律。",
+            "tactic": "(forall-intro x 5)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "fix",
+            "rule": "\\frac{}{\\{x\\} \\vdash x}",
+            "description": "向上下文中引入一个新鲜的项变量——类似于 assume，但用来做\"任取一个\"。全称引入的前置准备。",
+            "syntax": "(fix x)",
+            "example": "1. (fix x)  →  {x} ⊢ x"
+        },
+        {
+            "name": "∀-intro",
+            "rule": "\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}",
+            "description": "如果推论对任意变量 $x$ 成立，且没有其他假设依赖 $x$——那推论对所有的 $x$ 成立。从\"任意\"跳到\"所有\"。",
+            "syntax": "(forall-intro x N)",
+            "example": "1. (fix x)  →  {x} ⊢ x\n2. (assume (App P x))  →  {x, P(x)} ⊢ P(x)\n3. (->-intro (App P x) 2)  →  {x} ⊢ P(x) → P(x)\n4. (forall-intro x 3)  →  ⊢ ∀x. P(x) → P(x)"
+        }
+    ]
 }

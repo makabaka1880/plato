@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from 'vue'
+import { computed, ref, watch, nextTick, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Problem } from '@/types'
 import { useProblemLatex } from '@/composables/useProblemLatex'
 import { useVictory } from '@/composables/useVictory'
 import { useProgressStore } from '@/stores/progress'
+import { useRoadmapStore } from '@/stores/roadmap'
 import Katex from '@/components/Katex.vue'
 import InlineLatex from '@/components/InlineLatex.vue'
 import ProofRepl from '@/components/ProofRepl.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
 import TacticSidebar from '@/components/TacticSidebar.vue'
+import RoadmapModal from '@/components/RoadmapModal.vue'
 
 const { t } = useI18n()
 
@@ -25,6 +27,7 @@ const emit = defineEmits<{
 }>()
 
 const progress = useProgressStore()
+const roadmap = useRoadmapStore()
 
 const problem = computed(() => props.problems[props.problemIdx] ?? null)
 const hasNext = computed(() =>
@@ -41,6 +44,11 @@ const prefsOpen = ref(false)
 const agreed = ref(false)
 const showRepl = ref(false)
 const proofLines = ref<string[]>([])
+const roadmapOpen = ref(false)
+
+const sortedEntries = computed(() =>
+  [...roadmap.entries].sort((a, b) => a.idx - b.idx)
+)
 
 watch(() => props.problemIdx, () => {
     agreed.value = false
@@ -61,8 +69,15 @@ function onSolved(lines: string[]) {
     if (problem.value) {
         victory.fire(problem.value.unlocks)
         progress.markSolved(props.problemIdx)
+        roadmap.add({
+            idx: props.problemIdx,
+            description: problem.value.description,
+            goal: problem.value.goal,
+            proofLines: lines,
+        })
     }
 }
+
 </script>
 
 <template>
@@ -78,7 +93,8 @@ function onSolved(lines: string[]) {
                 <span class="spacer"></span>
                 <span class="goal-chip">{{ problem.goal }}</span>
                 <span class="spacer"></span>
-                <a class="gh-link" href="https://github.com/makabaka1880/plato" target="_blank" title="GitHub">GitHub</a>
+                <a class="gh-link" href="https://github.com/makabaka1880/plato" target="_blank"
+                    title="GitHub">GitHub</a>
                 <button class="prefs-link" @click="prefsOpen = true">{{ t('problem.preferences') }}</button>
             </div>
 
@@ -133,12 +149,24 @@ function onSolved(lines: string[]) {
 
             <div class="footer">
                 <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">{{ t('problem.prev') }}</button>
-                <span class="spacer"></span>
+                <div class="footer-roadmap" @click="roadmapOpen = true">
+                  <div class="mini-track">
+                    <div
+                      v-for="(entry, i) in sortedEntries"
+                      :key="entry.idx"
+                      class="mini-dot"
+                      :class="{ latest: i === sortedEntries.length - 1 }"
+                    >
+                      <span class="mini-dot-num">{{ i + 1 }}</span>
+                    </div>
+                  </div>
+                </div>
                 <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">{{ t('problem.next') }}</button>
             </div>
         </div>
 
         <TacticSidebar />
+        <RoadmapModal v-if="roadmapOpen" :total-problems="problems.length" @close="roadmapOpen = false" />
     </div>
 </template>
 
@@ -231,9 +259,24 @@ function onSolved(lines: string[]) {
 
 .footer {
     display: flex;
+    align-items: center;
     gap: 8px;
     padding: 8px 12px;
     border-top: 1px solid var(--color-border);
+}
+
+.footer-roadmap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    min-width: 0;
+}
+.footer-roadmap:hover {
+    opacity: 0.7;
 }
 
 .nav-btn {
@@ -241,6 +284,49 @@ function onSolved(lines: string[]) {
     font-family: inherit;
     font-size: 13px;
     cursor: pointer;
+}
+
+.mini-track {
+    display: flex; gap: 4px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.mini-dot {
+    width: 22px; height: 22px;
+    border-radius: 100%;
+    background: var(--color-subtle-bg);
+    border: 1px solid var(--color-border);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease;
+    animation: dotAppear 0.4s ease both;
+}
+.mini-dot:nth-child(1) { animation-delay: 0s; }
+.mini-dot:nth-child(2) { animation-delay: 0.05s; }
+.mini-dot:nth-child(3) { animation-delay: 0.1s; }
+.mini-dot:nth-child(4) { animation-delay: 0.15s; }
+.mini-dot:nth-child(5) { animation-delay: 0.2s; }
+.mini-dot:nth-child(6) { animation-delay: 0.25s; }
+.mini-dot.latest {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.mini-dot-num {
+    font-size: 10px; font-weight: 600;
+    color: var(--color-muted);
+}
+.mini-dot.latest .mini-dot-num {
+    color: var(--color-primary-fg);
+}
+.mini-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-border-strong);
+}
+
+@keyframes dotAppear {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .not-found {

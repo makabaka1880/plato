@@ -111,6 +111,13 @@ export default {
     text: 'Text',
   },
 
+  roadmap: {
+    title: 'Your Journey',
+    empty: 'Solve your first problem to begin the journey.',
+    node: 'Problem {n}',
+    proof: 'Proof',
+  },
+
   footer: {
     rights: 'All Rights Reserved',
     author: 'Makabaka1880',

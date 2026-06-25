@@ -53,9 +53,9 @@ const groups: { i18nGroup: string; entries: CommandEntry[] }[] = [
     {
         i18nGroup: 'help.groups.basics',
         entries: [
-            { syntax: '(assume F)', i18nKey: 'help.commands.assume', unlocked: store.collected.has('assume'), rule: '\\frac{}{\\{p\\} \\vdash p}' },
+            { syntax: '(assume F)', i18nKey: 'help.commands.assume', unlocked: store.collected.includes('assume'), rule: '\\frac{}{\\{p\\} \\vdash p}' },
             { syntax: '(fix x)', i18nKey: 'help.commands.fix', unlocked: true },
-            { syntax: '(subst N (A F)...)', i18nKey: 'help.commands.subst', unlocked: store.collected.has('subst'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}' },
+            { syntax: '(subst N (A F)...)', i18nKey: 'help.commands.subst', unlocked: store.collected.includes('subst'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}' },
             { syntax: '(show N)', i18nKey: 'help.commands.show', unlocked: true },
             { syntax: 'F', i18nKey: 'help.commands.parse', unlocked: true },
         ],
@@ -63,42 +63,42 @@ const groups: { i18nGroup: string; entries: CommandEntry[] }[] = [
     {
         i18nGroup: 'help.groups.implication',
         entries: [
-            { syntax: '(->-intro F N)', i18nKey: 'help.commands.->-intro', unlocked: store.collected.has('→-intro'), rule: '\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}' },
-            { syntax: '(->-elim N M)', i18nKey: 'help.commands.->-elim', unlocked: store.collected.has('→-elim'), rule: '\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}' },
+            { syntax: '(->-intro F N)', i18nKey: 'help.commands.->-intro', unlocked: store.collected.includes('→-intro'), rule: '\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}' },
+            { syntax: '(->-elim N M)', i18nKey: 'help.commands.->-elim', unlocked: store.collected.includes('→-elim'), rule: '\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}' },
         ],
     },
     {
         i18nGroup: 'help.groups.conjunction',
         entries: [
-            { syntax: '(and-intro N M)', i18nKey: 'help.commands.and-intro', unlocked: store.collected.has('∧-intro'), rule: '\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}' },
-            { syntax: '(and-elim-l N)', i18nKey: 'help.commands.and-elim-l', unlocked: store.collected.has('∧-elim-l'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}' },
-            { syntax: '(and-elim-r N)', i18nKey: 'help.commands.and-elim-r', unlocked: store.collected.has('∧-elim-r'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}' },
+            { syntax: '(and-intro N M)', i18nKey: 'help.commands.and-intro', unlocked: store.collected.includes('∧-intro'), rule: '\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}' },
+            { syntax: '(and-elim-l N)', i18nKey: 'help.commands.and-elim-l', unlocked: store.collected.includes('∧-elim-l'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}' },
+            { syntax: '(and-elim-r N)', i18nKey: 'help.commands.and-elim-r', unlocked: store.collected.includes('∧-elim-r'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}' },
         ],
     },
     {
         i18nGroup: 'help.groups.disjunction',
         entries: [
-            { syntax: '(or-intro-l N F)', i18nKey: 'help.commands.or-intro-l', unlocked: store.collected.has('∨-intro-l'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}' },
-            { syntax: '(or-intro-r N F)', i18nKey: 'help.commands.or-intro-r', unlocked: store.collected.has('∨-intro-r'), rule: '\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}' },
-            { syntax: '(or-elim N M K)', i18nKey: 'help.commands.or-elim', unlocked: store.collected.has('∨-elim'), rule: '\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}' },
+            { syntax: '(or-intro-l N F)', i18nKey: 'help.commands.or-intro-l', unlocked: store.collected.includes('∨-intro-l'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}' },
+            { syntax: '(or-intro-r N F)', i18nKey: 'help.commands.or-intro-r', unlocked: store.collected.includes('∨-intro-r'), rule: '\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}' },
+            { syntax: '(or-elim N M K)', i18nKey: 'help.commands.or-elim', unlocked: store.collected.includes('∨-elim'), rule: '\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}' },
         ],
     },
     {
         i18nGroup: 'help.groups.negation',
         entries: [
-            { syntax: '(not-intro F N M)', i18nKey: 'help.commands.not-intro', unlocked: store.collected.has('¬-intro'), rule: '\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}' },
-            { syntax: '(not-elim N)', i18nKey: 'help.commands.not-elim', unlocked: store.collected.has('¬-elim') },
-            { syntax: '(dne N)', i18nKey: 'help.commands.dne', unlocked: store.collected.has('¬¬-elim') },
-            { syntax: '(ex-falso N F)', i18nKey: 'help.commands.ex-falso', unlocked: store.collected.has('ex-falso') },
+            { syntax: '(not-intro F N M)', i18nKey: 'help.commands.not-intro', unlocked: store.collected.includes('¬-intro'), rule: '\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}' },
+            { syntax: '(not-elim N)', i18nKey: 'help.commands.not-elim', unlocked: store.collected.includes('¬-elim') },
+            { syntax: '(dne N)', i18nKey: 'help.commands.dne', unlocked: store.collected.includes('¬¬-elim') },
+            { syntax: '(ex-falso N F)', i18nKey: 'help.commands.ex-falso', unlocked: store.collected.includes('ex-falso') },
         ],
     },
     {
         i18nGroup: 'help.groups.quantifiers',
         entries: [
-            { syntax: '(forall-intro x N)', i18nKey: 'help.commands.forall-intro', unlocked: store.collected.has('∀-intro'), rule: '\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}' },
-            { syntax: '(forall-elim N t)', i18nKey: 'help.commands.forall-elim', unlocked: store.collected.has('∀-elim'), rule: '\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}' },
-            { syntax: '(exists-intro N t x)', i18nKey: 'help.commands.exists-intro', unlocked: store.collected.has('∃-intro'), rule: '\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}' },
-            { syntax: '(exists-elim N M x)', i18nKey: 'help.commands.exists-elim', unlocked: store.collected.has('∃-elim'), rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}' },
+            { syntax: '(forall-intro x N)', i18nKey: 'help.commands.forall-intro', unlocked: store.collected.includes('∀-intro'), rule: '\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}' },
+            { syntax: '(forall-elim N t)', i18nKey: 'help.commands.forall-elim', unlocked: store.collected.includes('∀-elim'), rule: '\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}' },
+            { syntax: '(exists-intro N t x)', i18nKey: 'help.commands.exists-intro', unlocked: store.collected.includes('∃-intro'), rule: '\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}' },
+            { syntax: '(exists-elim N M x)', i18nKey: 'help.commands.exists-elim', unlocked: store.collected.includes('∃-elim'), rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}' },
         ],
     },
 ]
@@ -187,7 +187,7 @@ onMounted(async () => {
 
             <!-- ═══ Commands tab ═══ -->
             <div v-if="activeTab === 'commands'" class="body">
-                <div v-for="group in groups" :key="group.label" class="group">
+                <div v-for="group in groups" :key="group.i18nGroup" class="group">
                     <div class="group-label">{{ t(group.i18nGroup) }}</div>
                     <div v-for="cmd in group.entries" :key="cmd.syntax" class="cmd" :class="{ locked: !cmd.unlocked }">
                         <div class="cmd-head">

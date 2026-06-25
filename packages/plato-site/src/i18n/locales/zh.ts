@@ -111,6 +111,13 @@ export default {
         text: '文本',
     },
 
+    roadmap: {
+        title: '你的旅程',
+        empty: '解决第一个问题来开启旅程。',
+        node: '问题 {n}',
+        proof: '证明',
+    },
+
     footer: {
         rights: '版权所有',
         author: 'Makabaka1880',

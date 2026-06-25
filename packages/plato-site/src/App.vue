@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { loadProblems } from '@/data'
 import { useProgressStore } from '@/stores/progress'
 import { useTacticsStore } from '@/stores/tactics'
+import { useRoadmapStore } from '@/stores/roadmap'
 import HomeView from '@/views/HomeView.vue'
 import ProblemView from '@/views/ProblemView.vue'
 
@@ -31,6 +32,7 @@ function goHome() {
 function onStart() {
     progress.reset()
     tactics.reset()
+    useRoadmapStore().reset()
     page.value = { type: 'problem', idx: 0 }
 }
 

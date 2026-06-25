@@ -93,6 +93,7 @@ function run() {
             text: t('repl.tacticExpected', { tactic: g.tactic }),
             error: true,
             step: null,
+            meta: null,
         })
         scrollDown()
         return

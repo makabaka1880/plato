@@ -11,6 +11,10 @@
       "tactic": null
     },
     {
+        "text": "Oh fun fact -- Aristotel is one of the most famous students of Plato.",
+        "tactic": ""
+    },
+    {
       "text": "Start by assuming the first [premise|premise]: $\\forall x.\\; man(x) \\to mortal(x)$.",
       "tactic": "(assume (forall x (-> (App man x) (App mortal x))))"
     },

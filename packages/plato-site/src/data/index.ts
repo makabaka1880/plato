@@ -44,15 +44,15 @@ export function loadProblems(locale = 'en'): Problem[] {
   const source = paths.length > 0 ? paths : Object.keys(problemModules).filter(p => p.startsWith('./en/problems/')).sort()
   return source.map((path, index) => ({
     id: index + 1,
-    ...problemModules[path].default,
+    ...problemModules[path]!.default,
   }))
 }
 
 /** Load glossary for a locale. Falls back to `en`. */
 export function loadGlossary(locale = 'en'): GlossaryEntry[] {
   const key = `./${locale}/glossary.json`
-  if (glossaryModules[key]) return glossaryModules[key].default
-  return glossaryModules['./en/glossary.json'].default
+  if (glossaryModules[key]) return glossaryModules[key]!.default
+  return glossaryModules['./en/glossary.json']!.default
 }
 
 /** Convenience: eagerly load `en` problems. */
@@ -60,8 +60,8 @@ export const problems = loadProblems('en')
 /** Load NLG templates for a locale. Falls back to `en`. */
 export function loadNlg(locale = 'en'): Record<string, string> {
   const key = `./${locale}/nlg.ts`
-  if (nlgModules[key]) return nlgModules[key].default
-  return nlgModules['./en/nlg.ts'].default
+  if (nlgModules[key]) return nlgModules[key]!.default
+  return nlgModules['./en/nlg.ts']!.default
 }
 
 /** Convenience: eagerly load `en` glossary. */
@@ -69,8 +69,8 @@ export const glossary = loadGlossary('en')
 /** Load tactics registry for a locale. Falls back to `en`. */
 export function loadTactics(locale = 'en'): Tactic[] {
   const key = `./${locale}/tactics.json`
-  if (tacticsModules[key]) return tacticsModules[key].default
-  return tacticsModules['./en/tactics.json'].default
+  if (tacticsModules[key]) return tacticsModules[key]!.default
+  return tacticsModules['./en/tactics.json']!.default
 }
 
 /** Look up a single tactic by name for the given locale. */
