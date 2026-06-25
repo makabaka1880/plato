@@ -164,9 +164,6 @@ function onKeydown(e: KeyboardEvent) {
       }
     }
     onBracketKeydown(e)
-    // Bracket pairing may have moved the cursor without changing input (e.g. skipping past `)`).
-    // Refresh autocomplete so the menu dismisses if we're no longer inside a fragment.
-    if (autocomplete.visible.value) autocomplete.refresh()
     if (e.key === 'Enter' && !e.defaultPrevented) {
         // ── live parse error: don't submit ────────────────────────
         if (liveParse.parseError.value) return
@@ -331,7 +328,7 @@ defineExpose({ insertTactic })
                         <span v-else class="ac-desc">{{ s.description }}</span>
                     </div>
                 </div>
-                <input ref="inpEl" v-model="input" @keydown="onKeydown" @click="autocomplete.onCursorCheck()" :disabled="guideInputDisabled"
+                <input ref="inpEl" v-model="input" @keydown="onKeydown" @click="autocomplete.dismiss()" :disabled="guideInputDisabled"
                     :placeholder="visibleGuide?.tactic ?? t('repl.placeholder')" class="repl-input" />
                 <button class="submit-btn" @click="run" :disabled="guideInputDisabled || !!liveParse.parseError.value" :title="t('common.submit')">
                     →

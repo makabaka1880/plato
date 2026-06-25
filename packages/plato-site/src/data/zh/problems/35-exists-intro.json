@@ -25,7 +25,9 @@
     {
       "name": "∃-intro",
       "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}",
-      "description": "从 $\\varphi(t)$ 推出 $\\exists x.\\; \\varphi$——有一个具体的例子，就足以断定存在。"
+      "description": "从 $\\varphi(t)$ 推出 $\\exists x.\\; \\varphi$——有一个具体的例子，就足以断定存在。",
+      "syntax": "(exists-intro N t x)",
+      "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)"
     }
   ]
 }

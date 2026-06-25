@@ -30,7 +30,9 @@
     {
       "name": "∧-intro",
       "rule": "\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}",
-      "description": "分别证明 $p$ 和 $q$，然后把它们合在一起——就得到了 $p \\land q$。"
+      "description": "分别证明 $p$ 和 $q$，然后把它们合在一起——就得到了 $p \\land q$。",
+      "syntax": "(and-intro N M)",
+      "example": "1. ⊢ P\n2. ⊢ Q\n3. (and-intro 1 2)  →  ⊢ P ∧ Q"
     }
   ]
 }

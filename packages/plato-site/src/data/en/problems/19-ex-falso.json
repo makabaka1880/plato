@@ -25,7 +25,9 @@
     {
       "name": "ex-falso",
       "rule": "\\frac{\\Gamma \\vdash \\bot}{\\Gamma \\vdash p}",
-      "description": "From a contradiction ($\\bot$), you can derive any formula $p$. The principle of explosion — *ex falso quodlibet*."
+      "description": "From a contradiction ($\\bot$), you can derive any formula $p$. The principle of explosion — *ex falso quodlibet*.",
+      "syntax": "(ex-falso N F)",
+      "example": "1. ⊢ ⊥\n2. (ex-falso 1 Q)  →  ⊢ Q"
     }
   ]
 }

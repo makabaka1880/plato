@@ -1,0 +1,135 @@
+[
+  {
+    "name": "assume",
+    "description": "如果你假设一个命题成立，那你自然可以推出它——因为你刚刚声明它是真的。",
+    "syntax": "(assume F)",
+    "example": "1. (assume P)  →  {P} ⊢ P",
+    "rule": "\\frac{}{\\{p\\} \\vdash p}"
+  },
+  {
+    "name": "ex-falso",
+    "description": "从 $\\bot$ 出发，你想到哪就到哪——任何公式都可以。因为在一个自相矛盾的宇宙里，什么话都是对的。",
+    "syntax": "(ex-falso N F)",
+    "example": "1. ⊢ ⊥\n2. (ex-falso 1 Q)  →  ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash \\bot}{\\Gamma \\vdash p}"
+  },
+  {
+    "name": "fix",
+    "description": "向上下文中引入一个新鲜的项变量——类似于 assume，但用来做\"任取一个\"。全称引入的前置准备。",
+    "syntax": "(fix x)",
+    "example": "1. (fix x)  →  {x} ⊢ x",
+    "rule": "\\frac{}{\\{x\\} \\vdash x}"
+  },
+  {
+    "name": "subst",
+    "description": "在一个已证明的断言中，统一地把原子替换为任意公式。证明的结构是骨架，具体的符号是皮——换皮不换骨。",
+    "syntax": "(subst N (A F)...)",
+    "example": "1. ⊢ P → P\n2. (subst 1 (P (and A B)))  →  ⊢ (A ∧ B) → (A ∧ B)",
+    "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}"
+  },
+  {
+    "name": "¬-elim",
+    "description": "把 $\\lnot p$ 翻译成 $p \\to \\bot$——揭示了\"非\"的真面目：它是一个导致荒谬的承诺。",
+    "syntax": "(not-elim N)",
+    "example": "1. ⊢ ¬P\n2. (not-elim 1)  →  ⊢ P → ⊥",
+    "rule": "\\frac{\\Gamma \\vdash \\lnot p}{\\Gamma \\vdash p \\to \\bot}"
+  },
+  {
+    "name": "¬-intro",
+    "description": "如果你假设 $p$ 然后在其中推出了矛盾（既有 $q$ 又有 $\\lnot q$），那你就可以放心地得出 $\\lnot p$——归谬法。",
+    "syntax": "(not-intro F N M)",
+    "example": "1. [P] ⊢ Q\n2. [P] ⊢ ¬Q\n3. (not-intro P 1 2)  →  ⊢ ¬P",
+    "rule": "\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}"
+  },
+  {
+    "name": "¬¬-elim",
+    "description": "从 $\\lnot \\lnot p$ 推出 $p$——剥掉双重否定，经典逻辑的\"负负得正\"。",
+    "syntax": "(dne N)",
+    "example": "1. ⊢ ¬¬P\n2. (dne 1)  →  ⊢ P",
+    "rule": "\\frac{\\Gamma \\vdash \\lnot \\lnot p}{\\Gamma \\vdash p}"
+  },
+  {
+    "name": "→-elim",
+    "description": "有了 $p \\to q$ 和 $p$，你就能推出 $q$——逻辑中最自然的推理步。",
+    "syntax": "(->-elim N M)",
+    "example": "1. (assume P)  →  {P} ⊢ P\n2. 前提 P → Q\n3. (->-elim 2 1) → Q",
+    "rule": "\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}"
+  },
+  {
+    "name": "→-intro",
+    "description": "如果从假设 $p$ 成立你能推出 $q$，那么 $p$ 蕴含 $q$——而且你可以放心地把 $p$ 从上下文里拿掉了。",
+    "syntax": "(->-intro F N)",
+    "example": "1. (assume Q)  →  {Q} ⊢ Q\n2. (->-intro Q 1)  →  ⊢ Q → Q",
+    "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}"
+  },
+  {
+    "name": "∀-elim",
+    "description": "From $\\forall x.\\; \\varphi$, derive $\\varphi$ with any term $t$ substituted for $x$. What holds for everything holds for any particular thing.",
+    "syntax": "(forall-elim N t)",
+    "example": "1. ⊢ ∀x. P(x)\n2. (forall-elim 1 t)  →  ⊢ P(t)",
+    "rule": "\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}"
+  },
+  {
+    "name": "∀-intro",
+    "description": "如果推论对任意变量 $x$ 成立，且没有其他假设依赖 $x$——那推论对所有的 $x$ 成立。从\"任意\"跳到\"所有\"。",
+    "syntax": "(forall-intro x N)",
+    "example": "1. (fix x)  →  {x} ⊢ x\n2. (assume (App P x))  →  {x, P(x)} ⊢ P(x)\n3. (->-intro (App P x) 2)  →  {x} ⊢ P(x) → P(x)\n4. (forall-intro x 3)  →  ⊢ ∀x. P(x) → P(x)",
+    "rule": "\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}"
+  },
+  {
+    "name": "∃-elim",
+    "description": "从 $\\exists x.\\; \\varphi$ 出发，挑一个新鲜见证变量，在它的证词下证明 $\\psi$——然后消去见证，$\\psi$ 干干净净地立在那里。",
+    "syntax": "(exists-elim N M x)",
+    "example": "1. ⊢ ∃x. P(x)\n2. [P(y)] ⊢ Q\n3. (exists-elim 1 2 y)  →  ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, y, \\varphi[y/x] \\vdash \\psi \\quad y \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}"
+  },
+  {
+    "name": "∃-intro",
+    "description": "从 $\\varphi(t)$ 推出 $\\exists x.\\; \\varphi$——有一个具体的例子，就足以断定存在。",
+    "syntax": "(exists-intro N t x)",
+    "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)",
+    "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}"
+  },
+  {
+    "name": "∧-elim-l",
+    "description": "If you know $p \\land q$, then you know $p$ — the left half of the conjunction.",
+    "syntax": "(and-elim-l N)",
+    "example": "1. ⊢ P ∧ Q\n2. (and-elim-l 1)  →  ⊢ P",
+    "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}"
+  },
+  {
+    "name": "∧-elim-r",
+    "description": "If you know $p \\land q$, then you know $q$ — the right half of the conjunction.",
+    "syntax": "(and-elim-r N)",
+    "example": "1. ⊢ P ∧ Q\n2. (and-elim-r 1)  →  ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}"
+  },
+  {
+    "name": "∧-intro",
+    "description": "分别证明 $p$ 和 $q$，然后把它们合在一起——就得到了 $p \\land q$。",
+    "syntax": "(and-intro N M)",
+    "example": "1. ⊢ P\n2. ⊢ Q\n3. (and-intro 1 2)  →  ⊢ P ∧ Q",
+    "rule": "\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}"
+  },
+  {
+    "name": "∨-elim",
+    "description": "从 $p \\lor q$ 和两个分别从 $p$、$q$ 推出 $r$ 的子证明，你可以确切地得出 $r$——无论走哪条路。",
+    "syntax": "(or-elim N M K)",
+    "example": "1. ⊢ P ∨ Q\n2. [P] ⊢ R\n3. [Q] ⊢ R\n4. (or-elim 1 2 3)  →  ⊢ R",
+    "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}"
+  },
+  {
+    "name": "∨-intro-l",
+    "description": "从 $p$ 推出 $p \\lor q$——给一个真命题加一个\"或\"的尾巴。",
+    "syntax": "(or-intro-l N F)",
+    "example": "1. ⊢ P\n2. (or-intro-l 1 Q)  →  ⊢ P ∨ Q",
+    "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}"
+  },
+  {
+    "name": "∨-intro-r",
+    "description": "从 $q$ 推出 $p \\lor q$——从右边构造析取。",
+    "syntax": "(or-intro-r N F)",
+    "example": "1. ⊢ Q\n2. (or-intro-r 1 P)  →  ⊢ P ∨ Q",
+    "rule": "\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}"
+  }
+]

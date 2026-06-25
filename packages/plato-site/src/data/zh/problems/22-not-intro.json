@@ -33,7 +33,9 @@
     {
       "name": "¬-intro",
       "rule": "\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}",
-      "description": "如果你假设 $p$ 然后在其中推出了矛盾（既有 $q$ 又有 $\\lnot q$），那你就可以放心地得出 $\\lnot p$——归谬法。"
+      "description": "如果你假设 $p$ 然后在其中推出了矛盾（既有 $q$ 又有 $\\lnot q$），那你就可以放心地得出 $\\lnot p$——归谬法。",
+      "syntax": "(not-intro F N M)",
+      "example": "1. [P] ⊢ Q\n2. [P] ⊢ ¬Q\n3. (not-intro P 1 2)  →  ⊢ ¬P"
     }
   ]
 }

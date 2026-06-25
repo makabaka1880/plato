@@ -25,7 +25,9 @@
     {
       "name": "¬¬-elim",
       "rule": "\\frac{\\Gamma \\vdash \\lnot \\lnot p}{\\Gamma \\vdash p}",
-      "description": "从 $\\lnot \\lnot p$ 推出 $p$——剥掉双重否定，经典逻辑的\"负负得正\"。"
+      "description": "从 $\\lnot \\lnot p$ 推出 $p$——剥掉双重否定，经典逻辑的\"负负得正\"。",
+      "syntax": "(dne N)",
+      "example": "1. ⊢ ¬¬P\n2. (dne 1)  →  ⊢ P"
     }
   ]
 }

@@ -1,38 +1,32 @@
 import { defineStore } from 'pinia'
-import type { Tactic } from '@/types'
 
 const KEY = 'plato-tactics'
 
-function load(): Map<string, Tactic> {
+function load(): string[] {
   try {
     const raw = localStorage.getItem(KEY)
-    if (raw !== null) return new Map(JSON.parse(raw))
+    if (raw !== null) return JSON.parse(raw)
   } catch { /* ignore */ }
-  return new Map()
+  return []
 }
 
-function save(collected: Map<string, Tactic>) {
-  localStorage.setItem(KEY, JSON.stringify(Array.from(collected.entries())))
+function save(names: string[]) {
+  localStorage.setItem(KEY, JSON.stringify(names))
 }
 
 export const useTacticsStore = defineStore('tactics', {
   state: () => ({
-    collected: load(),
+    collected: load() as string[],
   }),
-  getters: {
-    all(state): Tactic[] {
-      return Array.from(state.collected.values())
-    },
-  },
   actions: {
-    add(tactic: Tactic) {
-      if (!this.collected.has(tactic.name)) {
-        this.collected.set(tactic.name, tactic)
+    add(name: string) {
+      if (!this.collected.includes(name)) {
+        this.collected.push(name)
         save(this.collected)
       }
     },
     reset() {
-      this.collected.clear()
+      this.collected = []
       save(this.collected)
     },
   },

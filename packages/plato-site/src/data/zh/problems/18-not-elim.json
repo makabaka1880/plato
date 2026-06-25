@@ -25,7 +25,9 @@
     {
       "name": "¬-elim",
       "rule": "\\frac{\\Gamma \\vdash \\lnot p}{\\Gamma \\vdash p \\to \\bot}",
-      "description": "把 $\\lnot p$ 翻译成 $p \\to \\bot$——揭示了\"非\"的真面目：它是一个导致荒谬的承诺。"
+      "description": "把 $\\lnot p$ 翻译成 $p \\to \\bot$——揭示了\"非\"的真面目：它是一个导致荒谬的承诺。",
+      "syntax": "(not-elim N)",
+      "example": "1. ⊢ ¬P\n2. (not-elim 1)  →  ⊢ P → ⊥"
     }
   ]
 }

@@ -25,12 +25,16 @@
     {
       "name": "∨-intro-l",
       "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}",
-      "description": "If you've proved $p$, you've proved $p \\lor q$ — because the left side is already true. The $q$ can be anything."
+      "description": "If you've proved $p$, you've proved $p \\lor q$ — because the left side is already true. The $q$ can be anything.",
+      "syntax": "(or-intro-l N F)",
+      "example": "1. ⊢ P\n2. (or-intro-l 1 Q)  →  ⊢ P ∨ Q"
     },
     {
       "name": "∨-intro-r",
       "rule": "\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}",
-      "description": "If you've proved $q$, you've proved $p \\lor q$ — because the right side is already true. The $p$ can be anything."
+      "description": "If you've proved $q$, you've proved $p \\lor q$ — because the right side is already true. The $p$ can be anything.",
+      "syntax": "(or-intro-r N F)",
+      "example": "1. ⊢ Q\n2. (or-intro-r 1 P)  →  ⊢ P ∨ Q"
     }
   ]
 }

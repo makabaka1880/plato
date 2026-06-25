@@ -20,4 +20,8 @@ export interface Tactic {
     rule: string
     /** What this rule means */
     description: string
+    /** Concrete syntax, e.g. "(->-intro F N)" */
+    syntax: string
+    /** A short worked example, e.g. "From $A$ we proved $B$, so we get $A \\to B$." */
+    example: string
 }

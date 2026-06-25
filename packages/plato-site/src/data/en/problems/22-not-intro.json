@@ -33,7 +33,9 @@
     {
       "name": "¬-intro",
       "rule": "\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}",
-      "description": "If assuming $p$ leads to both $q$ and $\\lnot q$ (a contradiction), then $\\lnot p$ must hold. *Reductio ad absurdum* — reduce to the absurd."
+      "description": "If assuming $p$ leads to both $q$ and $\\lnot q$ (a contradiction), then $\\lnot p$ must hold. *Reductio ad absurdum* — reduce to the absurd.",
+      "syntax": "(not-intro F N M)",
+      "example": "1. [P] ⊢ Q\n2. [P] ⊢ ¬Q\n3. (not-intro P 1 2)  →  ⊢ ¬P"
     }
   ]
 }

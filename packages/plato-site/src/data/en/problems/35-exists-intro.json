@@ -25,7 +25,9 @@
     {
       "name": "∃-intro",
       "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}",
-      "description": "If you have a concrete example $\\varphi$ involving term $t$, generalise it to $\\exists x.\\; \\varphi$ by replacing $t$ with a fresh variable $x$. From the particular to the existential."
+      "description": "If you have a concrete example $\\varphi$ involving term $t$, generalise it to $\\exists x.\\; \\varphi$ by replacing $t$ with a fresh variable $x$. From the particular to the existential.",
+      "syntax": "(exists-intro N t x)",
+      "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)"
     }
   ]
 }

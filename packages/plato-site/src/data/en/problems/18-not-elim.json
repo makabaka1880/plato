@@ -25,7 +25,9 @@
     {
       "name": "¬-elim",
       "rule": "\\frac{\\Gamma \\vdash \\lnot p}{\\Gamma \\vdash p \\to \\bot}",
-      "description": "From $\\lnot p$ derive $p \\to \\bot$ — negation unwraps into an implication to falsity."
+      "description": "From $\\lnot p$ derive $p \\to \\bot$ — negation unwraps into an implication to falsity.",
+      "syntax": "(not-elim N)",
+      "example": "1. ⊢ ¬P\n2. (not-elim 1)  →  ⊢ P → ⊥"
     }
   ]
 }

@@ -33,12 +33,16 @@
     {
       "name": "assume",
       "rule": "\\frac{}{\\{p\\} \\vdash p}",
-      "description": "If you assume a proposition, you can deduce it — because you just said it's true."
+      "description": "If you assume a proposition, you can deduce it — because you just said it's true.",
+      "syntax": "(assume F)",
+      "example": "1. (assume P)  →  {P} ⊢ P"
     },
     {
       "name": "→-intro",
       "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}",
-      "description": "If from assuming $p$ you can reach $q$, then $p$ implies $q$ — and you can safely drop $p$ from the context."
+      "description": "If from assuming $p$ you can reach $q$, then $p$ implies $q$ — and you can safely drop $p$ from the context.",
+      "syntax": "(->-intro F N)",
+      "example": "1. (assume Q)  →  {Q} ⊢ Q\n2. (->-intro Q 1)  →  ⊢ Q → Q"
     }
   ]
 }

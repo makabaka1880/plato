@@ -10,7 +10,7 @@ export function useVictory() {
     solved.value = true
     const store = useTacticsStore()
     for (const t of unlocks) {
-      store.add(t)
+      store.add(t.name)
     }
     confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } })
     setTimeout(() => confetti({ particleCount: 80, spread: 80, origin: { y: 0.4, x: 0.3 } }), 200)

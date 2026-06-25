@@ -1,0 +1,135 @@
+[
+  {
+    "name": "assume",
+    "description": "If you assume a proposition, you can deduce it — because you just said it's true.",
+    "syntax": "(assume F)",
+    "example": "1. (assume P)  →  {P} ⊢ P",
+    "rule": "\\frac{}{\\{p\\} \\vdash p}"
+  },
+  {
+    "name": "ex-falso",
+    "description": "From a contradiction ($\\bot$), you can derive any formula $p$. The principle of explosion — *ex falso quodlibet*.",
+    "syntax": "(ex-falso N F)",
+    "example": "1. ⊢ ⊥\n2. (ex-falso 1 Q)  →  ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash \\bot}{\\Gamma \\vdash p}"
+  },
+  {
+    "name": "fix",
+    "description": "Introduce a fresh term variable into the context — like assume, but for terms.",
+    "syntax": "(fix x)",
+    "example": "1. (fix x)  →  {x} ⊢ x",
+    "rule": "\\frac{}{\\{x\\} \\vdash x}"
+  },
+  {
+    "name": "subst",
+    "description": "Uniformly replace atoms with formulas in a proven judgement. The proof structure is independent of the particular symbols — a structural rule.",
+    "syntax": "(subst N (A F)...)",
+    "example": "1. ⊢ P → P\n2. (subst 1 (P (and A B)))  →  ⊢ (A ∧ B) → (A ∧ B)",
+    "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}"
+  },
+  {
+    "name": "¬-elim",
+    "description": "From $\\lnot p$ derive $p \\to \\bot$ — negation unwraps into an implication to falsity.",
+    "syntax": "(not-elim N)",
+    "example": "1. ⊢ ¬P\n2. (not-elim 1)  →  ⊢ P → ⊥",
+    "rule": "\\frac{\\Gamma \\vdash \\lnot p}{\\Gamma \\vdash p \\to \\bot}"
+  },
+  {
+    "name": "¬-intro",
+    "description": "If assuming $p$ leads to both $q$ and $\\lnot q$ (a contradiction), then $\\lnot p$ must hold. *Reductio ad absurdum* — reduce to the absurd.",
+    "syntax": "(not-intro F N M)",
+    "example": "1. [P] ⊢ Q\n2. [P] ⊢ ¬Q\n3. (not-intro P 1 2)  →  ⊢ ¬P",
+    "rule": "\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}"
+  },
+  {
+    "name": "¬¬-elim",
+    "description": "From $\\lnot \\lnot p$ derive $p$. Eliminate a double negation — classical logic's escape hatch.",
+    "syntax": "(dne N)",
+    "example": "1. ⊢ ¬¬P\n2. (dne 1)  →  ⊢ P",
+    "rule": "\\frac{\\Gamma \\vdash \\lnot \\lnot p}{\\Gamma \\vdash p}"
+  },
+  {
+    "name": "→-elim",
+    "description": "If $p$ implies $q$, and you have $p$, then you have $q$. The classic syllogism — *modus ponens*.",
+    "syntax": "(->-elim N M)",
+    "example": "1. (assume P)  →  {P} ⊢ P\n2. P → Q provided as premise\n3. (->-elim 2 1) → Q",
+    "rule": "\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}"
+  },
+  {
+    "name": "→-intro",
+    "description": "If from assuming $p$ you can reach $q$, then $p$ implies $q$ — and you can safely drop $p$ from the context.",
+    "syntax": "(->-intro F N)",
+    "example": "1. (assume Q)  →  {Q} ⊢ Q\n2. (->-intro Q 1)  →  ⊢ Q → Q",
+    "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}"
+  },
+  {
+    "name": "∀-elim",
+    "description": "From $\\forall x.\\; \\varphi$, derive $\\varphi$ with any term $t$ substituted for $x$. What holds for everything holds for any particular thing.",
+    "syntax": "(forall-elim N t)",
+    "example": "1. ⊢ ∀x. P(x)\n2. (forall-elim 1 t)  →  ⊢ P(t)",
+    "rule": "\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}"
+  },
+  {
+    "name": "∀-intro",
+    "description": "If you prove $\\varphi$ for an arbitrary $x$ not appearing elsewhere, the proof holds for all $x$. Universal generalisation.",
+    "syntax": "(forall-intro x N)",
+    "example": "1. (fix x)  →  {x} ⊢ x\n2. (assume (App P x))  →  {x, P(x)} ⊢ P(x)\n3. (->-intro (App P x) 2)  →  {x} ⊢ P(x) → P(x)\n4. (forall-intro x 3)  →  ⊢ ∀x. P(x) → P(x)",
+    "rule": "\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}"
+  },
+  {
+    "name": "∃-elim",
+    "description": "From an existential claim, open a witness $y$, prove the conclusion $\\psi$ under the assumption $\\varphi[y/x]$, and discharge — provided $y$ doesn't escape into $\\Delta$ or $\\psi$.",
+    "syntax": "(exists-elim N M x)",
+    "example": "1. ⊢ ∃x. P(x)\n2. [P(y)] ⊢ Q\n3. (exists-elim 1 2 y)  →  ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, y, \\varphi[y/x] \\vdash \\psi \\quad y \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}"
+  },
+  {
+    "name": "∃-intro",
+    "description": "If you have a concrete example $\\varphi$ involving term $t$, generalise it to $\\exists x.\\; \\varphi$ by replacing $t$ with a fresh variable $x$. From the particular to the existential.",
+    "syntax": "(exists-intro N t x)",
+    "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)",
+    "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}"
+  },
+  {
+    "name": "∧-elim-l",
+    "description": "If you know $p \\land q$, then you know $p$ — the left half of the conjunction.",
+    "syntax": "(and-elim-l N)",
+    "example": "1. ⊢ P ∧ Q\n2. (and-elim-l 1)  →  ⊢ P",
+    "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}"
+  },
+  {
+    "name": "∧-elim-r",
+    "description": "If you know $p \\land q$, then you know $q$ — the right half of the conjunction.",
+    "syntax": "(and-elim-r N)",
+    "example": "1. ⊢ P ∧ Q\n2. (and-elim-r 1)  →  ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}"
+  },
+  {
+    "name": "∧-intro",
+    "description": "If you've proved $p$ and you've proved $q$, then you've proved $p \\land q$ — they're both true together.",
+    "syntax": "(and-intro N M)",
+    "example": "1. ⊢ P\n2. ⊢ Q\n3. (and-intro 1 2)  →  ⊢ P ∧ Q",
+    "rule": "\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}"
+  },
+  {
+    "name": "∨-elim",
+    "description": "If $p \\lor q$ is true, and both $p$ and $q$ independently lead to $r$, then $r$ is true regardless. Reason by cases — exhaust the possibilities.",
+    "syntax": "(or-elim N M K)",
+    "example": "1. ⊢ P ∨ Q\n2. [P] ⊢ R\n3. [Q] ⊢ R\n4. (or-elim 1 2 3)  →  ⊢ R",
+    "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}"
+  },
+  {
+    "name": "∨-intro-l",
+    "description": "If you've proved $p$, you've proved $p \\lor q$ — because the left side is already true. The $q$ can be anything.",
+    "syntax": "(or-intro-l N F)",
+    "example": "1. ⊢ P\n2. (or-intro-l 1 Q)  →  ⊢ P ∨ Q",
+    "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}"
+  },
+  {
+    "name": "∨-intro-r",
+    "description": "If you've proved $q$, you've proved $p \\lor q$ — because the right side is already true. The $p$ can be anything.",
+    "syntax": "(or-intro-r N F)",
+    "example": "1. ⊢ Q\n2. (or-intro-r 1 P)  →  ⊢ P ∨ Q",
+    "rule": "\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}"
+  }
+]

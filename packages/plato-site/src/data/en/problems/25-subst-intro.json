@@ -29,7 +29,9 @@
     {
       "name": "subst",
       "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}",
-      "description": "Uniformly replace atoms with formulas in a proven judgement. The proof structure is independent of the particular symbols — a structural rule."
+      "description": "Uniformly replace atoms with formulas in a proven judgement. The proof structure is independent of the particular symbols — a structural rule.",
+      "syntax": "(subst N (A F)...)",
+      "example": "1. ⊢ P → P\n2. (subst 1 (P (and A B)))  →  ⊢ (A ∧ B) → (A ∧ B)"
     }
   ]
 }

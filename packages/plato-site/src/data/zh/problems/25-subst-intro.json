@@ -29,7 +29,9 @@
     {
       "name": "subst",
       "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}",
-      "description": "在一个已证明的断言中，统一地把原子替换为任意公式。证明的结构是骨架，具体的符号是皮——换皮不换骨。"
+      "description": "在一个已证明的断言中，统一地把原子替换为任意公式。证明的结构是骨架，具体的符号是皮——换皮不换骨。",
+      "syntax": "(subst N (A F)...)",
+      "example": "1. ⊢ P → P\n2. (subst 1 (P (and A B)))  →  ⊢ (A ∧ B) → (A ∧ B)"
     }
   ]
 }

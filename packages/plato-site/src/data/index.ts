@@ -1,4 +1,4 @@
-import type { Problem } from '@/types'
+import type { Problem, Tactic } from '@/types'
 
 /** Omit `id` from the JSON schema — it's assigned here. */
 type ProblemData = Omit<Problem, 'id'>
@@ -20,6 +20,12 @@ const problemModules = import.meta.glob<{ default: ProblemData }>(
 /** All locales' glossaries */
 const glossaryModules = import.meta.glob<{ default: GlossaryEntry[] }>(
   './*/glossary.json',
+  { eager: true },
+)
+
+/** All locales' tactics registries */
+const tacticsModules = import.meta.glob<{ default: Tactic[] }>(
+  './*/tactics.json',
   { eager: true },
 )
 
@@ -60,6 +66,19 @@ export function loadNlg(locale = 'en'): Record<string, string> {
 
 /** Convenience: eagerly load `en` glossary. */
 export const glossary = loadGlossary('en')
+/** Load tactics registry for a locale. Falls back to `en`. */
+export function loadTactics(locale = 'en'): Tactic[] {
+  const key = `./${locale}/tactics.json`
+  if (tacticsModules[key]) return tacticsModules[key].default
+  return tacticsModules['./en/tactics.json'].default
+}
+
+/** Look up a single tactic by name for the given locale. */
+export function lookupTactic(name: string, locale = 'en'): Tactic | null {
+  const all = loadTactics(locale)
+  return all.find(t => t.name === name) ?? null
+}
+
 /** Convenience: eagerly load `en` NLG. */
 export const nlg = loadNlg('en')
 

@@ -37,12 +37,16 @@
     {
       "name": "fix",
       "rule": "\\frac{}{\\{x\\} \\vdash x}",
-      "description": "向上下文中引入一个新鲜的项变量——类似于 assume，但用来做\"任取一个\"。全称引入的前置准备。"
+      "description": "向上下文中引入一个新鲜的项变量——类似于 assume，但用来做\"任取一个\"。全称引入的前置准备。",
+      "syntax": "(fix x)",
+      "example": "1. (fix x)  →  {x} ⊢ x"
     },
     {
       "name": "∀-intro",
       "rule": "\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}",
-      "description": "如果推论对任意变量 $x$ 成立，且没有其他假设依赖 $x$——那推论对所有的 $x$ 成立。从\"任意\"跳到\"所有\"。"
+      "description": "如果推论对任意变量 $x$ 成立，且没有其他假设依赖 $x$——那推论对所有的 $x$ 成立。从\"任意\"跳到\"所有\"。",
+      "syntax": "(forall-intro x N)",
+      "example": "1. (fix x)  →  {x} ⊢ x\n2. (assume (App P x))  →  {x, P(x)} ⊢ P(x)\n3. (->-intro (App P x) 2)  →  {x} ⊢ P(x) → P(x)\n4. (forall-intro x 3)  →  ⊢ ∀x. P(x) → P(x)"
     }
   ]
 }

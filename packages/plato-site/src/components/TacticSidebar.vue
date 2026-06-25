@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { Tactic } from '@/types'
 import { useTacticsStore } from '@/stores/tactics'
+import { lookupTactic } from '@/data'
 import TacticCard from './TacticCard.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const store = useTacticsStore()
-const items = computed(() => store.all)
+const items = computed(() =>
+  store.collected.map(n => lookupTactic(n, locale.value)).filter((t): t is Tactic => t !== null)
+)
 
 const open = ref(false)
 
@@ -140,7 +144,7 @@ watch(items, (next) => {
   font-size: 12px; color: #bbb; line-height: 1.6;
 }
 .sidebar :deep(.card) {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .list-enter-active { transition: all 0.35s ease; }

@@ -25,12 +25,16 @@
     {
       "name": "∧-elim-l",
       "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}",
-      "description": "If you know $p \\land q$, then you know $p$ — the left half of the conjunction."
+      "description": "If you know $p \\land q$, then you know $p$ — the left half of the conjunction.",
+      "syntax": "(and-elim-l N)",
+      "example": "1. ⊢ P ∧ Q\n2. (and-elim-l 1)  →  ⊢ P"
     },
     {
       "name": "∧-elim-r",
       "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}",
-      "description": "If you know $p \\land q$, then you know $q$ — the right half of the conjunction."
+      "description": "If you know $p \\land q$, then you know $q$ — the right half of the conjunction.",
+      "syntax": "(and-elim-r N)",
+      "example": "1. ⊢ P ∧ Q\n2. (and-elim-r 1)  →  ⊢ Q"
     }
   ]
 }

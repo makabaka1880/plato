@@ -4,7 +4,7 @@ export interface Suggestion {
   label: string
   insert: string
   description: string
-  kind: 'command' | 'formula' | 'step'
+  kind: 'command' | 'formula' | 'step' | 'atom'
   /** KaTeX preview for step suggestions */
   latex?: string
 }
@@ -43,36 +43,17 @@ const STATIC: Suggestion[] = [
 ]
 
 /**
- * Find the innermost unclosed-paren fragment around the cursor.
- * Example: for `(assume (an )` with cursor at `|`, returns `(an` (the inner paren).
- * Returns `{ start, end, fragment }` where fragment is the text after `(` before cursor,
- * or null if no matching paren found.
+ * Extract the token at the cursor: scan backwards until hitting a space or paren.
+ * Returns `{ token, start }` where `start` is the index in `value` where the token begins.
  */
-function parseParenFragment(value: string, cursorPos: number): { start: number; end: number; fragment: string; replaceStart: number } | null {
-  let depth = 0
-  for (let i = cursorPos - 1; i >= 0; i--) {
-    const ch = value[i]
-    if (ch === ')') {
-      depth++
-    } else if (ch === '(') {
-      if (depth > 0) {
-        depth--
-      } else {
-        const afterParen = value.slice(i + 1)
-        const closeIdx = afterParen.indexOf(')')
-        const text = closeIdx === -1 ? afterParen.slice(0, cursorPos - i - 1) : afterParen.slice(0, closeIdx)
-        // Extract the last space-delimited token
-        const lastSpace = text.lastIndexOf(' ')
-        const fragment = lastSpace === -1 ? text : text.slice(lastSpace + 1)
-        if (!fragment) return null
-        // replaceStart: where the fragment starts in the original string.
-        // When there's a space, we replace just the last token (not from `(`).
-        const replaceStart = lastSpace === -1 ? i : i + 1 + lastSpace + 1
-        return { start: i, end: cursorPos, fragment, replaceStart }
-      }
-    }
+function tokenAtCursor(value: string, cursorPos: number): { token: string; start: number } | null {
+  let start = cursorPos
+  while (start > 0 && value[start - 1] !== ' ' && value[start - 1] !== '(' && value[start - 1] !== ')') {
+    start--
   }
-  return null
+  const token = value.slice(start, cursorPos)
+  if (token.length === 0) return null
+  return { token, start }
 }
 
 export function useAutocomplete(
@@ -83,92 +64,72 @@ export function useAutocomplete(
   const suggestions = ref<Suggestion[]>([])
   const activeIndex = ref(0)
   const visible = ref(false)
-  let matchStart = 0
-  let matchEnd = 0
+  let tokenStart = 0
+  let suppressNext = false
 
-  function computeSuggestions(val: string) {
+  function refresh() {
+    if (suppressNext) { suppressNext = false; return }
     const el = inpEl.value
+    const val = input.value
     const cursor = el?.selectionStart ?? val.length
-    const info = parseParenFragment(val, cursor)
-    if (!info) return null
-    matchStart = info.start
-    matchEnd = info.end
-    const rawFragment = info.fragment.trim()
-    const fragment = rawFragment.toLowerCase()
 
-    if (fragment === '') {
-      return { suggestions: STATIC, activeIdx: 0 }
+    const tok = tokenAtCursor(val, cursor)
+    if (!tok || tok.token.length === 0) {
+      if (visible.value) { visible.value = false; suggestions.value = [] }
+      return
     }
+    tokenStart = tok.start
+    const raw = tok.token
+    const lower = raw.toLowerCase()
 
-    let filtered = STATIC.filter(s => s.label.toLowerCase().startsWith(fragment))
+    let filtered = STATIC.filter(s => s.label.toLowerCase().startsWith(lower))
     let activeIdx = 0
 
-    if (/^[A-Za-z]$/.test(rawFragment) && fragment.length === 1 && !filtered.some(s => s.label.toLowerCase() === fragment)) {
-      filtered = [{ label: rawFragment, insert: rawFragment + ' ', description: 'Insert Atom', kind: 'formula' }, ...filtered]
+    // Single ASCII letter → prepend atom suggestion
+    if (/^[A-Za-z]$/.test(raw) && raw.length === 1 && !filtered.some(s => s.label.toLowerCase() === lower)) {
+      filtered = [{ label: raw, insert: raw + ' ', description: 'Insert Atom', kind: 'atom' }, ...filtered]
     }
 
-    if (/^\d+$/.test(fragment)) {
+    // Numeric → step suggestions
+    if (/^\d+$/.test(raw)) {
       const previews = stepPreviews.value
       const stepSugs: Suggestion[] = []
       for (const [n, latex] of Object.entries(previews)) {
-        if (n.startsWith(fragment)) {
+        if (n.startsWith(raw)) {
           stepSugs.push({ label: n, insert: n + ' ', description: 'Step ' + n, kind: 'step', latex })
         }
       }
       filtered = [...stepSugs, ...filtered]
     }
 
-    return { suggestions: filtered, activeIdx }
-  }
-
-  let lastLen = 0
-  function refresh() {
-    const val = input.value
-    const res = computeSuggestions(val)
-    if (!res) {
-      visible.value = false
-      suggestions.value = []
+    if (filtered.length === 0) {
+      if (visible.value) { visible.value = false; suggestions.value = [] }
       return
     }
-    suggestions.value = res.suggestions
-    activeIndex.value = res.activeIdx
-    visible.value = res.suggestions.length > 0
+    suggestions.value = filtered
+    activeIndex.value = activeIdx
+    visible.value = true
   }
 
-  watch(input, (val) => {
-    const wentUp = val.length >= lastLen
-    lastLen = val.length
-    if (!visible.value && !wentUp) return
-    refresh()
-  }, { immediate: true })
-
-  function onCursorCheck() {
-    refresh()
-  }
+  watch(input, () => refresh(), { immediate: true })
 
   function accept() {
     const s = suggestions.value[activeIndex.value]
     if (!s) return
     const el = inpEl.value
     const val = input.value
-    const cursorPos = el?.selectionStart ?? val.length
+    const cursor = el?.selectionStart ?? val.length
 
-    const info = parseParenFragment(val, cursorPos)
-    if (!info) return
+    const before = val.slice(0, tokenStart)
+    const after = val.slice(cursor)
+    input.value = before + s.insert + after
 
-    // replaceStart === info.start means replace from `(` as before (the command name itself).
-    // Otherwise replace only the last token (e.g. a step number argument).
-    const prependParen = info.replaceStart === info.start
-    const before = val.slice(0, info.replaceStart)
-    const after = val.slice(cursorPos)
-    const insertion = (prependParen ? '(' : '') + s.insert
-    input.value = before + insertion + after
-
-    const cursor = before.length + insertion.length
+    const newCursor = before.length + s.insert.length
     if (el) {
-      nextTick(() => el.setSelectionRange(cursor, cursor))
+      nextTick(() => el.setSelectionRange(newCursor, newCursor))
     }
     visible.value = false
+    suppressNext = true
   }
 
   function onKeydown(e: KeyboardEvent) {
@@ -200,9 +161,14 @@ export function useAutocomplete(
     }
   }
 
-  function dismiss() {
-    visible.value = false
+  function dismiss() { visible.value = false }
+  /** Signal that the cursor has moved via click — dismiss the menu. */
+  function onCursorMove() {
+    if (visible.value) {
+      visible.value = false
+      suggestions.value = []
+    }
   }
 
-  return { suggestions, activeIndex, visible, accept, onKeydown, dismiss, refresh, onCursorCheck }
+  return { suggestions, activeIndex, visible, accept, onKeydown, dismiss, onCursorMove }
 }

@@ -32,7 +32,9 @@
     {
       "name": "→-elim",
       "rule": "\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}",
-      "description": "If $p$ implies $q$, and you have $p$, then you have $q$. The classic syllogism — *modus ponens*."
+      "description": "If $p$ implies $q$, and you have $p$, then you have $q$. The classic syllogism — *modus ponens*.",
+      "syntax": "(->-elim N M)",
+      "example": "1. (assume P)  →  {P} ⊢ P\n2. P → Q provided as premise\n3. (->-elim 2 1) → Q"
     }
   ]
 }
