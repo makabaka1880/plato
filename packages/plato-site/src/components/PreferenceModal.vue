@@ -28,16 +28,16 @@ onUnmounted(() => {
 <template>
   <div class="backdrop" @click.self="emit('close')">
     <div class="modal">
-      <div class="title">preferences</div>
+      <div class="title">Preferences</div>
 
       <div class="row">
-        <span>proof output</span>
+        <span>Proof Output</span>
         <button class="toggle" @click="prefs.toggleViewMode()">
-          {{ prefs.viewMode === 'tex' ? 'TeX' : 'text' }}
+          {{ prefs.viewMode === 'tex' ? 'TeX' : 'Text' }}
         </button>
       </div>
 
-      <button ref="doneBtn" class="done-btn" @click="emit('close')">done</button>
+      <button ref="doneBtn" class="done-btn" @click="emit('close')">Done</button>
     </div>
   </div>
 </template>

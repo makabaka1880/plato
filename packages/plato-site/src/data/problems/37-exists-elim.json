@@ -1,0 +1,51 @@
+{
+  "description": "If something exists, then something exists — no matter what you call it.",
+  "goal": "(-> (exists x (App P x)) (exists y (App P y)))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "The goal is $\\exists x.\\; P(x) \\to \\exists y.\\; P(y)$. This should be trivially true — if something is $P$, then something is $P$, regardless of the variable name. But to prove it, we need `exists-elim`: from the existential claim, we open a witness, prove the conclusion under that witness, then discharge.",
+      "tactic": null
+    },
+    {
+      "text": "Assume the existential claim: something is $P$.",
+      "tactic": "(assume (exists x (App P x)))"
+    },
+    {
+      "text": "Introduce a fresh witness $y$ with `fix`. This is the arbitrary term we'll work with — 'let $y$ be some thing.'",
+      "tactic": "(fix y)"
+    },
+    {
+      "text": "Assume the witness satisfies $P$: $P(y)$. This is the instantiated body of the existential, under the fresh name $y$.",
+      "tactic": "(assume (App P y))"
+    },
+    {
+      "text": "Merge the witness atom $y$ with the assumption $P(y)$ using `and-intro` so both are in the same context.",
+      "tactic": "(and-intro 2 3)"
+    },
+    {
+      "text": "Extract $P(y)$ from the merged context. Now you have $P(y)$ at a step whose context contains both $y$ and $P(y)$.",
+      "tactic": "(and-elim-r 4)"
+    },
+    {
+      "text": "From $P(y)$, form $\\exists y.\\; P(y)$ using `exists-intro`. Replace the concrete term $y$ with the binding variable $y$ — same name, but now it's the bound variable of the quantifier.",
+      "tactic": "(exists-intro 5 y y)"
+    },
+    {
+      "text": "Now `exists-elim` discharges everything. It takes the existential (step 1), the witness subproof (step 6), and the witness variable name ($y$). The engine checks that $y$ doesn't leak into the conclusion and removes the witness atom and its instantiated body from the context.",
+      "tactic": "(exists-elim 1 6 y)"
+    },
+    {
+      "text": "Step 7 gives us $\\exists y.\\; P(y)$ under the assumption $\\exists x.\\; P(x)$. Discharge to finish.",
+      "tactic": "(->-intro (exists x (App P x)) 7)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "∃-elim",
+      "rule": "\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, y, \\varphi[y/x] \\vdash \\psi \\quad y \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}",
+      "description": "From an existential claim, open a witness $y$, prove the conclusion $\\psi$ under the assumption $\\varphi[y/x]$, and discharge — provided $y$ doesn't escape into $\\Delta$ or $\\psi$."
+    }
+  ]
+}

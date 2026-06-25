@@ -214,6 +214,50 @@ impl Session {
                 self.steps.push(Rc::new(j));
                 self.last_fmt()
             }
+            Command::Subst(n, pairs) => {
+                let jn = self.step(n)?.clone();
+                let j = rules::misc::subst(&jn, &pairs)
+                    .ok_or_else(|| "subst failed".to_string())?;
+                self.steps.push(Rc::new(j));
+                self.last_fmt()
+            }
+            Command::Fix(f) => {
+                let mut ctx = Context::new();
+                ctx.insert(f.as_ref().clone());
+                let j = rules::misc::var_intro(&ctx, f)
+                    .ok_or_else(|| "internal error: fix".to_string())?;
+                self.steps.push(Rc::new(j));
+                self.last_fmt()
+            }
+            Command::ForallIntro(x, n) => {
+                let jn = self.step(n)?;
+                let j = rules::quant::forall_intro(&x, jn)
+                    .ok_or_else(|| format!("forall-intro failed: {} is not in the context of step {}, or it appears free in other assumptions", x, n))?;
+                self.steps.push(Rc::new(j));
+                self.last_fmt()
+            }
+            Command::ForallElim(n, t) => {
+                let jn = self.step(n)?;
+                let j = rules::quant::forall_elim(jn, &t)
+                    .ok_or_else(|| "forall-elim failed: step is not a universal formula".to_string())?;
+                self.steps.push(Rc::new(j));
+                self.last_fmt()
+            }
+            Command::ExistsIntro(n, t, x) => {
+                let jn = self.step(n)?;
+                let j = rules::quant::exists_intro(jn, &t, &x)
+                    .ok_or_else(|| format!("exists-intro failed: check that '{}' is a term variable", x))?;
+                self.steps.push(Rc::new(j));
+                self.last_fmt()
+            }
+            Command::ExistsElim(n, m, x) => {
+                let jn = self.step(n)?;
+                let jm = self.step(m)?;
+                let j = rules::quant::exists_elim(jn, jm, &x)
+                    .ok_or_else(|| format!("exists-elim failed: check that step {} is an existential, step {} has {} in its context, and {} is not free in the witness context or conclusion", n, m, x, x))?;
+                self.steps.push(Rc::new(j));
+                self.last_fmt()
+            }
         })
     }
 
@@ -241,6 +285,12 @@ Commands:
   (not-elim N)          negation elimination
   (dne N)               double negation elimination
   (ex-falso N F)        ex falso quodlibet
+  (fix x)               introduce a term variable {x}⊢x
+  (forall-intro x N)    universal generalisation (discharges x)
+  (forall-elim N t)     universal instantiation
+  (exists-intro N t x)  existential generalisation
+  (exists-elim N M x)   existential witness elimination
+  (subst N (A F)...)    substitute atom A with formula F in step N
   (show N)              re-print step N
   (and A B) ..etc       parse a formula (just prints it)
 
@@ -252,7 +302,11 @@ Formula syntax:
   (and F G)              conjunction
   (or F G)               disjunction
   (-> F G)               implication
+  (forall x F)           universal quantification
+  (exists x F)           existential quantification
+  (App P t)              predicate application
 
+Atoms are terms (lowercase) or propositions (uppercase) by convention.
 Aliases: mp=->-elim, raa=not-intro, efq=ex-falso, imp-intro=->-intro"
             .to_string()
     }

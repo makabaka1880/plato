@@ -1,0 +1,49 @@
+{
+  "description": "If A implies B, then the falsity of B implies the falsity of A.",
+  "goal": "(-> (-> A B) (-> (not B) (not A)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "This is the **contrapositive**: if $A$ implies $B$, then $\\lnot B$ implies $\\lnot A$. (If $B$ is impossible, then $A$ must not hold either — otherwise $A$ would force $B$.) You'll need `not-intro` to prove $\\lnot A$. Start by assuming $A \\to B$.",
+      "tactic": null
+    },
+    {
+      "text": "Assume the implication $A \\to B$.",
+      "tactic": "(assume (-> A B))"
+    },
+    {
+      "text": "Now you're proving $\\lnot B \\to \\lnot A$. As always with implications, assume the antecedent: $\\lnot B$.",
+      "tactic": "(assume (not B))"
+    },
+    {
+      "text": "To prove $\\lnot A$ using `not-intro`, you need two subproofs sharing $A$ — one proving some $p$, the other proving $\\lnot p$. For $p$, choose $B$. First subproof: assume $A$.",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "From $A \\to B$ (step 1) and your fresh $A$ (step 3), use modus ponens to get $B$. This is your positive subproof — context contains $A$, conclusion is $B$.",
+      "tactic": "(->-elim 1 3)"
+    },
+    {
+      "text": "Second subproof: you need a step whose context contains $A$ and whose conclusion is $\\lnot B$. Merge $A$ (step 3) with $\\lnot B$ (step 2) using `and-intro`.",
+      "tactic": "(and-intro 3 2)"
+    },
+    {
+      "text": "Extract $\\lnot B$ from the merged conjunction with `and-elim-r`. Now its context contains $A$.",
+      "tactic": "(and-elim-r 5)"
+    },
+    {
+      "text": "Steps 4 and 6 both have $A$ in context and prove $B$ and $\\lnot B$ — the contradiction. Apply `not-intro A`.",
+      "tactic": "(not-intro A 4 6)"
+    },
+    {
+      "text": "Discharge $\\lnot B$ to get $\\lnot B \\to \\lnot A$.",
+      "tactic": "(->-intro (not B) 7)"
+    },
+    {
+      "text": "Discharge $A \\to B$ to finish the contrapositive.",
+      "tactic": "(->-intro (-> A B) 8)"
+    }
+  ],
+  "unlocks": []
+}

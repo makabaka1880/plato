@@ -41,6 +41,18 @@ pub enum Command {
     ExFalso(usize, Rc<PropWWF>),
     /// `(show n)` — re-print a previous step.
     Show(usize),
+    /// `(subst n (A F1) (B F2) ...)` — substitute atoms in step n.
+    Subst(usize, Vec<(String, Rc<PropWWF>)>),
+    /// `(fix x)` — introduce a term variable into the context.
+    Fix(Rc<PropWWF>),
+    /// `(forall-intro x n)` — universal generalisation.
+    ForallIntro(String, usize),
+    /// `(forall-elim n t)` — universal instantiation.
+    ForallElim(usize, String),
+    /// `(exists-intro n t x)` — existential generalisation.
+    ExistsIntro(usize, String, String),
+    /// `(exists-elim n m x)` — existential witness elimination.
+    ExistsElim(usize, usize, String),
 }
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -241,6 +253,82 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                         ));
                     }
                     Ok(Command::Show(expect_usize(&items[1])?))
+                }
+                "fix" => {
+                    if items.len() != 2 {
+                        return Err(format!("fix expects 1 argument, got {}", items.len() - 1));
+                    }
+                    Ok(Command::Fix(parse_formula(&items[1])?))
+                }
+                "forall-intro" | "∀-intro" | "forall" => {
+                    if items.len() != 3 {
+                        return Err(format!("forall-intro expects 2 arguments (var, step), got {}", items.len() - 1));
+                    }
+                    let var = match &items[1] {
+                        SExpr::Atom(s) => s.clone(),
+                        _ => return Err("forall-intro first argument must be an atom".into()),
+                    };
+                    Ok(Command::ForallIntro(var, expect_usize(&items[2])?))
+                }
+                "forall-elim" | "∀-elim" => {
+                    if items.len() != 3 {
+                        return Err(format!("forall-elim expects 2 arguments (step, term), got {}", items.len() - 1));
+                    }
+                    let n = expect_usize(&items[1])?;
+                    let t = match &items[2] {
+                        SExpr::Atom(s) => s.clone(),
+                        _ => return Err("forall-elim second argument must be an atom (term)".into()),
+                    };
+                    Ok(Command::ForallElim(n, t))
+                }
+                "exists-intro" | "∃-intro" => {
+                    if items.len() != 4 {
+                        return Err(format!("exists-intro expects 3 arguments (step, old-term, new-var), got {}", items.len() - 1));
+                    }
+                    let n = expect_usize(&items[1])?;
+                    let t = match &items[2] {
+                        SExpr::Atom(s) => s.clone(),
+                        _ => return Err("exists-intro second argument must be an atom (the term to generalise)".into()),
+                    };
+                    let x = match &items[3] {
+                        SExpr::Atom(s) => s.clone(),
+                        _ => return Err("exists-intro third argument must be an atom (the binding variable)".into()),
+                    };
+                    Ok(Command::ExistsIntro(n, t, x))
+                }
+                "exists-elim" | "∃-elim" => {
+                    if items.len() != 4 {
+                        return Err(format!("exists-elim expects 3 arguments (step-ex, step-witness, var), got {}", items.len() - 1));
+                    }
+                    Ok(Command::ExistsElim(
+                        expect_usize(&items[1])?,
+                        expect_usize(&items[2])?,
+                        match &items[3] {
+                            SExpr::Atom(s) => s.clone(),
+                            _ => return Err("exists-elim third argument must be an atom (witness var)".into()),
+                        },
+                    ))
+                }
+                "subst" | "substitute" => {
+                    if items.len() < 2 {
+                        return Err("subst expects at least 1 argument (step)".into());
+                    }
+                    let n = expect_usize(&items[1])?;
+                    let mut pairs = Vec::new();
+                    for item in &items[2..] {
+                        match item {
+                            SExpr::List(pair) if pair.len() == 2 => {
+                                let atom = match &pair[0] {
+                                    SExpr::Atom(s) => s.clone(),
+                                    _ => return Err("subst pair first element must be an atom".into()),
+                                };
+                                let repl = parse_formula(&pair[1])?;
+                                pairs.push((atom, repl));
+                            }
+                            _ => return Err("subst expects (atom formula) pairs".into()),
+                        }
+                    }
+                    Ok(Command::Subst(n, pairs))
                 }
                 "help" | "?" => Ok(Command::Show(0)), // special — prints help
                 // Fallback: try parsing as a formula

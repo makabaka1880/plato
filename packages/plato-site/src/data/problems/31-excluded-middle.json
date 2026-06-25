@@ -1,0 +1,49 @@
+{
+  "description": "Every statement is either true or false — there is no third option.",
+  "goal": "(or A (not A))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "This is the **law of excluded middle**: $A \\lor \\lnot A$. It's classical — you'll need `not-intro` and `dne`. The strategy: assume $\\lnot (A \\lor \\lnot A)$, derive a contradiction, then use double negation. Start with that assumption.",
+      "tactic": null
+    },
+    {
+      "text": "Assume $\\lnot (A \\lor \\lnot A)$.",
+      "tactic": "(assume (not (or A (not A))))"
+    },
+    {
+      "text": "From this assumption, you'll derive $A \\lor \\lnot A$ itself — a contradiction. To get $\\lnot A$ (which gives you the right half of the disjunction), assume $A$ and show it's impossible. Start: assume $A$.",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "From $A$, form $A \\lor \\lnot A$ with `or-intro-l` — placing $A$ on the left and $\\lnot A$ on the right.",
+      "tactic": "(or-intro-l 2 (not A))"
+    },
+    {
+      "text": "Now you need a step that has $\\lnot (A \\lor \\lnot A)$ in the same context as $A$. Merge $A$ (step 2) with $\\lnot (A \\lor \\lnot A)$ (step 1) using `and-intro`.",
+      "tactic": "(and-intro 2 1)"
+    },
+    {
+      "text": "Extract $\\lnot (A \\lor \\lnot A)$ from the conjunction. Its context now contains $A$.",
+      "tactic": "(and-elim-r 4)"
+    },
+    {
+      "text": "Step 3 proves $A \\lor \\lnot A$ with $A$ in context. Step 5 proves $\\lnot (A \\lor \\lnot A)$ with $A$ in context. Apply `not-intro A` — this discharges $A$ and gives you $\\lnot A$.",
+      "tactic": "(not-intro A 3 5)"
+    },
+    {
+      "text": "With $\\lnot A$ in hand, build $A \\lor \\lnot A$ by putting $\\lnot A$ on the right side using `or-intro-r`.",
+      "tactic": "(or-intro-r 6 A)"
+    },
+    {
+      "text": "Now the payoff. Step 1 proves $\\lnot (A \\lor \\lnot A)$. Step 7 proves $A \\lor \\lnot A$. Both share $\\lnot (A \\lor \\lnot A)$ in context. Apply `not-intro` to get $\\lnot \\lnot (A \\lor \\lnot A)$.",
+      "tactic": "(not-intro (or A (not A)) 7 1)"
+    },
+    {
+      "text": "One `dne` strips the double negation, and the law of excluded middle stands proved.",
+      "tactic": "(dne 8)"
+    }
+  ],
+  "unlocks": []
+}

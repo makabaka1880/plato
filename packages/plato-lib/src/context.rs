@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fmt;
+use std::rc::Rc;
 
 use crate::formula::PropWWF;
 
@@ -52,6 +53,16 @@ impl Context {
     /// Returns `true` if the context is empty.
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+
+    /// Substitute atoms throughout every formula in the context.
+    pub fn substitute(&self, subs: &[(String, Rc<PropWWF>)]) -> Self {
+        Self(
+            self.0
+                .iter()
+                .map(|f| f.substitute(subs).as_ref().clone())
+                .collect(),
+        )
     }
 }
 

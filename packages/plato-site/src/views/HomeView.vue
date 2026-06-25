@@ -25,7 +25,7 @@ onMounted(() => {
             Continue
           </button>
           <button ref="startBtn" class="hero-btn" :class="props.hasProgress ? 'secondary' : ''" @click="emit('start')">
-            &rarr; Start fresh
+            &rarr; Start Fresh
           </button>
         </div>
     </div>
@@ -65,6 +65,7 @@ onMounted(() => {
     color: var(--color-muted);
 }
 .hero-btn.secondary:hover {
+    background: var(--color-subtle-bg);
     border-color: var(--color-primary-hover);
     color: var(--color-primary-hover);
 }

@@ -1,0 +1,48 @@
+{
+  "description": "Everything implies itself — even when we say it about everything.",
+  "goal": "(forall x (-> (App P x) (App P x)))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "The goal is $\\forall x.\\; P(x) \\to P(x)$. In words: for every $x$, $P(x)$ implies itself. This is the identity theorem from problem 01, generalised to all possible things. To prove a universal statement, we pick an arbitrary witness — a fresh term variable — prove the statement for that witness, then generalise.",
+      "tactic": null
+    },
+    {
+      "text": "The rule `fix` introduces a fresh term variable into the context, just like `assume` does for propositions. It gives us $\\{x\\} \\vdash x$ — we now have an arbitrary $x$ to work with.",
+      "tactic": "(fix x)"
+    },
+    {
+      "text": "Now, under the assumption that we have this arbitrary $x$, assume $P(x)$ — a concrete instance of the predicate.",
+      "tactic": "(assume (App P x))"
+    },
+    {
+      "text": "The two assumptions live in separate contexts: $\\{x\\}$ and $\\{P(x)\\}$. To use both, merge them with `and-intro`.",
+      "tactic": "(and-intro 1 2)"
+    },
+    {
+      "text": "Extract $P(x)$ from the merged context using `and-elim-r`. Now both $x$ and $P(x)$ are in the context of this step.",
+      "tactic": "(and-elim-r 3)"
+    },
+    {
+      "text": "Discharge $P(x)$ with `->-intro`. The context shrinks to just $\\{x\\}$ — we've proved $P(x) \\to P(x)$ under the arbitrary witness $x$.",
+      "tactic": "(->-intro (App P x) 4)"
+    },
+    {
+      "text": "The final move: `forall-intro` generalises over $x$. It checks that $x$ appears nowhere else free in the context (freshness) and wraps the conclusion: $\\forall x.\\; P(x) \\to P(x)$. The witness is discharged, the proof stands for all $x$.",
+      "tactic": "(forall-intro x 5)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "fix",
+      "rule": "\\frac{}{\\{x\\} \\vdash x}",
+      "description": "Introduce a fresh term variable into the context — like assume, but for terms."
+    },
+    {
+      "name": "∀-intro",
+      "rule": "\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}",
+      "description": "If you prove $\\varphi$ for an arbitrary $x$ not appearing elsewhere, the proof holds for all $x$. Universal generalisation."
+    }
+  ]
+}

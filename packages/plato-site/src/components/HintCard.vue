@@ -57,6 +57,10 @@ function onTactic(tactic: string) {
   padding: 4px 12px; cursor: pointer;
   background: var(--color-tactic-bg); border: 1px solid var(--color-border-light);
   border-radius: 4px; color: var(--color-tactic-fg);
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .tactic:hover { background: var(--color-border-light); }
 

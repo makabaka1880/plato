@@ -23,3 +23,16 @@ pub fn exfalso(j_bot: &Judgement, p: Rc<PropWWF>) -> Option<Judgement> {
     }
     None
 }
+
+/// Substitution — the uniform replacement of atoms in a proven judgement.
+///
+/// From `Γ ⊢ p` and a list of `(atom, replacement)` pairs, derive
+/// `Γ[subs] ⊢ p[subs]`.  This is a structural rule: a proof that works
+/// for atoms also works when those atoms are replaced by arbitrary
+/// formulas, as long as the replacement is uniform.
+pub fn subst(j: &Judgement, subs: &[(String, Rc<PropWWF>)]) -> Option<Judgement> {
+    Some(Judgement::new(
+        j.ctx.substitute(subs),
+        j.prop.substitute(subs),
+    ))
+}

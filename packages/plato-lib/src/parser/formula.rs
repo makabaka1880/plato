@@ -56,6 +56,35 @@ pub fn parse_formula(sexpr: &SExpr) -> Result<Rc<PropWWF>, String> {
                         parse_formula(&items[2])?,
                     )))
                 }
+                "forall" | "∀" => {
+                    if items.len() != 3 {
+                        return Err(format!("'{}' expects 2 arguments (var body), got {}", head, items.len() - 1));
+                    }
+                    let var = match &items[1] {
+                        SExpr::Atom(s) => s.clone(),
+                        _ => return Err("forall first argument must be an atom".into()),
+                    };
+                    Ok(Rc::new(PropWWF::Forall(var, parse_formula(&items[2])?)))
+                }
+                "exists" | "∃" => {
+                    if items.len() != 3 {
+                        return Err(format!("'{}' expects 2 arguments (var body), got {}", head, items.len() - 1));
+                    }
+                    let var = match &items[1] {
+                        SExpr::Atom(s) => s.clone(),
+                        _ => return Err("exists first argument must be an atom".into()),
+                    };
+                    Ok(Rc::new(PropWWF::Exists(var, parse_formula(&items[2])?)))
+                }
+                "App" => {
+                    if items.len() != 3 {
+                        return Err(format!("'App' expects 2 arguments, got {}", items.len() - 1));
+                    }
+                    Ok(Rc::new(PropWWF::App(
+                        parse_formula(&items[1])?,
+                        parse_formula(&items[2])?,
+                    )))
+                }
                 "->" | "→" | "imp" | "⊃" => {
                     if items.len() != 3 {
                         return Err(format!(

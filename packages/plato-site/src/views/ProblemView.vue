@@ -84,8 +84,8 @@ function onSolved() {
                             <InlineLatex :text="problem.description" />
                         </div>
                         <div class="goal-line">
-                            <span v-if="problem.premise" class="premise-label">PREMISE</span>
-                            <span v-if="problem.premise" class="premise-katex">
+                            <span v-if="problem.premise.length" class="premise-label">PREMISE</span>
+                            <span v-if="problem.premise.length" class="premise-katex">
                                 <Katex :expr="premiseLatex" />
                             </span>
                             <span class="goal-label">GOAL</span>
@@ -106,12 +106,12 @@ function onSolved() {
                 <Transition name="fade-in">
                     <div v-if="victory.solved.value" class="victory-overlay">
                         <div class="victory">
-                            <div class="victory-text">I believe you.</div>
+                            <div class="victory-text">I Believe You.</div>
                             <button v-if="hasNext" class="victory-btn" @click="emit('next')">
-                                next problem &rarr;
+                                Next Problem &rarr;
                             </button>
                             <button v-else class="victory-btn" @click="emit('home')">
-                                back home
+                                Back Home
                             </button>
                         </div>
                     </div>
@@ -119,9 +119,9 @@ function onSolved() {
             </div>
 
             <div class="footer">
-                <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">&larr; prev</button>
+                <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">&larr; Prev</button>
                 <span class="spacer"></span>
-                <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">next &rarr;</button>
+                <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">Next &rarr;</button>
             </div>
         </div>
 

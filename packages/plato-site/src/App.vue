@@ -17,11 +17,17 @@ const problemIdx = computed(() =>
     page.value.type === 'problem' ? page.value.idx : 0
 )
 
+/** Unique key that changes every time the page changes, for transition. */
+const pageKey = computed(() =>
+    page.value.type === 'home' ? 'home' : `problem-${page.value.idx}`
+)
+
 function goHome() {
     page.value = { type: 'home' }
 }
 
 function onStart() {
+    progress.highestSolved = 0;
     page.value = { type: 'problem', idx: 0 }
 }
 
@@ -49,14 +55,24 @@ function onPrev() {
 <template>
     <div class="app">
         <div class="main">
-            <HomeView
-              v-if="page.type === 'home'"
-              :has-progress="progress.highestSolved >= 0"
-              @start="onStart"
-              @continue="onContinue"
-            />
-            <ProblemView v-else :problem-idx="problemIdx" :problems="problems" @next="onNext" @prev="onPrev"
-                @home="goHome" />
+            <Transition name="page" mode="out-in">
+              <HomeView
+                v-if="page.type === 'home'"
+                :key="pageKey"
+                :has-progress="progress.highestSolved >= 0"
+                @start="onStart"
+                @continue="onContinue"
+              />
+              <ProblemView
+                v-else
+                :key="pageKey"
+                :problem-idx="problemIdx"
+                :problems="problems"
+                @next="onNext"
+                @prev="onPrev"
+                @home="goHome"
+              />
+            </Transition>
         </div>
         <footer class="footer">
             All Rights Reserved
@@ -76,6 +92,23 @@ function onPrev() {
 .main {
     flex: 1;
     overflow: hidden;
+    position: relative;
+}
+
+/* ── page transitions ──────────────────── */
+.page-enter-active,
+.page-leave-active {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.page-enter-from {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.page-leave-to {
+    opacity: 0;
+    transform: translateY(-8px);
 }
 
 .footer {

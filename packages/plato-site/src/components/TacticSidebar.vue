@@ -32,7 +32,7 @@ watch(items, (next) => {
       <div v-if="open" class="backdrop" @click.self="open = false">
         <div class="overlay">
           <div class="overlay-header">
-            <span class="title">tactics collected</span>
+            <span class="title">Tactics Collected</span>
             <button class="close-btn" @click="open = false">&times;</button>
           </div>
           <TransitionGroup name="list" tag="div">
@@ -43,7 +43,7 @@ watch(items, (next) => {
             />
           </TransitionGroup>
           <div v-if="items.length === 0" class="empty">
-            solve problems to collect tactics
+            Solve problems to collect tactics
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@ watch(items, (next) => {
 
   <!-- wide: inline sidebar -->
   <div class="sidebar">
-    <div class="title">tactics collected</div>
+    <div class="title">Tactics Collected</div>
     <TransitionGroup name="list" tag="div">
       <TacticCard
         v-for="t in items" :key="t.name"
@@ -61,7 +61,7 @@ watch(items, (next) => {
       />
     </TransitionGroup>
     <div v-if="items.length === 0" class="empty">
-      solve problems to collect tactics
+      Solve problems to collect tactics
     </div>
   </div>
 </template>

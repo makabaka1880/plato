@@ -48,6 +48,22 @@ const groups: { label: string; entries: CommandEntry[] }[] = [
         unlocked: true,
       },
       {
+        syntax: '(fix x)',
+        description: 'Introduce a term variable {x} ⊢ x (like assume, but for terms)',
+        unlocked: true,
+      },
+      {
+        syntax: '(subst N (A F)...)',
+        description: 'Substitute atoms with formulas uniformly in step N',
+        unlocked: store.collected.has('subst'),
+        rule: '\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}',
+      },
+      {
+        syntax: '(show N)',
+        description: 'Re-print step N',
+        unlocked: true,
+      },
+      {
         syntax: 'F',
         description: 'Parse a formula (prints its structure)',
         unlocked: true,
@@ -143,6 +159,35 @@ const groups: { label: string; entries: CommandEntry[] }[] = [
       },
     ],
   },
+  {
+    label: 'Quantifiers (∀, ∃)',
+    entries: [
+      {
+        syntax: '(forall-intro x N)',
+        description: 'Universal generalisation — discharge x from step N (x must not be free in other assumptions)',
+        unlocked: store.collected.has('∀-intro'),
+        rule: '\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}',
+      },
+      {
+        syntax: '(forall-elim N t)',
+        description: 'Universal instantiation — from ∀x.φ, get φ[t/x]',
+        unlocked: store.collected.has('∀-elim'),
+        rule: '\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}',
+      },
+      {
+        syntax: '(exists-intro N t x)',
+        description: 'Existential generalisation — from φ(t), form ∃x.φ (generalise term t to variable x)',
+        unlocked: store.collected.has('∃-intro'),
+        rule: '\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}',
+      },
+      {
+        syntax: '(exists-elim N M x)',
+        description: 'Witness elimination — step N is ∃x.φ, step M proves ψ under witness x, x not free in conclusion',
+        unlocked: store.collected.has('∃-elim'),
+        rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}',
+      },
+    ],
+  },
 ]
 
 const unlockedCount = groups.reduce(
@@ -155,8 +200,8 @@ const unlockedCount = groups.reduce(
   <div ref="backdrop" class="backdrop" tabindex="-1" @keydown.esc="emit('close')" @click.self="emit('close')">
     <div class="modal">
       <div class="head">
-        <span class="title">commands</span>
-        <span class="count">{{ unlockedCount }} unlocked</span>
+        <span class="title">Commands</span>
+        <span class="count">{{ unlockedCount }} Unlocked</span>
         <button class="close-btn" @click="emit('close')">&times;</button>
       </div>
 
@@ -182,7 +227,7 @@ const unlockedCount = groups.reduce(
       </div>
 
       <div class="foot">
-        <span>press <kbd>Esc</kbd> or click outside to close</span>
+        <span>Press <kbd>Esc</kbd> or click outside to close</span>
       </div>
     </div>
   </div>

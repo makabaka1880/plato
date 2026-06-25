@@ -30,12 +30,14 @@ onMounted(() => {
 
 <style scoped>
 .card {
+    width: 100%;
+    min-width: 0;
     padding: 10px 14px;
     background: var(--color-subtle-bg);
     border-radius: 8px;
     font-size: 13px;
     line-height: 1.55;
-    contain: layout style;
+    box-sizing: border-box;
 }
 
 .tactic {
@@ -48,6 +50,10 @@ onMounted(() => {
     border: 1px solid var(--color-border-light);
     border-radius: 4px;
     color: var(--color-tactic-fg);
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .tactic:hover {
