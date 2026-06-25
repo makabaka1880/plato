@@ -27,6 +27,11 @@ export const useProgressStore = defineStore('progress', {
       }
     },
 
+    reset() {
+      this.highestSolved = -1
+      save(-1)
+    },
+
     /** Unlock every problem (debug cheat). */
     unlockAll(total: number) {
       this.highestSolved = total - 1

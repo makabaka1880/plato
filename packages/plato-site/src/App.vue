@@ -27,7 +27,7 @@ function goHome() {
 }
 
 function onStart() {
-    progress.highestSolved = 0;
+    progress.reset()
     page.value = { type: 'problem', idx: 0 }
 }
 
