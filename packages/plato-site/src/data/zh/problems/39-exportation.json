@@ -1,0 +1,45 @@
+{
+  "description": "合则两利，分则独行。",
+  "goal": "(-> (-> (and A B) C) (-> A (-> B C)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "这是逻辑中的 **[exportation|输出律]**：$A \\land B \\to C$ 等价于 $A \\to B \\to C$。把一对[assumption|假设]拆成一条[implication|蕴含]链。先假设 $A \\land B \\to C$。",
+      "tactic": null
+    },
+    {
+      "text": "假设 $A \\land B \\to C$。",
+      "tactic": "(assume (-> (and A B) C))"
+    },
+    {
+      "text": "现在你要在这条[assumption|假设]之下证明 $A \\to B \\to C$。假设 $A$——链条的第一环。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "在 $A$ 的基础上，你还需要 $B \\to C$。假设 $B$——链条的第二环。",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "手上有了 $A$ 和 $B$，用 `and-intro` 把它们打包成一个[conjunction|合取]，好喂给第一步那个大[assumption|假设]。",
+      "tactic": "(and-intro 2 3)"
+    },
+    {
+      "text": "拿 $A \\land B \\to C$（第1步）和你刚打包的 $A \\land B$（第4步）做[modus-ponens|蕴含消去]，一步抵达 $C$。",
+      "tactic": "(->-elim 1 4)"
+    },
+    {
+      "text": "[assumption|消去] $B$，收拢内层[implication|蕴含]。",
+      "tactic": "(->-intro B 5)"
+    },
+    {
+      "text": "[assumption|消去] $A$，收拢中层[implication|蕴含]。",
+      "tactic": "(->-intro A 6)"
+    },
+    {
+      "text": "最后，[assumption|消去]最外层的 $A \\land B \\to C$。合则两利，分则独行。",
+      "tactic": "(->-intro (-> (and A B) C) 7)"
+    }
+  ],
+  "unlocks": []
+}

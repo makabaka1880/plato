@@ -1,0 +1,49 @@
+{
+  "description": "If there is no such thing, then every thing is no such thing.",
+  "goal": "(-> (not (exists x (App P x))) (forall x (not (App P x))))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "This is a fundamental quantifier-negation law: if nothing satisfies $P$, then everything fails to satisfy $P$. $\\lnot \\exists x. P(x) \\to \\forall x. \\lnot P(x)$. You'll use `not-elim`, `exists-intro`, and `forall-intro`. Start by assuming the left side.",
+      "tactic": null
+    },
+    {
+      "text": "Assume $\\lnot \\exists x. P(x)$.",
+      "tactic": "(assume (not (exists x (App P x))))"
+    },
+    {
+      "text": "Unpack the [negation|negation] with `not-elim`: $\\exists x. P(x) \\to \\bot$.",
+      "tactic": "(not-elim 1)"
+    },
+    {
+      "text": "To prove $\\forall x. \\lnot P(x)$, introduce a fresh [atom|atom] $y$ with `fix`. This is the generic element we'll reason about — 'pick any $y$.'",
+      "tactic": "(fix y)"
+    },
+    {
+      "text": "Now prove $\\lnot P(y)$ under that fresh $y$. $\\lnot P(y)$ is just $P(y) \\to \\bot$, so assume $P(y)$.",
+      "tactic": "(assume (App P y))"
+    },
+    {
+      "text": "From $P(y)$, use `exists-intro` to generalise: replace the concrete term $y$ with the [bound-variable|bound variable] $x$ to get $\\exists x. P(x)$.",
+      "tactic": "(exists-intro 4 y x)"
+    },
+    {
+      "text": "[modus-ponens|Modus ponens] on $\\exists x. P(x) \\to \\bot$ (step 2) and $\\exists x. P(x)$ (step 5): you get $\\bot$.",
+      "tactic": "(->-elim 2 5)"
+    },
+    {
+      "text": "[assumption|Discharge] $P(y)$ to get $P(y) \\to \\bot$ — that is, $\\lnot P(y)$.",
+      "tactic": "(->-intro (App P y) 6)"
+    },
+    {
+      "text": "Step 7 proves $\\lnot P(y)$ with the fresh [atom|atom] $y$ in [context|context]. Use `forall-intro` to generalise: $\\forall x. \\lnot P(x)$.",
+      "tactic": "(forall-intro y 7)"
+    },
+    {
+      "text": "[assumption|Discharge] the left side to finish the [implication|implication].",
+      "tactic": "(->-intro (not (exists x (App P x))) 8)"
+    }
+  ],
+  "unlocks": []
+}

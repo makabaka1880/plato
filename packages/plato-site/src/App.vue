@@ -7,6 +7,7 @@ import { useTacticsStore } from '@/stores/tactics'
 import { useRoadmapStore } from '@/stores/roadmap'
 import HomeView from '@/views/HomeView.vue'
 import ProblemView from '@/views/ProblemView.vue'
+import CustomProblemView from '@/views/CustomProblemView.vue'
 
 const { t, locale } = useI18n()
 
@@ -16,6 +17,7 @@ const tactics = useTacticsStore()
 type Page =
     | { type: 'home' }
     | { type: 'problem'; idx: number }
+    | { type: 'custom' }
 
 const page = ref<Page>({ type: 'home' })
 
@@ -27,6 +29,10 @@ const problemIdx = computed(() =>
 
 function goHome() {
     page.value = { type: 'home' }
+}
+
+function goCustom() {
+    page.value = { type: 'custom' }
 }
 
 function onStart() {
@@ -62,9 +68,10 @@ function onPrev() {
         <div class="main">
             <Transition name="page" mode="out-in">
                 <HomeView v-if="page.type === 'home'" :has-progress="progress.highestSolved >= 0"
-                    @start="onStart" @continue="onContinue" />
-                <ProblemView v-else :problem-idx="problemIdx" :problems="problems" @next="onNext"
+                    @start="onStart" @continue="onContinue" @go-custom="goCustom" />
+                <ProblemView v-else-if="page.type === 'problem'" :problem-idx="problemIdx" :problems="problems" @next="onNext"
                     @prev="onPrev" @home="goHome" />
+                <CustomProblemView v-else @home="goHome" />
             </Transition>
         </div>
         <footer class="footer">

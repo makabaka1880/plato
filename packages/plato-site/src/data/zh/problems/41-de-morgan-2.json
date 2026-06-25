@@ -1,0 +1,89 @@
+{
+  "description": "非此非彼，问无可问。",
+  "goal": "(-> (and (not A) (not B)) (not (or A B)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "德摩根律的另一半：若 $A$ 假且 $B$ 假，则 $A \\lor B$ 必假。你手上有 $\\lnot A$ 和 $\\lnot B$——每个都是'通向 $\\bot$'的缩写——需要证明 $A \\lor B$ 直通 $\\bot$。策略：假设 $A \\lor B$，然后证明两种情形都会炸。先假设[conjunction|合取] $\\lnot A \\land \\lnot B$。",
+      "tactic": null
+    },
+    {
+      "text": "假设 $\\lnot A \\land \\lnot B$。",
+      "tactic": "(assume (and (not A) (not B)))"
+    },
+    {
+      "text": "从左边取出 $\\lnot A$。",
+      "tactic": "(and-elim-l 1)"
+    },
+    {
+      "text": "从右边取出 $\\lnot B$。",
+      "tactic": "(and-elim-r 1)"
+    },
+    {
+      "text": "用 `not-elim` 拆开 $\\lnot A$，得到 $A \\to \\bot$。",
+      "tactic": "(not-elim 2)"
+    },
+    {
+      "text": "同理，拆开 $\\lnot B$，得到 $B \\to \\bot$。",
+      "tactic": "(not-elim 3)"
+    },
+    {
+      "text": "要证明 $\\lnot (A \\lor B)$——也就是 $(A \\lor B) \\to \\bot$——先假设 $A \\lor B$。",
+      "tactic": "(assume (or A B))"
+    },
+    {
+      "text": "[disjunction|析取]的第一种情形：假设 $A$。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "用 `and-intro` 把 $A$ 和 $A \\to \\bot$（第4步）合并到同一个[context|上下文]里。",
+      "tactic": "(and-intro 7 4)"
+    },
+    {
+      "text": "从[conjunction|合取]中取出 $A$。",
+      "tactic": "(and-elim-l 8)"
+    },
+    {
+      "text": "从[conjunction|合取]中取出 $A \\to \\bot$。",
+      "tactic": "(and-elim-r 8)"
+    },
+    {
+      "text": "[modus-ponens|蕴含消去]：$A \\to \\bot$ 碰上 $A$——[contradiction|矛盾]！$\\bot$。",
+      "tactic": "(->-elim 10 9)"
+    },
+    {
+      "text": "第二种情形：假设 $B$。",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "把 $B$ 和 $B \\to \\bot$（第5步）合并。",
+      "tactic": "(and-intro 12 5)"
+    },
+    {
+      "text": "取出 $B$。",
+      "tactic": "(and-elim-l 13)"
+    },
+    {
+      "text": "取出 $B \\to \\bot$。",
+      "tactic": "(and-elim-r 13)"
+    },
+    {
+      "text": "[modus-ponens|蕴含消去]：$B \\to \\bot$ 碰上 $B$——又是 $\\bot$。",
+      "tactic": "(->-elim 15 14)"
+    },
+    {
+      "text": "用 `or-elim` 对第6步做[proof-by-cases|分情形证明]（第11步和第16步）。$A$ 和 $B$ 都通向 $\\bot$，所以 $A \\lor B$ 也通向 $\\bot$。",
+      "tactic": "(or-elim 6 11 16)"
+    },
+    {
+      "text": "[assumption|消去] $A \\lor B$，得到 $(A \\lor B) \\to \\bot$——也就是 $\\lnot (A \\lor B)$。",
+      "tactic": "(->-intro (or A B) 17)"
+    },
+    {
+      "text": "[assumption|消去]最初的[conjunction|合取]。非此非彼，问无可问。",
+      "tactic": "(->-intro (and (not A) (not B)) 18)"
+    }
+  ],
+  "unlocks": []
+}

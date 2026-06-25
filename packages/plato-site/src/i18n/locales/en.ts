@@ -13,6 +13,22 @@ export default {
     title: '? ⊢ Plato',
     continue: 'Continue',
     startFresh: '→ Start Fresh',
+    customProblem: '→ Go custom',
+  },
+
+  custom: {
+    title: 'Custom Problem',
+    desc: 'Load a problem or a problem set from a URL or a JSON file.',
+    urlPlaceholder: 'https://example.com/problem.json',
+    loadUrl: 'Load from URL',
+    loadFile: 'Load from File',
+    back: '← Back',
+    invalidJson: 'Invalid JSON. Make sure it matches the problem format.',
+    fetching: 'Fetching…',
+    agreed: 'Agree',
+    singleLoaded: '1 problem loaded.',
+    setLoaded: '{n} problems loaded.',
+    viewSpec: 'Problem format spec ↗',
   },
 
   problem: {

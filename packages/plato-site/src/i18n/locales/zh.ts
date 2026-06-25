@@ -13,6 +13,22 @@ export default {
         title: '? ⊢ 柏拉图',
         continue: '继续',
         startFresh: '→ 重新开始',
+        customProblem: '→ 自定义题目',
+    },
+
+    custom: {
+        title: '自定义题目',
+        desc: '从 URL 或 JSON 文件加载题目或题目集。',
+        urlPlaceholder: 'https://example.com/problem.json',
+        loadUrl: '从 URL 加载',
+        loadFile: '从文件加载',
+        back: '← 返回',
+        invalidJson: 'JSON 格式有误，请确认其符合题目格式。',
+        fetching: '加载中…',
+        agreed: '赞成',
+        singleLoaded: '已加载 1 道题目。',
+        setLoaded: '已加载 {n} 道题目。',
+        viewSpec: '题目格式说明 ↗',
     },
 
     problem: {

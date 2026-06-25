@@ -1,0 +1,49 @@
+{
+  "description": "When everything says no, nowhere can say yes.",
+  "goal": "(-> (forall x (not (App P x))) (not (exists x (App P x))))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "The reverse quantifier-negation law: if everything fails to be $P$, then nothing can be $P$. $\\forall x. \\lnot P(x) \\to \\lnot \\exists x. P(x)$. The proof goes: assume something exists, open the [witness|witness], use the universal to get a [contradiction|contradiction], and close. Start by assuming $\\forall x. \\lnot P(x)$.",
+      "tactic": null
+    },
+    {
+      "text": "Assume $\\forall x. \\lnot P(x)$.",
+      "tactic": "(assume (forall x (not (App P x))))"
+    },
+    {
+      "text": "To prove $\\lnot \\exists x. P(x)$ — i.e. $\\exists x. P(x) \\to \\bot$ — assume the existential.",
+      "tactic": "(assume (exists x (App P x)))"
+    },
+    {
+      "text": "Open the existential with a fresh [witness|witness] $y$ using `fix`.",
+      "tactic": "(fix y)"
+    },
+    {
+      "text": "Assume the [witness|witness] satisfies $P$: $P(y)$.",
+      "tactic": "(assume (App P y))"
+    },
+    {
+      "text": "Instantiate the universal (step 1) with the [witness|witness] term $y$ using `forall-elim` to get $\\lnot P(y)$.",
+      "tactic": "(forall-elim 1 y)"
+    },
+    {
+      "text": "$\\lnot P(y)$ is $P(y) \\to \\bot$. Apply [modus-ponens|modus ponens] on step 5 ($\\lnot P(y)$) and step 4 ($P(y)$) to reach $\\bot$.",
+      "tactic": "(->-elim 5 4)"
+    },
+    {
+      "text": "Close the existential with `exists-elim`: the existential (step 2), the [witness|witness] subproof (step 6), and the witness variable $y$. The engine [assumption|discharges] both the witness [atom|atom] and $P(y)$.",
+      "tactic": "(exists-elim 2 6 y)"
+    },
+    {
+      "text": "[assumption|Discharge] the existential to get $\\exists x. P(x) \\to \\bot$ — that is, $\\lnot \\exists x. P(x)$.",
+      "tactic": "(->-intro (exists x (App P x)) 7)"
+    },
+    {
+      "text": "[assumption|Discharge] the universal to finish. When everywhere is wrong, nowhere is right.",
+      "tactic": "(->-intro (forall x (not (App P x))) 8)"
+    }
+  ],
+  "unlocks": []
+}

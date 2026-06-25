@@ -1,0 +1,45 @@
+{
+  "description": "Two promises, served one at a time.",
+  "goal": "(-> (-> (and A B) C) (-> A (-> B C)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "This is **exportation** (or currying, if you speak functional): $A \\land B \\to C$ folds into $A \\to B \\to C$. You're trading a pair of [assumption|assumptions] for a chain of [implication|implications]. Start by assuming $A \\land B \\to C$.",
+      "tactic": null
+    },
+    {
+      "text": "Assume $A \\land B \\to C$.",
+      "tactic": "(assume (-> (and A B) C))"
+    },
+    {
+      "text": "You're now proving $A \\to B \\to C$ under that [assumption|assumption]. Assume $A$ — the first link in the chain.",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "Under $A$, you need $B \\to C$. Assume $B$ — the second link.",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "You have $A$ and $B$ individually. Bundle them into a [conjunction|conjunction] with `and-intro` so you can feed them to your big [assumption|assumption] from step 1.",
+      "tactic": "(and-intro 2 3)"
+    },
+    {
+      "text": "[modus-ponens|Modus ponens] with $A \\land B \\to C$ (step 1) and your fresh $A \\land B$ (step 4) lands you squarely at $C$.",
+      "tactic": "(->-elim 1 4)"
+    },
+    {
+      "text": "[assumption|Discharge] $B$ to wrap the inner [implication|implication].",
+      "tactic": "(->-intro B 5)"
+    },
+    {
+      "text": "[assumption|Discharge] $A$ to wrap the middle [implication|implication].",
+      "tactic": "(->-intro A 6)"
+    },
+    {
+      "text": "Finally, [assumption|discharge] the big $A \\land B \\to C$ to finish. Two promises, delivered one at a time.",
+      "tactic": "(->-intro (-> (and A B) C) 7)"
+    }
+  ],
+  "unlocks": []
+}

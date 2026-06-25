@@ -47,7 +47,7 @@ const proofLines = ref<string[]>([])
 const roadmapOpen = ref(false)
 
 const sortedEntries = computed(() =>
-  [...roadmap.entries].sort((a, b) => a.idx - b.idx)
+    [...roadmap.entries].sort((a, b) => a.idx - b.idx)
 )
 
 watch(() => props.problemIdx, () => {
@@ -88,8 +88,6 @@ function onSolved(lines: string[]) {
         <div class="root">
             <div class="header">
                 <button class="logo" @click="emit('home')">{{ t('problem.logo') }}</button>
-                <span class="sep">/</span>
-                <span>{{ props.problemIdx + 1 }} / {{ props.problems.length }}</span>
                 <span class="spacer"></span>
                 <span class="goal-chip">{{ problem.goal }}</span>
                 <span class="spacer"></span>
@@ -150,16 +148,12 @@ function onSolved(lines: string[]) {
             <div class="footer">
                 <button @click="emit('prev')" :disabled="!hasPrev" class="nav-btn">{{ t('problem.prev') }}</button>
                 <div class="footer-roadmap" @click="roadmapOpen = true">
-                  <div class="mini-track">
-                    <div
-                      v-for="(entry, i) in sortedEntries"
-                      :key="entry.idx"
-                      class="mini-dot"
-                      :class="{ latest: i === sortedEntries.length - 1 }"
-                    >
-                      <span class="mini-dot-num">{{ i + 1 }}</span>
+                    <div class="mini-track">
+                        <div v-for="(entry, i) in sortedEntries" :key="entry.idx" class="mini-dot"
+                            :class="{ latest: i === sortedEntries.length - 1 }">
+                            <span class="mini-dot-num">{{ i + 1 }}</span>
+                        </div>
                     </div>
-                  </div>
                 </div>
                 <button @click="emit('next')" :disabled="!hasNext" class="nav-btn">{{ t('problem.next') }}</button>
             </div>
@@ -275,6 +269,7 @@ function onSolved(lines: string[]) {
     transition: opacity 0.15s;
     min-width: 0;
 }
+
 .footer-roadmap:hover {
     opacity: 0.7;
 }
@@ -287,46 +282,85 @@ function onSolved(lines: string[]) {
 }
 
 .mini-track {
-    display: flex; gap: 4px;
+    display: flex;
+    gap: 4px;
     justify-content: center;
     flex-wrap: wrap;
 }
+
 .mini-dot {
-    width: 22px; height: 22px;
+    width: 22px;
+    height: 22px;
     border-radius: 100%;
     background: var(--color-subtle-bg);
     border: 1px solid var(--color-border);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.3s ease;
     animation: dotAppear 0.4s ease both;
 }
-.mini-dot:nth-child(1) { animation-delay: 0s; }
-.mini-dot:nth-child(2) { animation-delay: 0.05s; }
-.mini-dot:nth-child(3) { animation-delay: 0.1s; }
-.mini-dot:nth-child(4) { animation-delay: 0.15s; }
-.mini-dot:nth-child(5) { animation-delay: 0.2s; }
-.mini-dot:nth-child(6) { animation-delay: 0.25s; }
+
+.mini-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.mini-dot:nth-child(2) {
+    animation-delay: 0.05s;
+}
+
+.mini-dot:nth-child(3) {
+    animation-delay: 0.1s;
+}
+
+.mini-dot:nth-child(4) {
+    animation-delay: 0.15s;
+}
+
+.mini-dot:nth-child(5) {
+    animation-delay: 0.2s;
+}
+
+.mini-dot:nth-child(6) {
+    animation-delay: 0.25s;
+}
+
 .mini-dot.latest {
     background: var(--color-primary);
     border-color: var(--color-primary);
 }
+
 .mini-dot-num {
-    font-size: 10px; font-weight: 600;
+    font-size: 10px;
+    font-weight: 600;
     color: var(--color-muted);
 }
+
 .mini-dot.latest .mini-dot-num {
     color: var(--color-primary-fg);
 }
+
 .mini-label {
-    font-size: 10px; font-weight: 600;
+    font-size: 10px;
+    font-weight: 600;
     letter-spacing: 0.04em;
     color: var(--color-border-strong);
 }
 
 @keyframes dotAppear {
-  0%   { transform: scale(0); opacity: 0; }
-  60%  { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .not-found {
