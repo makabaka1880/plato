@@ -219,8 +219,9 @@ function renderTex(text: string): string {
                     <button class="tab" :class="{ active: activeTab === 'glossary' }" @click="activeTab = 'glossary'">{{
                         t('help.tabs.glossary') }}</button>
                 </div>
-                <span v-if="activeTab === 'commands'" class="count">{{ t('help.unlocked', { n: unlockedCount })
-                    }}</span>
+                <span class="count">
+                    <template v-if="activeTab === 'commands'">{{ t('help.unlocked', { n: unlockedCount }) }}</template>
+                </span>
                 <button class="close-btn" @click="emit('close')">&times;</button>
             </div>
 

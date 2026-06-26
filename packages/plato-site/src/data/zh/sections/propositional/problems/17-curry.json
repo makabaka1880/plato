@@ -5,23 +5,23 @@
     "guides": [],
     "hints": [
         {
-            "text": "目标：$(A \\to B \\to C) \\to (A \\land B \\to C)$。这是柯里化的反方向——把\"一次接收一个参数\"变回\"一次接收两个参数\"。",
+            "text": "目标是 $A \\to (B \\to A \\land B)$。最外层的 [connective|连接词] 是一个 [implication|蕴含]，所以第一步应该是假设它的前件 $A$。",
             "tactic": "(assume A)"
         },
         {
-            "text": "假设 $A \\to B \\to C$。这是一个[connective|连接词]堆起来的链条：先给 $A$，得到 $B \\to C$；再给 $B$，得到 $C$。两步触发。",
+            "text": "目前在 [assumption|假设] $A$ 之下。要证明剩下的 [implication|蕴含] $B \\to A \\land B$，来假设它的前件 $B$。",
             "tactic": "(assume B)"
         },
         {
-            "text": "再假设 $A \\land B$。你同时有 $A$ 和 $B$，但它们被捆在一个[conjunction|合取]里——需要先松绑。",
+            "text": "漂亮。现在第 1 步有 $A$，第 2 步有 $B$。用 `and-intro` 把它们捆成一个 [conjunction|合取]。",
             "tactic": "(and-intro 1 2)"
         },
         {
-            "text": "用 `and-elim-l` 取出 $A$。用 $A$ 去喂 $A \\to B \\to C$——用 $\\to$-elim 得到 $B \\to C$。",
+            "text": "第 3 步拿到了 $A \\land B$，现在可以消去最近的 [assumption|假设] $B$，用 `->-intro`。",
             "tactic": "(->-intro B 3)"
         },
         {
-            "text": "用 `and-elim-r` 取出 $B$。现在 $B \\to C$ 和 $B$ 都在手上——再来一次 [modus-ponens|肯定前件]，得 $C$。",
+            "text": "快到了！第 4 步给了我们 $B \\to A \\land B$。消去最初的 [assumption|假设] $A$，最后一脚 `->-intro` 冲过终点线。",
             "tactic": "(->-intro A 4)"
         }
     ],

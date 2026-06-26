@@ -4,27 +4,27 @@
   "premise": [],
   "guides": [
     {
-      "text": "要证明一个[negation|否定式] $\\lnot P$，你不需要直接论证\"$P$ 怎么怎么不是真的\"。用 [reductio-ad-absurdum|归谬法]：暂时[assumption|假设] $P$，如果你的假设导致[contradiction|矛盾]，那 $\\lnot P$ 就自动成立了。",
+      "text": "目标是 $\\lnot (A \\land \\lnot A)$。这就是**[contradiction|矛盾]律**：没有 [proposition|命题] 可以同时为真又为假。要证明一个 [negation|否定]，我们用**[reductio-ad-absurdum|归谬法]**——假设我们想推翻的东西，然后证明它会导致矛盾。",
       "tactic": null
     },
     {
-      "text": "归谬法需要 `not-intro` 规则。它要三个参数：你要消去的[formula|公式]，一个证明某个命题 $q$ 的步骤，以及一个证明 $\\lnot q$ 的步骤——也就是 $q$ 的矛盾。意思就是：\"假设 $P$，然后同时推出 $q$ 和 $\\lnot q$——这说明 $P$ 的假设是立不住的。\"",
+      "text": "策略：假设 $A \\land \\lnot A$，然后证明它里面装着两个互相矛盾的命题——$A$ 和 $\\lnot A$。规则 `not-intro` 会帮我们推出 $\\lnot (A \\land \\lnot A)$。先做出这个 [assumption|假设]。",
       "tactic": "(assume (and A (not A)))"
     },
     {
-      "text": "目标：$A \\to \\lnot \\lnot A$。如果 $A$ 是真的，那 $A$ 就\"不是假的\"——这个需求很朴素。先假设 $A$。现在需要搞出 $\\lnot \\lnot A$，也就是 $\\lnot A \\to \\bot$ 然后推导矛盾。",
+      "text": "拆出左边的合取支：$A$。",
       "tactic": "(and-elim-l 1)"
     },
     {
-      "text": "要制造 [contradiction|矛盾]，先假设 $\\lnot A$。现在[context|上下文]里面有 $A$ 和 $\\lnot A$——这俩人在一起要炸。从 $\\lnot A$ 用 `not-elim` 转化成 $A \\to \\bot$，然后配上 $A$ 推出 $\\bot$。现在我们手上有矛盾了——$\\bot$ 是证据，$A$ 是被 $\\lnot A$ 攻击的那个命题。",
+      "text": "再拆出右边的：$\\lnot A$。现在你同时持有 $A$（第 2 步）和 $\\lnot A$（第 3 步）——一个 [contradiction|矛盾]。",
       "tactic": "(and-elim-r 1)"
     },
     {
-      "text": "用 `not-intro` 消去 $\\lnot A$ 并得到 $\\lnot \\lnot A$。参数：$(\\lnot A)$，然后两个产生[conclusion|矛盾结论] 的步骤号。$\\lnot A$ 这条假设自己把自己玩炸了。",
+      "text": "`not-intro` 规则接受三个参数：要被否定的 [formula|公式]，以及两个步骤——它们（a）都在 [context|上下文] 中包含那个公式，且（b）证明了互相矛盾的东西。第 2 步和第 3 步共享 $A \\land \\lnot A$ 在上下文中，且它们的 [conclusion|结论] 是 $A$ 和 $\\lnot A$——完美。结果消去 [assumption|假设] 并产生它的 [negation|否定]。",
       "tactic": "(not-intro (and A (not A)) 2 3)"
     },
     {
-      "text": "最后[discharge|消去] $A$。$A \\to \\lnot \\lnot A$ 证毕。一个基本事实：真的事情不会是假的。",
+      "text": "完成了。没有 [assumption|假设] 残留在上下文中——[contradiction|矛盾]律作为无条件真理独立成立。",
       "tactic": null
     }
   ],

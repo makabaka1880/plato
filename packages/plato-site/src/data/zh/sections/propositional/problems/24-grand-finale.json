@@ -5,51 +5,51 @@
     "guides": [],
     "hints": [
         {
-            "text": "命题逻辑部分的压轴题。目标：$(\\lnot A \\to A) \\to A$。这个定理看起来有点绕——\"如果 '非A' 能推出 A，那 A 必定成立\"。细想想：如果有样东西，连它的否定都替它说话，那它除了是真的还能是什么？",
+            "text": "目标是 $(A \\to B \\land \\lnot B) \\to \\lnot A$——伪装成合取形式的**逆否命题**。如果 $A$ [implication|蕴含] $B$ 但 $B$ 为假，那么 $A$ 必然也为假。你需要 $\\land$-消除、$\\to$-消除、[negation|否定] 规则和 $\\to$-引入。从假设整个左边开始。",
             "tactic": null
         },
         {
-            "text": "假设 $\\lnot A \\to A$。我们要从中推出 $A$。反向思维：先假设 $\\lnot A$，看看会发生什么。",
+            "text": "假设这个 [conjunction|合取]：$A \\to B$ 和 $\\lnot B$。",
             "tactic": "(assume (and (-> A B) (not B)))"
         },
         {
-            "text": "现在[context|上下文]里有 $\\lnot A \\to A$ 和 $\\lnot A$。用 `->-elim`——$\\lnot A \\to A$ 碰到 $\\lnot A$，推出 $A$。等一下——我们手上有 $A$ 又有 $\\lnot A$？这不是矛盾吗？",
+            "text": "把 [conjunction|合取] 拆开，分别拿到 $A \\to B$ 和 $\\lnot B$。",
             "tactic": null
         },
         {
-            "text": "是的——从 $\\lnot A$ 我们推出了 $A$，又同时持有 $\\lnot A$。用 `not-elim` 把 $\\lnot A$ 变成 $A \\to \\bot$。配合 $A$ 推出 $\\bot$。$\\lnot A$ 自爆了。",
+            "text": "从左半边提取 $A \\to B$。",
             "tactic": "(and-elim-l 1)"
         },
         {
-            "text": "现在我们有 $\\lnot A$（假设）和 $\\bot$（推出的矛盾）。根据 `not-intro` 规则，这说明 $\\lnot A$ 这条假设撑不住——于是得出 $\\lnot \\lnot A$。",
+            "text": "从右半边提取 $\\lnot B$。",
             "tactic": "(and-elim-r 1)"
         },
         {
-            "text": "用 `dne` 从 $\\lnot \\lnot A$ 直接剥出 $A$。",
+            "text": "从 $\\lnot B$ 出发，用 `not-elim` 得到 $B \\to \\bot$。",
             "tactic": "(not-elim 3)"
         },
         {
-            "text": "用 [modus-ponens|肯定前件] 配上 $A \\to B$（步骤 2）和你刚拿到的 $A$，得到 $B$。",
+            "text": "现在要证明 $\\lnot A$。用 [contradiction|反证法]：假设 $A$，然后推出一个 [proposition|命题] 和它的 [negation|否定] 同时成立。先假设 $A$。",
             "tactic": "(assume A)"
         },
         {
-            "text": "现在还需要另一个子证明，在 $A$ 的 [context|上下文] 里证明 $\\lnot B$。用 `and-intro` 把 $A$ 和 $\\lnot B$ 绑在一起。",
+            "text": "用 [modus-ponens|肯定前件]：$A \\to B$（第 2 步）配上刚拿到的 $A$，推出 $B$。",
             "tactic": "(->-elim 2 5)"
         },
         {
-            "text": "用 `and-elim-r` 从合并的 [context|上下文] 中提取 $\\lnot B$。现在你一边有证明 $B$ 的子证明，一边有证明 $\\lnot B$ 的子证明。",
+            "text": "现在还需要另一个子证明，在 $A$ 的 [context|上下文] 里证明 $\\lnot B$。用 `and-intro` 把 $A$ 的 [assumption|假设] 和第 3 步的 $\\lnot B$ 合并。",
             "tactic": "(and-intro 5 3)"
         },
         {
-            "text": "两个子证明共享 $A$ 的 [context|上下文]，并且证明了矛盾的 [conclusion|结论]（$B$ 和 $\\lnot B$）。用 `not-intro` 消去 $A$，得出 $\\lnot A$。",
+            "text": "用 `and-elim-r` 从合并的 [context|上下文] 中提取 $\\lnot B$。现在你有了两个子证明：第 6 步证明 $B$，第 8 步证明 $\\lnot B$——两者都在 $A$ 的上下文中。",
             "tactic": "(and-elim-r 7)"
         },
         {
-            "text": "最后消去 $\\lnot A \\to A$。定理得证。这个定理在直觉主义逻辑里不可证——它等价于排中律的一种形式。经典逻辑的专属风景。",
+            "text": "第 6 步和第 8 步共享 $A$ 在 [context|上下文] 里，并且证明了矛盾的 [conclusion|结论]（$B$ 和 $\\lnot B$）。用 `not-intro` 得出 $\\lnot A$。",
             "tactic": "(not-intro A 6 8)"
         },
         {
-            "text": "Discharge the original [conjunction|conjunction] [assumption|assumption] to finish the [implication|implication].",
+            "text": "消去最初的 [conjunction|合取] [assumption|假设]，完成这个 [implication|蕴含]。",
             "tactic": "(->-intro (and (-> A B) (not B)) 9)"
         }
     ],

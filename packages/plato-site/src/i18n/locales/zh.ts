@@ -7,6 +7,7 @@ export default {
         loading: '加载 WASM 中…',
         submit: '提交',
         error: '错误',
+        copied: '已复制！',
     },
 
     home: {
@@ -19,6 +20,7 @@ export default {
         contribute: '参与贡献',
         about: '关于',
         story: '幕后',
+        contact: '联系作者',
     },
 
     custom: {

@@ -1,33 +1,33 @@
 {
-  "description": "皮之不存，毛将焉附。",
-  "goal": "(-> (not A) (-> A _|_))",
-  "premise": [],
-  "guides": [
-    {
-      "text": "到目前为止我们只看了\"正面的\"逻辑——讨论的都是什么东西为真。现在引入 [contradiction|否定]。$\\lnot$ 或 `not` 代表\"非\"——它把真值翻转。",
-      "tactic": null
-    },
-    {
-      "text": "$\\lnot P$ 到底是什么意思？在这个系统里，$\\lnot P$ 被定义为 $P \\to \\bot$，其中 $\\bot$（读作'底'或'谬'，之后会遇到它的对偶 $\\top$ '真'）是[contradiction|矛盾]/\"谬\"——那个永远不成立的东西。所以\"非 $P$\"的意思就是\"如果 $P$ 是真的，那就会导致荒谬\"。",
-      "tactic": "(assume (not A))"
-    },
-    {
-      "text": "`not-elim` 规则从 $\\lnot p$ 推导出 $p \\to \\bot$。本质上就是把定义的包装拆开——从\"非 $P$\"里提取出那个隐含的蕴含式。目标：$\\lnot P \\to (P \\to Q)$。这条定理说：\"如果 $P$ 是假的，那么 $P$ [implication|蕴含] 任何东西\"。",
-      "tactic": "(not-elim 1)"
-    },
-    {
-      "text": "假设 $\\lnot P$... 再假设 $P$... 用 `not-elim` 把 $\\lnot P$（那个[negation|否定]）转化成 $P \\to \\bot$。现在 $P \\to \\bot$ 和 $P$ 都在手上。用 $\\to$-elim 推出 $\\bot$——矛盾！从[contradiction|矛盾]可以推出任何东西——包括 $Q$。用 `ex-falso` 命令——它正是做这件事的。",
-      "tactic": "(->-intro (not A) 2)"
-    }
-  ],
-  "hints": [],
-  "unlocks": [
-    {
-      "name": "not-elim",
-      "rule": "\\frac{\\Gamma \\vdash \\lnot p}{\\Gamma \\vdash p \\to \\bot}",
-      "description": "把 $\\lnot p$ 翻译成 $p \\to \\bot$——揭示了\"非\"的真面目：它是一个导致荒谬的承诺。",
-      "syntax": "(not-elim N)",
-      "example": "1. ⊢ ¬P\n2. (not-elim 1)  →  ⊢ P → ⊥"
-    }
-  ]
+    "description": "皮之不存，毛将焉附。",
+    "goal": "(-> (not A) (-> A _|_))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "当前目标是 $\\lnot A \\to (A \\to \\bot)$。通俗来说：如果 $\\lnot A$ 成立，那么再假设 $A$ 就会让你陷入 [contradiction|矛盾]（$\\bot$，读作‘底’或‘谬’——我们会在后面的关卡中遇到它的对偶 $\\top$ ‘顶/真’）。这正是我们系统中 [negation|否定] 的**核心含义**——$\\lnot A$ 本质上就是 $A$ [implication|蕴含] 了谬误。",
+            "tactic": null
+        },
+        {
+            "text": "一如既往，面对一个 [implication|蕴含式]，我们先假设它的左手边。这次是 $\\lnot A$ —— 一个我们之前没处理过的复合 [formula|公式]。底层引擎会将 `(not A)` 解析为 $\\lnot A$。",
+            "tactic": "(assume (not A))"
+        },
+        {
+            "text": "`not-elim` 规则可以将一个 [negation|否定] 转换成它背后所代表的那个 [implication|蕴含式]。从步骤 1 的 $\\lnot A$ 出发，它会产生 $A \\to \\bot$ —— 即‘$A$ 蕴含荒谬’。此时 [context|上下文] 保持不变。",
+            "tactic": "(not-elim 1)"
+        },
+        {
+            "text": "现在我们在 [assumption|假设] $\\lnot A$ 的前提下得到了 $A \\to \\bot$。使用 `->-intro` 来释放假设并收尾吧！",
+            "tactic": "(->-intro (not A) 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "not-elim",
+            "rule": "\\frac{\\Gamma \\vdash \\lnot p}{\\Gamma \\vdash p \\to \\bot}",
+            "description": "从 $\\lnot p$ 推导出 $p \\to \\bot$ —— 揭示了“非”的真面目：剥开否定的外壳，露出指向荒谬的蕴含式。",
+            "syntax": "(not-elim N)",
+            "example": "1. ⊢ ¬P\n2. (not-elim 1)  →  ⊢ P → ⊥"
+        }
+    ]
 }

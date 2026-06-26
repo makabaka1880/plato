@@ -84,6 +84,18 @@ function sectionProgressPercent(sectionId: string): number {
 const continueBtn = ref<HTMLButtonElement | null>(null)
 const startBtn = ref<HTMLButtonElement | null>(null)
 
+const copied = ref(false)
+
+async function copyEmail() {
+    try {
+        await navigator.clipboard.writeText('makabaka1880@outlook.com')
+        copied.value = true
+        setTimeout(() => { copied.value = false }, 1800)
+    } catch {
+        // fallback silently
+    }
+}
+
 onMounted(() => {
     if (hasProgress.value) continueBtn.value?.focus()
     else startBtn.value?.focus()
@@ -149,6 +161,11 @@ onMounted(() => {
             <router-link to="/about">{{ t('home.about') }}</router-link>
             <span class="sub-sep">·</span>
             <a href="https://blog.makabaka1880.xyz/articles/260625-building-plato">{{ t('home.story') }}</a>
+            <span class="sub-sep">·</span>
+            <span class="contact-wrap">
+                <span class="contact-trigger" @click="copyEmail">{{ t('home.contact') }}</span>
+                <span class="contact-pop" :class="{ copied }">{{ copied ? t('common.copied') : 'makabaka1880@outlook.com' }}</span>
+            </span>
         </div>
     </div>
 </template>
@@ -280,5 +297,29 @@ onMounted(() => {
     }
 
     .sub-sep { color: var(--color-border); user-select: none; }
+
+    .contact-wrap { position: relative; }
+    .contact-trigger {
+        color: var(--color-subtle); padding: 2px 6px; cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+        border-bottom: 1px solid transparent;
+        &:hover { color: var(--color-primary); border-bottom-color: var(--color-primary-hover); }
+    }
+    .contact-pop {
+        position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+        margin-bottom: 6px; padding: 4px 10px; border-radius: 4px;
+        background: var(--color-fg); color: var(--color-bg);
+        font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none;
+        transition: opacity 0.15s;
+        &::after {
+            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border: 4px solid transparent; border-top-color: var(--color-fg);
+        }
+        &.copied {
+            opacity: 1; background: var(--color-primary); color: var(--color-primary-fg);
+            &::after { border-top-color: var(--color-primary); }
+        }
+    }
+    .contact-wrap:hover .contact-pop:not(.copied) { opacity: 1; }
 }
 </style>

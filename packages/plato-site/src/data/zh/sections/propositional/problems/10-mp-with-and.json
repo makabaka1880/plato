@@ -5,27 +5,27 @@
     "guides": [],
     "hints": [
         {
-            "text": "前提：$A \\land B$，$A \\to C$。目标：$C$。有点绕，但 [modus-ponens|肯定前件] 和合取消除配合起来就能搞定。",
+            "text": "目标是 $(A \\land (A \\to B)) \\to B$。$A$ 和承诺 $A \\to B$ 被打包在一起给了你。只要把它们拆开，[modus-ponens|肯定前件] 就能搞定剩下的。先从假设这个 [conjunction|合取] 开始。",
             "tactic": null
         },
         {
-            "text": "$A \\to C$ 需要一个 $A$ 来触发它。但我们被给的是一条[conjunction|合取] $A \\land B$，不是单独的 $A$——需要先拆。",
+            "text": "假设这个捆绑的承诺：$A \\land (A \\to B)$。",
             "tactic": "(assume (and A (-> A B)))"
         },
         {
-            "text": "用 `and-elim-l` 从合取里取出 $A$。$A \\land B$ 的里面本来就藏着 $A$——你只需要把它拿出来。",
+            "text": "拆出左半边——这就是 $A$，那把钥匙。",
             "tactic": "(and-elim-l 1)"
         },
         {
-            "text": "现在 $A \\to C$ 和 $A$ 都在手上了。用 [modus-ponens|肯定前件]——推出 $C$。",
+            "text": "再拆出右半边——这就是 $A \\to B$，那条承诺本身。",
             "tactic": "(and-elim-r 1)"
         },
         {
-            "text": "证毕。你会发现很多证明都是\"拆包裹 + 肯定前件\"这个模式的变种。",
+            "text": "承诺在第 3 步，钥匙在第 2 步。用 [modus-ponens|肯定前件] 来解锁 $B$。",
             "tactic": "(->-elim 3 2)"
         },
         {
-            "text": "[discharge|消去] 假设，收工。",
+            "text": "[discharge|消去] 这个 [assumption|假设]，收工。",
             "tactic": "(->-intro (and A (-> A B)) 4)"
         }
     ],

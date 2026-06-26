@@ -5,18 +5,18 @@
     "guides": [],
     "hints": [
         {
-            "text": "目标是一个嵌套的 [implication|蕴含式]：外面套着 $A \\to B$，里面还嵌着两层箭头。别慌——一层一层来，这是证明嵌套蕴含的基本功。先假设最外层 $A \\to B$。"
+            "text": "目标是一个 [implication|蕴含式] $A \\to B$。常规思路：假设左边，然后证明右边。先从这里开始。"
         },
         {
-            "text": "现在外面又有一层箭头。再破一次：假设 $A \\to C$。你的[context|上下文]里已经有两个假设了。",
+            "text": "假设 $A$，把它拉进 [context|上下文]。要证明 $A \\land A$，你需要同一个命题的两份拷贝——一边一个。",
             "tactic": "(assume A)"
         },
         {
-            "text": "再破一层：假设 $A$。现在上下文里已经有了三个假设，越来越热闹了。目标已经很近——我们要 $A \\to (B \\land C)$。",
+            "text": "`and-intro` 接受两个步骤编号，产生它们的 [conjunction|合取]。没人说过这两个编号不能是**同一个步骤**。",
             "tactic": "(and-intro 1 1)"
         },
         {
-            "text": "从 $A \\to B$ 和 $A$ 出发，用 `->-elim`（也就是 [modus-ponens|肯定前件]）推出 $B$。同样，从 $A \\to C$ 和 $A$ 推出 $C$。现在你既有 $B$ 也有 $C$ 了。",
+            "text": "你已经在假设 $A$ 的前提下证明了 $A \\land A$。现在用 `->-intro` [discharge|消去] 那个 [assumption|假设]，把它包进你需要的 [implication|蕴含] 里。",
             "tactic": "(->-intro A 2)"
         }
     ],

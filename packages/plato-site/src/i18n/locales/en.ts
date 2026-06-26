@@ -7,6 +7,7 @@ export default {
         loading: 'Loading WASM…',
         submit: 'submit',
         error: 'Error',
+        copied: 'Copied!',
     },
 
     home: {
@@ -19,6 +20,7 @@ export default {
         contribute: 'Contribute',
         about: 'About',
         story: 'Behind the Scenes',
+        contact: 'Contact',
     },
 
     custom: {
@@ -41,7 +43,7 @@ export default {
         logo: 'Plato',
         preferences: 'Preferences',
         makeMeBelieve: 'MAKE ME BELIEVE',
-        premise: 'PREMISE',
+        premise: 'ASSUMPTIONS',
         goal: 'GOAL',
         agree: 'Agree',
         victory: 'I am Convinced.',
