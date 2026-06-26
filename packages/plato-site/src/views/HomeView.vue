@@ -273,9 +273,10 @@ onMounted(() => {
     margin-top: 8px; font-size: 12px; color: var(--color-border-strong);
 
     a {
-        color: inherit; text-decoration: none; padding: 2px 6px; cursor: pointer;
-        transition: color 0.15s;
-        &:hover { color: var(--color-muted); }
+        color: var(--color-subtle); text-decoration: none; padding: 2px 6px; cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+        border-bottom: 1px solid transparent;
+        &:hover { color: var(--color-primary); border-bottom-color: var(--color-primary-hover); }
     }
 
     .sub-sep { color: var(--color-border); user-select: none; }

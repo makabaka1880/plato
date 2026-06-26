@@ -125,8 +125,8 @@ onUnmounted(() => {
     table { width: 100%; border-collapse: collapse; margin: 0 0 14px; font-size: 13px; }
     th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--color-border); }
     th { font-weight: 600; color: var(--color-muted); }
-    a { color: var(--color-primary-hover); text-decoration: none;
-      &:hover { text-decoration: underline; }
+    a { color: #3b82b6; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px;
+      &:hover { color: #2563eb; text-decoration-style: solid; }
     }
   }
 }

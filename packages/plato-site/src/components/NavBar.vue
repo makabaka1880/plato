@@ -53,13 +53,16 @@ const emit = defineEmits<{
 %header-link {
     font-family: inherit;
     font-size: 13px;
-    color: var(--color-muted);
+    color: var(--color-subtle);
     padding: 2px 6px;
     border-radius: 4px;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
 
     &:hover {
-        color: var(--color-fg);
+        color: var(--color-primary);
         background: var(--color-subtle-bg);
+        border-bottom-color: var(--color-primary-hover);
     }
 }
 
