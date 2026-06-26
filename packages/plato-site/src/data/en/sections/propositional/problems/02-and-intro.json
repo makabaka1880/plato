@@ -27,12 +27,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "and-intro",
-      "rule": "\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}",
-      "description": "If you've proved $p$ and you've proved $q$, then you've proved $p \\land q$ — they're both true together.",
-      "syntax": "(and-intro N M)",
-      "example": "1. ⊢ P\n2. ⊢ Q\n3. (and-intro 1 2)  →  ⊢ P ∧ Q"
-    }
+    "and-intro"
   ]
 }

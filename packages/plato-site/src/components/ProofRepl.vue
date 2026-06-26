@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n'
 import type { Hint } from '@/types'
 import { usePreferencesStore } from '@/stores/preferences'
 import { loadNlg } from '@/data'
+import { renderNlg } from '@/composables/useNlg'
+import type { StepMeta } from '@/composables/useNlg'
 import InlineLatex from '@/components/InlineLatex.vue'
 import Katex from '@/components/Katex.vue'
 import GuideCard from './GuideCard.vue'
@@ -29,7 +31,7 @@ const props = defineProps<{
     allowedTactics?: string[]
 }>()
 
-const emit = defineEmits<{ stepTaken: []; solved: [proofLines: string[]]; openPrefs: [] }>()
+const emit = defineEmits<{ stepTaken: []; solved: [proofSteps: StepMeta[]]; openPrefs: [] }>()
 
 const prefs = usePreferencesStore()
 const inpEl = ref<HTMLInputElement | null>(null)
@@ -56,11 +58,11 @@ const {
     toggleHint, dismissHint, reset: hintsReset,
 } = useHints(() => props.hints.length)
 
-// ── compiled NLG proof ────────────────────────────────────────────
-const proofLines = computed(() =>
+// ── structured proof steps (locale-free) ──────────────────────────
+const proofSteps = computed(() =>
     entries.value
         .filter(e => e.step !== null && e.meta)
-        .map((e, i) => `${i + 1}. ${nlgText(e.meta!)}`)
+        .map(e => ({ cmdName: e.meta!.cmdName, params: e.meta!.params }))
 )
 const guideInputDisabled = computed(() =>
     visibleGuide.value !== null && !visibleGuide.value.tactic
@@ -118,7 +120,7 @@ function run() {
         emit('stepTaken')
 
         if (props.goal && isGoalResolved(props.goal)) {
-            emit('solved', proofLines.value)
+            emit('solved', proofSteps.value)
         }
     }
     scrollDown()
@@ -236,18 +238,10 @@ function insertTactic(tactic: string) {
 }
 
 // ── NLG rendering ─────────────────────────────────────────────────
-// Keys that hold LaTeX formula values (should be wrapped in $...$ for KaTeX)
-const FORMULA_KEYS = new Set(['F', 'conclusion'])
+const localeMap = computed(() => loadNlg(locale.value))
 
 function nlgText(meta: { cmdName: string; params: Record<string, string> }): string {
-    const nlg = loadNlg(locale.value)
-    const tpl = nlg[meta.cmdName]
-    if (!tpl) return ''
-    return tpl.replace(/\{(\w+)\}/g, (_, key: string) => {
-        const val = meta.params[key] ?? `{${key}}`
-        if (FORMULA_KEYS.has(key)) return '$' + val + '$'
-        return val
-    })
+    return renderNlg(meta.cmdName, meta.params, localeMap.value)
 }
 
 defineExpose({ insertTactic })

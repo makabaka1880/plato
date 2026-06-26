@@ -1,44 +1,26 @@
 import { defineStore } from 'pinia'
 import { resolveGlobalIndex } from '@/data'
+import type { StepMeta } from '@/composables/useNlg'
 
 export interface RoadmapEntry {
     sectionId: string
     sectionIdx: number
+    /** Raw proof steps — NLG lines are generated dynamically from these at display time. */
+    steps: StepMeta[]
+    /** The goal formula (s-expression). */
+    goal: string
+}
+
+const KEY = 'plato-roadmap-v3'
+
+/** Old v2 entries had `proofLines: string[]` and `description: string`. */
+interface V2Entry {
+    sectionId?: string
+    sectionIdx?: number
+    idx?: number
     description: string
     goal: string
     proofLines: string[]
-}
-
-const OLD_KEY = 'plato-roadmap'
-const KEY = 'plato-roadmap-v2'
-
-/** Migrate from old format (global `idx`) to new format (`sectionId` + `sectionIdx`). */
-function migrateOld(): RoadmapEntry[] | null {
-    try {
-        const raw = localStorage.getItem(OLD_KEY)
-        if (raw === null) return null
-        const oldEntries = JSON.parse(raw)
-        if (!Array.isArray(oldEntries) || oldEntries.length === 0) return null
-
-        const newEntries: RoadmapEntry[] = []
-        for (const old of oldEntries) {
-            if (typeof old.idx !== 'number') continue
-            const resolved = resolveGlobalIndex(old.idx)
-            if (resolved) {
-                newEntries.push({
-                    sectionId: resolved.sectionId,
-                    sectionIdx: resolved.sectionIdx,
-                    description: old.description ?? '',
-                    goal: old.goal ?? '',
-                    proofLines: old.proofLines ?? [],
-                })
-            }
-        }
-        // Clean up old key
-        localStorage.removeItem(OLD_KEY)
-        return newEntries.length > 0 ? newEntries : null
-    } catch { /* ignore */ }
-    return null
 }
 
 function load(): RoadmapEntry[] {
@@ -50,11 +32,61 @@ function load(): RoadmapEntry[] {
         }
     } catch { /* ignore */ }
 
-    // Try migration
-    const migrated = migrateOld()
-    if (migrated) return migrated
+    // Migrate from v2 / legacy
+    return migrateOld()
+}
 
-    return []
+/** Migrate from v2 (`plato-roadmap-v2`) and legacy (`plato-roadmap`). */
+function migrateOld(): RoadmapEntry[] {
+    const entries: RoadmapEntry[] = []
+
+    // Try v2 first
+    try {
+        const v2Raw = localStorage.getItem('plato-roadmap-v2')
+        if (v2Raw) {
+            const v2Entries: V2Entry[] = JSON.parse(v2Raw)
+            if (Array.isArray(v2Entries)) {
+                for (const e of v2Entries) {
+                    if (e.sectionId !== undefined && e.sectionIdx !== undefined) {
+                        entries.push({
+                            sectionId: e.sectionId,
+                            sectionIdx: e.sectionIdx,
+                            steps: [],
+                            goal: e.goal ?? '',
+                        })
+                    }
+                }
+            }
+            localStorage.removeItem('plato-roadmap-v2')
+        }
+    } catch { /* ignore */ }
+
+    // Try legacy (global idx)
+    if (entries.length === 0) {
+        try {
+            const oldRaw = localStorage.getItem('plato-roadmap')
+            if (oldRaw) {
+                const oldEntries = JSON.parse(oldRaw)
+                if (Array.isArray(oldEntries)) {
+                    for (const e of oldEntries) {
+                        if (typeof e.idx !== 'number') continue
+                        const resolved = resolveGlobalIndex(e.idx)
+                        if (resolved) {
+                            entries.push({
+                                sectionId: resolved.sectionId,
+                                sectionIdx: resolved.sectionIdx,
+                                steps: [],
+                                goal: e.goal ?? '',
+                            })
+                        }
+                    }
+                }
+                localStorage.removeItem('plato-roadmap')
+            }
+        } catch { /* ignore */ }
+    }
+
+    return entries
 }
 
 function save(entries: RoadmapEntry[]) {

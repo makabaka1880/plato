@@ -1,5 +1,6 @@
 export default {
   assume: '假设 {F} 成立，那么 {conclusion}。',
+  extend: '在第 {n} 行的上下文里多放一个 {F}，{conclusion} 照样成立。',
   fix: '取一个任意的 {x}，就有了 {conclusion}。',
   subst: '第 {n} 行证明的结果不依赖具体符号——把里面的名字换掉，照样得到 {conclusion}。',
   show: '回看第 {n} 步。',
@@ -28,7 +29,7 @@ export default {
 
   'box-intro': '第 {n} 行的证明不依赖任何世俗假设，因此它必然成立：{conclusion}。',
   'box-elim': '第 {n} 行说必然性尊重蕴含关系，而第 {m} 行给出了必然的前提——因此 {conclusion}。',
-      'top-intro': '真随时可证，无需任何前提：{conclusion}。',
-    'diamond-def-rev': '将第 {n} 行的双重否定通过定义折叠回来，得到 {conclusion}。',
-    'diamond-def': '展开第 {n} 行中可能性的定义，得到 {conclusion}。',
+  'top-intro': '真随时可证，无需任何前提：{conclusion}。',
+  'diamond-def-rev': '将第 {n} 行的双重否定通过定义折叠回来，得到 {conclusion}。',
+  'diamond-def': '展开第 {n} 行中可能性的定义，得到 {conclusion}。',
 }

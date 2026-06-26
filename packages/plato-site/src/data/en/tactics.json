@@ -7,6 +7,13 @@
     "rule": "\\frac{}{\\{p\\} \\vdash p}"
   },
   {
+    "name": "extend",
+    "description": "From $\\Gamma \\vdash p$, you can add any well-formed formula $q$ to the context — weakening the claim without changing the conclusion.",
+    "syntax": "(extend F N)",
+    "example": "1. {P} ⊢ Q\n2. (extend R 1)  →  {P, R} ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma, q \\vdash p}"
+  },
+  {
     "name": "ex-falso",
     "description": "From a contradiction ($\\bot$), you can derive any formula $p$. The principle of explosion — *ex falso quodlibet*.",
     "syntax": "(ex-falso N F)",

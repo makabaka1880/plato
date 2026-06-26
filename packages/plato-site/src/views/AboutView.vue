@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
+import { gfmHeadingId } from 'marked-gfm-heading-id';
 import katex from 'katex'
 import NavBar from '@/components/NavBar.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
 import HelpModal from '@/components/HelpModal.vue'
+import CommentPanel from '@/components/CommentPanel.vue'
 
 const { locale } = useI18n()
 
+marked.use(gfmHeadingId())
+
 const prefsOpen = ref(false)
 const showHelp = ref(false)
+const showMobileComments = ref(false)
+// Wide screen → inline sidebar. Narrow → floating button + overlay.
+const isWide = ref(window.matchMedia('(min-width: 861px)').matches)
 
 // Lazy-load ABOUT.md for the current locale
 const aboutModules = import.meta.glob(
@@ -65,11 +72,42 @@ function onScroll() {
     progress.value = h > 0 ? el.scrollTop / h : 0
 }
 
+function getFragmentId(): string | null {
+    // Hash-mode routing: URL is /#/about#fragment-id
+    // window.location.hash gives "#/about#fragment-id"
+    const raw = window.location.hash
+    if (!raw) return null
+    // Split by "#": the last non-empty segment is the fragment
+    const parts = raw.split('#').filter(Boolean)
+    // parts[0] is "/about" (route), parts[1] is "fragment-id"
+    if (parts.length < 2) return null
+    return parts[1] || null
+}
+
+async function scrollToFragment() {
+    await nextTick()
+    const id = getFragmentId()
+    if (!id) return
+    const target = document.getElementById(id)
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth' })
+    }
+}
+
+let mqCleanup: (() => void) | null = null
+
 onMounted(() => {
     scrollEl.value?.addEventListener('scroll', onScroll, { passive: true })
+    scrollToFragment()
+    const mq = window.matchMedia('(min-width: 861px)')
+    const handler = (e: MediaQueryListEvent) => { isWide.value = e.matches }
+    mq.addEventListener('change', handler)
+    mqCleanup = () => mq.removeEventListener('change', handler)
 })
+
 onUnmounted(() => {
     scrollEl.value?.removeEventListener('scroll', onScroll)
+    mqCleanup?.()
 })
 </script>
 
@@ -79,55 +117,217 @@ onUnmounted(() => {
         <div class="progress-bar">
             <div class="progress-fill" :style="{ width: `${progress * 100}%` }"></div>
         </div>
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <div ref="scrollEl" class="scroll-container">
-            <div class="content" v-html="html"></div>
+        <div class="about-columns">
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div ref="scrollEl" class="scroll-container">
+                <div class="content" v-html="html"></div>
+            </div>
+            <div v-if="isWide" class="comments-sidebar">
+                <CommentPanel mode="inline" />
+            </div>
         </div>
         <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
         <HelpModal v-if="showHelp" @close="showHelp = false" />
+
+        <button v-if="!isWide" class="comment-float" @click="showMobileComments = !showMobileComments"
+            :class="{ active: showMobileComments }" title="Comments">💬</button>
+
+        <CommentPanel v-if="!isWide" v-model="showMobileComments" mode="overlay" />
     </div>
 </template>
 
 <style lang="scss" scoped>
-.about-root { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-.progress-bar { height: 2px; background: var(--color-border); flex-shrink: 0; }
-.progress-fill { height: 100%; width: 0; background: var(--color-primary-hover); transition: width 0.05s linear; }
+.about-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 2px;
+    background: var(--color-border);
+    flex-shrink: 0;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0;
+    background: var(--color-primary-hover);
+    transition: width 0.05s linear;
+}
+
+.about-columns {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
 
 .scroll-container {
-  flex: 1; overflow-y: auto; scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .content {
-  max-width: 640px; margin: 0 auto; padding: 32px 20px 48px;
-  box-sizing: border-box; font-size: 14px; line-height: 1.75; color: var(--color-fg);
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 20px 48px;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--color-fg);
 
-  :deep {
-    h1 { font-size: 28px; font-weight: 400; letter-spacing: -0.02em; margin: 0 0 24px; }
-    h2 { font-size: 18px; font-weight: 600; margin: 40px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--color-border); }
-    h3 { font-size: 15px; font-weight: 600; margin: 24px 0 8px; }
-    p { margin: 0 0 14px; }
-    ul { margin: 0 0 14px; padding-left: 20px; }
-    li { margin-bottom: 4px; }
-    code { font-family: inherit; font-size: 0.92em; background: var(--color-subtle-bg); padding: 1px 5px; border-radius: 3px; }
-    pre {
-      background: var(--color-subtle-bg); border: 1px solid var(--color-border);
-      border-radius: 6px; padding: 12px 16px; overflow-x: auto;
-      margin: 0 0 14px; font-size: 13px; line-height: 1.6;
-      code { background: none; padding: 0; border-radius: 0; }
+    :deep {
+        h1 {
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            margin: 0 0 24px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 40px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 24px 0 8px;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 0 0 14px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        code {
+            font-family: inherit;
+            font-size: 0.92em;
+            background: var(--color-subtle-bg);
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        pre {
+            background: var(--color-subtle-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            padding: 12px 16px;
+            overflow-x: auto;
+            margin: 0 0 14px;
+            font-size: 13px;
+            line-height: 1.6;
+
+            code {
+                background: none;
+                padding: 0;
+                border-radius: 0;
+            }
+        }
+
+        blockquote {
+            border-left: 3px solid var(--color-border);
+            margin: 0 0 14px;
+            padding: 4px 0 4px 14px;
+            color: var(--color-muted);
+
+            p {
+                margin-bottom: 4px;
+            }
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--color-border);
+            margin: 24px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 0 14px;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 6px 12px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--color-muted);
+        }
+
+        a {
+            color: #3b82b6;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            text-underline-offset: 2px;
+
+            &:hover {
+                color: #2563eb;
+                text-decoration-style: solid;
+            }
+        }
     }
-    blockquote {
-      border-left: 3px solid var(--color-border); margin: 0 0 14px;
-      padding: 4px 0 4px 14px; color: var(--color-muted);
-      p { margin-bottom: 4px; }
+}
+
+.comment-float {
+    position: fixed;
+    bottom: 60px;
+    right: 60px;
+    z-index: 50;
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
+    color: var(--color-muted);
+
+    &:hover {
+        border-color: var(--color-muted);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
     }
-    hr { border: none; border-top: 1px solid var(--color-border); margin: 24px 0; }
-    table { width: 100%; border-collapse: collapse; margin: 0 0 14px; font-size: 13px; }
-    th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--color-border); }
-    th { font-weight: 600; color: var(--color-muted); }
-    a { color: #3b82b6; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px;
-      &:hover { color: #2563eb; text-decoration-style: solid; }
+
+    &.active {
+        color: var(--color-fol-on);
+        border-color: var(--color-fol-on);
     }
-  }
+}
+
+.comments-sidebar {
+    width: 360px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    border-left: 1px solid var(--color-border);
+    box-sizing: border-box;
 }
 </style>

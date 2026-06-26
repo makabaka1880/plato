@@ -42,12 +42,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "or-elim",
-      "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}",
-      "description": "从 $p \\lor q$ 和两个分别从 $p$、$q$ 推出 $r$ 的子证明，你可以确切地得出 $r$——无论走哪条路。",
-      "syntax": "(or-elim N M K)",
-      "example": "1. ⊢ P ∨ Q\n2. [P] ⊢ R\n3. [Q] ⊢ R\n4. (or-elim 1 2 3)  →  ⊢ R"
-    }
+    "or-elim"
   ]
 }

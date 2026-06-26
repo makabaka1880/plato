@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoadmapStore, type RoadmapEntry } from '@/stores/roadmap'
 import { loadSections } from '@/data'
 import { useProgressStore } from '@/stores/progress'
+import { renderProofLines } from '@/composables/useNlg'
 import InlineLatex from './InlineLatex.vue'
 
 const props = defineProps<{ sectionId?: string }>()
@@ -15,15 +16,12 @@ const store = useRoadmapStore()
 const progress = useProgressStore()
 const selected = ref<RoadmapEntry | null>(null)
 
-// If sectionId provided, show only that section's entries
-// Otherwise show all, grouped by section
 const sections = computed(() => loadSections(locale.value))
 
 const visibleSections = computed(() => {
     if (props.sectionId) {
         return sections.value.filter(s => s.id === props.sectionId)
     }
-    // Only show accessible sections
     return sections.value.filter(s => progress.isSectionAccessible(s.id, sections.value))
 })
 
@@ -37,6 +35,15 @@ function sectionName(sectionId: string): string {
     const sec = sections.value.find(s => s.id === sectionId)
     if (!sec) return sectionId
     return t(sec.meta.nameI18nKey)
+}
+
+function problemDescription(sectionId: string, sectionIdx: number): string {
+    const sec = sections.value.find(s => s.id === sectionId)
+    return sec?.problems[sectionIdx]?.description ?? ''
+}
+
+function proofLines(entry: RoadmapEntry): string[] {
+    return renderProofLines(entry.steps, locale.value)
 }
 
 onMounted(() => document.addEventListener('keydown', onKeydown))
@@ -65,12 +72,12 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
                         >
                             <button class="rm-stop-btn" @click="selected = (selected?.sectionId === entry.sectionId && selected?.sectionIdx === entry.sectionIdx) ? null : entry">
                                 <span class="rm-stop-num">{{ entry.sectionIdx + 1 }}</span>
-                                <span class="rm-stop-desc">{{ entry.description }}</span>
+                                <span class="rm-stop-desc">{{ problemDescription(entry.sectionId, entry.sectionIdx) }}</span>
                             </button>
                             <div v-if="selected?.sectionId === entry.sectionId && selected?.sectionIdx === entry.sectionIdx" class="rm-proof">
                                 <div class="rm-proof-label">{{ t('roadmap.proof') }}</div>
                                 <div
-                                    v-for="(line, j) in selected.proofLines"
+                                    v-for="(line, j) in proofLines(selected)"
                                     :key="j"
                                     class="rm-proof-line"
                                 >

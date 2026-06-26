@@ -83,6 +83,7 @@ export default {
 
         commands: {
             assume: 'Assume a formula, adds {F} ⊢ F',
+            extend: 'Weakening — add formula F to the context of step N (structural rule)',
             fix: 'Introduce a term variable {x} ⊢ x (like assume, but for terms)',
             subst: 'Substitute atoms with formulas uniformly in step N',
             show: 'Re-print step N',
@@ -114,6 +115,7 @@ export default {
             axiomSetTitle: 'Axiom Set',
             axiomSetPL: '<b>Propositional Logic (PL)</b> — You may use propositional connectives (¬, ∧, ∨, →, ⊤, ⊥) and, in the modal section, modal operators (□, ◇). Quantifiers (∀, ∃) and predicate application (App) are disabled.',
             axiomSetFOL: '<b>First-Order Logic (FOL)</b> — All propositional connectives plus quantifiers (∀, ∃), predicate application (App), and term variables (fix). Modal operators (□, ◇) are disabled.',
+            axiomSetMore: 'Why two axiom sets? →',
             formulaSyntax: 'Formula Syntax',
             variablesTerms: 'Variables &amp; Terms',
             syntaxIntro: 'Formulas use <b>s-expression</b> (prefix) notation. Each connective wraps its sub-formulas in parentheses.',

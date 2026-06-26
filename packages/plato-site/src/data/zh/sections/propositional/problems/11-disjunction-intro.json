@@ -22,19 +22,7 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "or-intro-l",
-      "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}",
-      "description": "从 $p$ 推出 $p \\lor q$——给一个真命题加一个\"或\"的尾巴。",
-      "syntax": "(or-intro-l N F)",
-      "example": "1. ⊢ P\n2. (or-intro-l 1 Q)  →  ⊢ P ∨ Q"
-    },
-    {
-      "name": "or-intro-r",
-      "rule": "\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}",
-      "description": "从 $q$ 推出 $p \\lor q$——从右边构造析取。",
-      "syntax": "(or-intro-r N F)",
-      "example": "1. ⊢ Q\n2. (or-intro-r 1 P)  →  ⊢ P ∨ Q"
-    }
+    "or-intro-l",
+    "or-intro-r"
   ]
 }

@@ -7,6 +7,9 @@ import { useProblemLatex } from '@/composables/useProblemLatex'
 import { useVictory } from '@/composables/useVictory'
 import { useProgressStore } from '@/stores/progress'
 import { useRoadmapStore } from '@/stores/roadmap'
+import { renderNlg } from '@/composables/useNlg'
+import type { StepMeta } from '@/composables/useNlg'
+import { loadNlg } from '@/data'
 import { useDiscoveryStore } from '@/stores/discovery'
 import Katex from '@/components/Katex.vue'
 import InlineLatex from '@/components/InlineLatex.vue'
@@ -124,9 +127,20 @@ const victory = useVictory()
 const prefsOpen = ref(false)
 const agreed = ref(false)
 const showRepl = ref(false)
-const proofLines = ref<string[]>([])
+// ── Victory proof lines (generated from locale-free steps at display time) ──
+const proofLines = computed(() => {
+    const entry = sectionEntries.value.find(e => e.sectionIdx === props.problemIdx)
+    if (!entry) return []
+    return entry.steps.map((s, i) => `${i + 1}. ${renderNlg(s.cmdName, s.params, loadNlg(locale.value))}`)
+})
 const roadmapOpen = ref(false)
 const showHelpGlobal = ref(false)
+const helpStartTab = ref<'commands' | 'notations' | 'glossary'>('commands')
+
+function openHelp(tab: 'commands' | 'notations' | 'glossary' = 'commands') {
+    helpStartTab.value = tab
+    showHelpGlobal.value = true
+}
 
 const sectionEntries = computed(() => {
     const bySection = roadmap.bySection
@@ -139,7 +153,6 @@ watch(
     () => {
         agreed.value = false
         showRepl.value = false
-        proofLines.value = []
         victory.solved.value = false
         updateLatex()
     },
@@ -151,17 +164,15 @@ async function onAgree() {
     setTimeout(() => { showRepl.value = true }, 500)
 }
 
-function onSolved(lines: string[]) {
-    proofLines.value = lines
+function onSolved(steps: StepMeta[]) {
     if (problem.value) {
         victory.fire(problem.value.unlocks)
         progress.markSolved(props.sectionId, props.problemIdx)
         roadmap.add({
             sectionId: props.sectionId,
             sectionIdx: props.problemIdx,
-            description: problem.value.description,
+            steps,
             goal: problem.value.goal,
-            proofLines: lines,
         })
         // Auto-transition to next section if this was the last problem
         if (section.value && props.problemIdx === section.value.problems.length - 1) {
@@ -186,6 +197,11 @@ const axiomSetLabel = computed(() => {
     return mode
 })
 
+const axiomSetTitle = computed(() => {
+    if (logicMode.value === 'fol') return 'FOL Axioms'
+    return 'PL Axioms'
+})
+
 const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 </script>
 
@@ -198,8 +214,18 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
     </div>
     <div v-else class="root-row">
         <div class="root">
-            <NavBar @open-prefs="prefsOpen = true" @open-help="showHelpGlobal = true">
-                <span class="goal-chip">{{ sectionName }} · <span class="axiom-chip" :class="{ 'axiom-chip--fol-off': logicMode === 'pl' }">{{ axiomSetLabel }}</span></span>
+            <NavBar @open-prefs="prefsOpen = true" @open-help="openHelp('commands')">
+                <span class="goal-chip"><span class="axiom-wrap" @click.stop="openHelp('notations')">
+                            <span class="axiom-dot" :class="{ 'axiom-dot--fol': logicMode === 'fol', 'axiom-dot--pl': logicMode === 'pl' }"></span>
+                            <span class="axiom-chip" :class="{ 'axiom-chip--fol-off': logicMode === 'pl' }">{{ sectionName }} · {{ axiomSetLabel }}</span>
+                            <span class="axiom-pop">
+                                <span class="axiom-pop-title" :class="{ 'axiom-pop-title--pl': logicMode === 'pl' }">{{ axiomSetTitle }}</span>
+                                <span class="axiom-pop-row" v-if="logicMode === 'fol'"><span class="axiom-pop-mark axiom-pop-mark--on">✓</span> Quantifiers</span>
+                                <span class="axiom-pop-row" v-else><span class="axiom-pop-mark axiom-pop-mark--off">✗</span> Quantifiers</span>
+                                <span class="axiom-pop-row" v-if="logicMode === 'pl'"><span class="axiom-pop-mark axiom-pop-mark--on">✓</span> Modal</span>
+                                <span class="axiom-pop-row" v-else><span class="axiom-pop-mark axiom-pop-mark--off">✗</span> Modal</span>
+                            </span>
+                        </span></span>
             </NavBar>
 
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
@@ -273,7 +299,7 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
         </div>
 
         <TacticSidebar :allowed-tactics="allowedTactics" />
-        <HelpModal v-if="showHelpGlobal" @close="showHelpGlobal = false" :allowed-tactics="allowedTactics" />
+        <HelpModal v-if="showHelpGlobal" @close="showHelpGlobal = false" :allowed-tactics="allowedTactics" :start-tab="helpStartTab" :axiom-flash-mode="logicMode" />
         <RoadmapModal v-if="roadmapOpen" :section-id="props.sectionId" @close="roadmapOpen = false" />
     </div>
 </template>
@@ -298,6 +324,15 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
     color: var(--color-muted);
 }
 
+.axiom-wrap {
+    position: relative;
+    cursor: pointer;
+
+    &:hover .axiom-pop {
+        opacity: 1;
+    }
+}
+
 .axiom-chip {
     font-size: 11px;
     font-weight: 600;
@@ -305,6 +340,82 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 
     &--fol-off {
         color: var(--color-fol-off);
+    }
+}
+
+.axiom-pop {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--color-fg);
+    color: var(--color-bg);
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 100;
+
+    &::before {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid transparent;
+        border-bottom-color: var(--color-fg);
+    }
+}
+
+.axiom-dot {
+    display: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    flex-shrink: 0;
+    vertical-align: middle;
+    margin-right: 6px;
+
+    &--fol {
+        background: var(--color-fol-on);
+    }
+
+    &--pl {
+        background: var(--color-fol-off);
+    }
+}
+
+.axiom-pop-title {
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-fol-on);
+    margin-bottom: 1px;
+
+    &--pl {
+        color: var(--color-fol-off);
+    }
+}
+
+.axiom-pop-row {
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.axiom-pop-mark {
+    &--on {
+        color: var(--color-axiom-check);
+    }
+
+    &--off {
+        color: var(--color-axiom-x);
     }
 }
 
@@ -623,7 +734,22 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 // ── Responsive ────────────────────────────────────────────────
 @media (max-width: 600px) {
     .goal-chip {
-        display: none;
+        .axiom-chip {
+            display: none;
+        }
+
+        .axiom-dot {
+            display: inline-block;
+        }
+
+        .axiom-pop {
+            left: -4px;
+            transform: none;
+
+            &::before {
+                left: 8px;
+            }
+        }
     }
 
     .prompt {

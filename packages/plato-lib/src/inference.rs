@@ -49,6 +49,8 @@ pub enum DeductionRule {
     /// Top introduction in step N's context:
     /// From step N's context, derive ⊤.
     TopIntroCtx(Rc<Judgement>),
+    /// Weakening: `Γ ⊢ p ⇒ Γ, q ⊢ p`.
+    Extend(Rc<Judgement>, Rc<PropWWF>),
 }
 
 impl DeductionRule {
@@ -72,6 +74,7 @@ impl DeductionRule {
             Self::ExFalso(j_bot, p) => rules::misc::exfalso(&j_bot, p),
             Self::TopIntro(ctx) => rules::misc::top_intro(&ctx),
             Self::TopIntroCtx(j) => rules::misc::top_intro(&j.ctx),
+            Self::Extend(j, q) => rules::misc::extend(&j, q),
         }
     }
 }

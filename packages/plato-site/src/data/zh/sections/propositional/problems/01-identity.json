@@ -26,19 +26,8 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "assume",
-      "rule": "\\frac{}{\\{p\\} \\vdash p}",
-      "description": "如果你假设一个命题成立，那你自然可以推出它——因为你刚刚声明它是真的。",
-      "syntax": "(assume F)",
-      "example": "1. (assume P)  →  {P} ⊢ P"
-    },
-    {
-      "name": "->-intro",
-      "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}",
-      "description": "如果从假设 $p$ 成立你能推出 $q$，那么 $p$ 蕴含 $q$——而且你可以放心地把 $p$ 从上下文里拿掉了。",
-      "syntax": "(->-intro F N)",
-      "example": "1. (assume Q)  →  {Q} ⊢ Q\n2. (->-intro Q 1)  →  ⊢ Q → Q"
-    }
+    "assume",
+    "->-intro",
+    "extend"
   ]
 }

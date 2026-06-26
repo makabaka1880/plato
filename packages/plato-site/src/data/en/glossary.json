@@ -1,5 +1,19 @@
 [
     {
+        "id": "axiom",
+        "term": "Axiom",
+        "key": "A",
+        "definition": "A statement accepted as true without proof, serving as a starting point for deduction. In Plato, an axiom is a built-in inference rule that the engine accepts directly — such as K ($\\Box(A \\to B) \\to (\\Box A \\to \\Box B)$) in modal logic, or NEC ($\\emptyset \\vdash A \\Rightarrow \\emptyset \\vdash \\Box A$). Each section of problems operates under a fixed set of axioms.",
+        "intuitive": "A rule of the game that everyone agrees on before play begins. You don't prove axioms — you use them to prove everything else."
+    },
+    {
+        "id": "axiom-set",
+        "term": "Axiom Set (PL / FOL)",
+        "key": "A",
+        "definition": "The collection of inference rules active in a given section. Plato has two axiom sets: **PL** (Propositional Logic) — connectives plus modal operators $\\Box$ and $\\Diamond$, but no quantifiers; and **FOL** (First-Order Logic) — connectives plus quantifiers $\\forall$, $\\exists$, predicate application, and term variables, but no modal operators. Each axiom set is decidable on its own; the engine separates them to avoid the undecidability of quantified modal logic.",
+        "intuitive": "A toolkit that defines which moves are legal. In PL mode your toolkit has modal operators; in FOL mode it has quantifiers. The two toolkits don't mix — not by accident, but because mixing them makes the game computationally impossible to referee."
+    },
+    {
         "id": "assumption",
         "term": "Assumption",
         "key": "A",
@@ -245,6 +259,13 @@
         "intuitive": "\"For all\" or \"for every.\" Like saying \"everyone in this room speaks French\" — you're making a claim about every single person, with no exceptions."
     },
     {
+        "id": "weakening",
+        "term": "Weakening (Extend)",
+        "key": "W",
+        "definition": "A structural rule: if you have proved $\\Gamma \\vdash p$, you may add any well-formed formula $q$ to the context, yielding $\\Gamma, q \\vdash p$. The conclusion is unchanged — only the assumptions grow. Use the `(extend F N)` command, where $F$ is the formula to add and $N$ is the step whose context you wish to extend.",
+        "intuitive": "Adding an extra tool to the workshop without taking anything away. If you already proved something under some assumptions, proving it under even more assumptions is still valid — you're simply carrying extra baggage you may not need."
+    },
+    {
         "id": "witness",
         "term": "Witness",
         "key": "W",
@@ -278,6 +299,13 @@
         "key": "V",
         "definition": "A symbol representing an arbitrary term. Variables may be free or bound by quantifiers. Lowercase letters such as `x`, `y`, and `z` are commonly used.",
         "intuitive": "A placeholder for an object. Like `x` in algebra, it stands for 'some thing' whose identity may not yet be known."
+    },
+    {
+        "id": "varying-domains",
+        "term": "Varying Domains",
+        "key": "V",
+        "definition": "The problem in quantified modal logic where different possible worlds may contain different objects. If the domain of objects varies between worlds, then $\\forall$x means different things depending on which world you evaluate it in. This introduces ambiguity: does $\\forall$x.\\;$\\Box$P(x) quantify over the objects of the current world, or all possible objects across all accessible worlds? Fixing the domains (constant domain assumption) resolves the philosophical ambiguity but quantified modal logic remains undecidable even with fixed domains.",
+        "intuitive": "Imagine Alice lives in our world but not in some parallel universe. Does 'every person' include Alice when we reason about that parallel universe? The set of 'everything that exists' might not be the same in every world — and that causes real logical trouble."
     },
     {
         "id": "scope",

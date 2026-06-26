@@ -46,12 +46,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "exists-elim",
-      "rule": "\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, y, \\varphi[y/x] \\vdash \\psi \\quad y \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}",
-      "description": "From an existential claim, open a witness $y$, prove the conclusion $\\psi$ under the assumption $\\varphi[y/x]$, and discharge — provided $y$ doesn't escape into $\\Delta$ or $\\psi$.",
-      "syntax": "(exists-elim N M x)",
-      "example": "1. ⊢ ∃x. P(x)\n2. [P(y)] ⊢ Q\n3. (exists-elim 1 2 y)  →  ⊢ Q"
-    }
+    "exists-elim"
   ]
 }

@@ -13,21 +13,23 @@ const detailOpen = ref(false)
 </script>
 
 <template>
-    <div class="card" :class="{ pop: animate }" @click="detailOpen = true">
-        <div class="card-body">
-            <div class="name">{{ tactic.name }}</div>
-            <div class="rule">
-                <Katex :expr="'\\displaystyle ' + tactic.rule" />
+    <!-- single root for TransitionGroup compatibility -->
+    <div>
+        <div class="card" :class="{ pop: animate }" @click="detailOpen = true">
+            <div class="card-body">
+                <div class="name">{{ tactic.name }}</div>
+                <div class="rule">
+                    <Katex :expr="'\\displaystyle ' + tactic.rule" />
+                </div>
+                <div class="desc">
+                    <InlineLatex :text="tactic.description" />
+                </div>
             </div>
-            <div class="desc">
-                <InlineLatex :text="tactic.description" />
-            </div>
+            <div class="card-hover-label">click for specs</div>
         </div>
-        <div class="card-hover-label">click for specs</div>
-    </div>
 
-    <!-- detail popover -->
-    <Teleport to="body">
+        <!-- detail popover -->
+        <Teleport to="body">
         <Transition name="tactic-fade">
             <div v-if="detailOpen" class="tactic-backdrop" @click.self="detailOpen = false">
                 <div class="tactic-detail">
@@ -63,6 +65,7 @@ const detailOpen = ref(false)
             </div>
         </Transition>
     </Teleport>
+    </div>
 </template>
 
 <style lang="scss" scoped>

@@ -4,6 +4,7 @@
     "order": 0,
     "allowedTactics": [
         "assume",
+        "extend",
         "ex-falso",
         "top-intro",
         "subst",

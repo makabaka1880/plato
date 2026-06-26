@@ -8,6 +8,7 @@ import { useDiscoveryStore } from '@/stores/discovery'
 import { useTacticsStore } from '@/stores/tactics'
 import { useRoadmapStore } from '@/stores/roadmap'
 import { usePreferencesStore } from '@/stores/preferences'
+import CommentPanel from '@/components/CommentPanel.vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -100,6 +101,9 @@ onMounted(() => {
     if (hasProgress.value) continueBtn.value?.focus()
     else startBtn.value?.focus()
 })
+
+// ── Giscus comments panel ────────────────────────────────────────────
+const showComments = ref(false)
 </script>
 
 <template>
@@ -164,10 +168,20 @@ onMounted(() => {
             <span class="sub-sep">·</span>
             <span class="contact-wrap">
                 <span class="contact-trigger" @click="copyEmail">{{ t('home.contact') }}</span>
-                <span class="contact-pop" :class="{ copied }">{{ copied ? t('common.copied') : 'makabaka1880@outlook.com' }}</span>
+                <span class="contact-pop" :class="{ copied }">{{ copied ? t('common.copied') :
+                    'makabaka1880@outlook.com'
+                }}</span>
             </span>
         </div>
     </div>
+
+    <!-- floating comment button -->
+    <button class="comment-float" @click="showComments = !showComments" :class="{ active: showComments }"
+        :title="showComments ? 'Hide comments' : 'Comments'">
+        💬
+    </button>
+
+    <CommentPanel v-model="showComments" mode="overlay" />
 </template>
 
 <style lang="scss" scoped>
@@ -205,121 +219,273 @@ onMounted(() => {
         cursor: pointer;
         transition: color 0.15s, border-color 0.15s;
 
-        &:hover { color: var(--color-fg); border-color: var(--color-border); }
-        &.active { color: var(--color-fg); border-color: var(--color-border); background: var(--color-subtle-bg); }
+        &:hover {
+            color: var(--color-fg);
+            border-color: var(--color-border);
+        }
+
+        &.active {
+            color: var(--color-fg);
+            border-color: var(--color-border);
+            background: var(--color-subtle-bg);
+        }
     }
 }
 
 .actions {
-    display: flex; flex-direction: column; gap: 8px;
-    align-items: center; margin-bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 28px;
 }
 
 .hero-btn {
-    font-family: inherit; font-size: 15px; padding: 8px 0; cursor: pointer;
-    width: 200px; background: var(--color-primary); color: var(--color-primary-fg);
-    border: none; border-radius: 4px;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 8px 0;
+    cursor: pointer;
+    width: 200px;
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+    border: none;
+    border-radius: 4px;
 
-    &:hover { background: var(--color-primary-hover); }
+    &:hover {
+        background: var(--color-primary-hover);
+    }
 
-    &.secondary, &.custom-btn {
-        background: transparent; border: 1px solid var(--color-border); color: var(--color-muted);
-        &:hover { background: var(--color-subtle-bg); border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
+    &.secondary,
+    &.custom-btn {
+        background: transparent;
+        border: 1px solid var(--color-border);
+        color: var(--color-muted);
+
+        &:hover {
+            background: var(--color-subtle-bg);
+            border-color: var(--color-primary-hover);
+            color: var(--color-primary-hover);
+        }
     }
 }
 
 .all-done {
-    font-size: 14px; color: var(--color-primary-hover);
-    font-weight: 500; text-align: center;
-    margin-bottom: 20px; opacity: 0.85;
+    font-size: 14px;
+    color: var(--color-primary-hover);
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 20px;
+    opacity: 0.85;
 }
 
 // ── Section cards ─────────────────────────────────────────────
 .sections {
-    display: flex; flex-direction: column; gap: 6px;
-    width: min(400px, 80vw); margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(400px, 80vw);
+    margin-bottom: 20px;
 }
 
 .section-card {
     padding: 10px 16px;
     border: 1px solid var(--color-border);
-    border-radius: 6px; cursor: pointer;
+    border-radius: 6px;
+    cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
 
-    &:hover:not(.locked) { border-color: var(--color-primary-hover); background: var(--color-subtle-bg); }
-    &.locked { cursor: default; opacity: 0.35; }
+    &:hover:not(.locked) {
+        border-color: var(--color-primary-hover);
+        background: var(--color-subtle-bg);
+    }
+
+    &.locked {
+        cursor: default;
+        opacity: 0.35;
+    }
 }
 
 .section-head {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 8px;
 }
 
 .section-name {
-    font-size: 13px; font-weight: 600; color: var(--color-fg);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-fg);
 }
 
 .replay-btn {
-    font-family: inherit; font-size: 10px; padding: 2px 8px; cursor: pointer;
-    background: none; border: 1px solid var(--color-border); border-radius: 3px;
+    font-family: inherit;
+    font-size: 10px;
+    padding: 2px 8px;
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
     color: var(--color-muted);
     transition: color 0.15s, border-color 0.15s;
 
-    &:hover { color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+    &:hover {
+        color: var(--color-primary-hover);
+        border-color: var(--color-primary-hover);
+    }
 }
 
 .progress-track {
-    height: 3px; background: var(--color-border); border-radius: 2px;
-    overflow: hidden; margin-bottom: 6px;
+    height: 3px;
+    background: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
 }
 
 .progress-fill {
-    height: 100%; width: 0; background: var(--color-primary);
-    border-radius: 2px; transition: width 0.5s ease;
+    height: 100%;
+    width: 0;
+    background: var(--color-primary);
+    border-radius: 2px;
+    transition: width 0.5s ease;
 }
 
 .section-count {
-    font-size: 10px; color: var(--color-muted); text-align: right;
+    font-size: 10px;
+    color: var(--color-muted);
+    text-align: right;
 }
-.locked-name { color: var(--color-border-strong) !important; }
-.locked-track { background: var(--color-border) !important; opacity: 0.3; }
-.locked-count { text-align: right; opacity: 0.5; }
+
+.locked-name {
+    color: var(--color-border-strong) !important;
+}
+
+.locked-track {
+    background: var(--color-border) !important;
+    opacity: 0.3;
+}
+
+.locked-count {
+    text-align: right;
+    opacity: 0.5;
+}
 
 .sub-actions {
-    display: flex; gap: 0; align-items: center; justify-content: center;
-    margin-top: 8px; font-size: 12px; color: var(--color-border-strong);
+    display: flex;
+    gap: 0;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-border-strong);
 
     a {
-        color: var(--color-subtle); text-decoration: none; padding: 2px 6px; cursor: pointer;
+        color: var(--color-subtle);
+        text-decoration: none;
+        padding: 2px 6px;
+        cursor: pointer;
         transition: color 0.15s, border-color 0.15s;
         border-bottom: 1px solid transparent;
-        &:hover { color: var(--color-primary); border-bottom-color: var(--color-primary-hover); }
+
+        &:hover {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary-hover);
+        }
     }
 
-    .sub-sep { color: var(--color-border); user-select: none; }
+    .sub-sep {
+        color: var(--color-border);
+        user-select: none;
+    }
 
-    .contact-wrap { position: relative; }
+    .contact-wrap {
+        position: relative;
+    }
+
     .contact-trigger {
-        color: var(--color-subtle); padding: 2px 6px; cursor: pointer;
+        color: var(--color-subtle);
+        padding: 2px 6px;
+        cursor: pointer;
         transition: color 0.15s, border-color 0.15s;
         border-bottom: 1px solid transparent;
-        &:hover { color: var(--color-primary); border-bottom-color: var(--color-primary-hover); }
+
+        &:hover {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary-hover);
+        }
     }
+
     .contact-pop {
-        position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-        margin-bottom: 6px; padding: 4px 10px; border-radius: 4px;
-        background: var(--color-fg); color: var(--color-bg);
-        font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 6px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        background: var(--color-fg);
+        color: var(--color-bg);
+        font-size: 11px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
         transition: opacity 0.15s;
+
         &::after {
-            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            border: 4px solid transparent; border-top-color: var(--color-fg);
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: var(--color-fg);
         }
+
         &.copied {
-            opacity: 1; background: var(--color-primary); color: var(--color-primary-fg);
-            &::after { border-top-color: var(--color-primary); }
+            opacity: 1;
+            background: var(--color-primary);
+            color: var(--color-primary-fg);
+
+            &::after {
+                border-top-color: var(--color-primary);
+            }
         }
     }
-    .contact-wrap:hover .contact-pop:not(.copied) { opacity: 1; }
+
+    .contact-wrap:hover .contact-pop:not(.copied) {
+        opacity: 1;
+    }
+
+}
+
+.comment-float {
+    position: fixed;
+    bottom: 60px;
+    right: 60px;
+    z-index: 50;
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
+    color: var(--color-muted);
+
+    &:hover {
+        border-color: var(--color-muted);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &.active {
+        color: var(--color-fol-on);
+        border-color: var(--color-fol-on);
+    }
 }
 </style>

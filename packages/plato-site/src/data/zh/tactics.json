@@ -7,6 +7,13 @@
     "rule": "\\frac{}{\\{p\\} \\vdash p}"
   },
   {
+    "name": "extend",
+    "description": "从 $\\Gamma \\vdash p$ 出发，你可以在上下文里多塞一个良构公式 $q$——弱化了断言，但不改变结论。",
+    "syntax": "(extend F N)",
+    "example": "1. {P} ⊢ Q\n2. (extend R 1)  →  {P, R} ⊢ Q",
+    "rule": "\\frac{\\Gamma \\vdash p}{\\Gamma, q \\vdash p}"
+  },
+  {
     "name": "ex-falso",
     "description": "从 $\\bot$ 出发，你想到哪就到哪——任何公式都可以。因为在一个自相矛盾的宇宙里，什么话都是对的。",
     "syntax": "(ex-falso N F)",
@@ -64,7 +71,7 @@
   },
   {
     "name": "forall-elim",
-    "description": "From $\\forall x.\\; \\varphi$, derive $\\varphi$ with any term $t$ substituted for $x$. What holds for everything holds for any particular thing.",
+    "description": "从 $\\forall x.\\; \\varphi$ 推出 $\\varphi[t/x]$——对一切都成立的事，对任意特定的 $t$ 自然也成立。全称实例化。",
     "syntax": "(forall-elim N t)",
     "example": "1. ⊢ ∀x. P(x)\n2. (forall-elim 1 t)  →  ⊢ P(t)",
     "rule": "\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}"
@@ -92,14 +99,14 @@
   },
   {
     "name": "and-elim-l",
-    "description": "If you know $p \\land q$, then you know $p$ — the left half of the conjunction.",
+    "description": "从 $p \\land q$ 推出 $p$——合取的左半边。既然两件事同时成立，那左边那件自然成立。",
     "syntax": "(and-elim-l N)",
     "example": "1. ⊢ P ∧ Q\n2. (and-elim-l 1)  →  ⊢ P",
     "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}"
   },
   {
     "name": "and-elim-r",
-    "description": "If you know $p \\land q$, then you know $q$ — the right half of the conjunction.",
+    "description": "从 $p \\land q$ 推出 $q$——合取的右半边。既然两件事同时成立，那右边那件自然成立。",
     "syntax": "(and-elim-r N)",
     "example": "1. ⊢ P ∧ Q\n2. (and-elim-r 1)  →  ⊢ Q",
     "rule": "\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}"

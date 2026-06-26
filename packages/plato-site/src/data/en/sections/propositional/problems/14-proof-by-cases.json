@@ -42,12 +42,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "or-elim",
-      "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}",
-      "description": "If $p \\lor q$ is true, and both $p$ and $q$ independently lead to $r$, then $r$ is true regardless. Reason by cases — exhaust the possibilities.",
-      "syntax": "(or-elim N M K)",
-      "example": "1. ⊢ P ∨ Q\n2. [P] ⊢ R\n3. [Q] ⊢ R\n4. (or-elim 1 2 3)  →  ⊢ R"
-    }
+    "or-elim"
   ]
 }

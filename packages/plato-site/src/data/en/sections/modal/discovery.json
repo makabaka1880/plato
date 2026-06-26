@@ -178,12 +178,84 @@
             "text": "So the diamond is [syntactic-sugar|syntactic sugar] — a convenient way to speak of possibility, but at its core, nothing more than the failure of necessary falsehood."
         },
         {
+            "speaker": "C. I. Lewis",
+            "text": "Now that we have $\\Box$ and $\\Diamond$, surely we want to combine them with everything we learned before. What about $\\forall x.\\; \\Box P(x)$ — 'everything is necessarily $P$'?"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "That looks perfectly grammatical. The quantifier binds $x$, the box scopes over $P(x)$. What could go wrong?"
+        },
+        {
             "speaker": "Saul Kripke",
-            "text": "Exactly. And one more thing: in System K, modal logic is [propositional|propositional]. You cannot quantify into modal contexts — no $\\forall x.\\; \\Box P(x)$. The box and diamond sit atop propositional logic, not first-order."
+            "text": "Try to say what it actually means — aloud. You are standing at world $w$. For every object $x$ in the domain, in every world accessible from $w$, $P(x)$ holds. But… which domain?"
         },
         {
             "speaker": "C. I. Lewis",
-            "text": "So the quantifier rules are gated — available only in first-order mode, not here."
+            "text": "The domain of all objects, of course. Everything that exists."
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "In which world? Consider: in our world, Sherlock Holmes does not exist. But in some possible world — the world of Arthur Conan Doyle's stories — he does. So when I say $\\forall x$, am I ranging over Holmes or not?"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Wait. If Holmes exists in some world but not in ours, then the set of 'all objects' depends on which world you are standing in. The quantifier means different things in different places."
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So $\\forall x$ under a $\\Box$ is ambiguous. The $\\Box$ shifts the world, but does the $\\forall$ track the domain of the world you left, or the world you arrived at?"
+        },
+        {
+            "speaker": "Curry",
+            "text": "This is the [varying-domains|varying domains] problem. If different worlds contain different objects, you must choose a convention. The Barcan formula — $\\Diamond \\exists x.\\; P(x) \\to \\exists x.\\; \\Diamond P(x)$ — is valid only if domains grow when you move to accessible worlds. The converse Barcan formula requires domains to shrink. You cannot have both without fixing the domains to be identical everywhere."
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Can we just declare the domains are fixed? The same objects in every world?"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "You can. That makes the [varying-domains|varying domains] problem go away philosophically. But then you hit a harder wall."
+        },
+        {
+            "speaker": "Curry",
+            "text": "The computational wall. Quantified modal logic, even with fixed domains, is **undecidable**. There is no algorithm that can take an arbitrary formula mixing $\\Box$, $\\Diamond$, $\\forall$, and $\\exists$ and determine whether it is a theorem. The combination of quantifier instantiation and world-switching creates an infinite search space that no finite procedure can exhaust."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "But propositional modal logic alone — just $\\Box$, $\\Diamond$, and the connectives — is decidable?"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Yes. The truth of any propositional modal formula can be mechanically settled by examining the finite Kripke structure it generates. Quantifiers destroy this by introducing unbounded term substitution across worlds."
+        },
+        {
+            "speaker": "Curry",
+            "text": "So here is what we did for this engine. We introduced a flag — a mode switch. Call it **PL** and **FOL**."
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Two separate axiom sets?"
+        },
+        {
+            "speaker": "Curry",
+            "text": "Exactly. In **PL** mode, you get propositional logic plus modal operators — $\\Box$ and $\\Diamond$. Quantifiers, predicate application, and term variables are disabled. Every problem in this mode is decidable."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "And in FOL mode?"
+        },
+        {
+            "speaker": "Curry",
+            "text": "In **FOL** mode, you get quantifiers, predicate application, and term variables — but modal operators are disabled. Again, decidable. Each mode is safe on its own. The boundary between them is the boundary between two decidable fragments of logic."
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So the engine refuses to let us write $\\forall x.\\; \\Box P(x)$. Not because the formula is meaningless — philosophers debate it to this day — but because no machine can reliably decide all such formulas."
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "A honest engineering choice. The machine declines to enter a room where it cannot promise to find the exit."
         },
         {
             "speaker": "Saul Kripke",

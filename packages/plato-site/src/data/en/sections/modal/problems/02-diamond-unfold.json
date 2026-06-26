@@ -22,12 +22,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "diamond-def",
-      "rule": "\\frac{\\Gamma \\vdash \\Diamond A}{\\Gamma \\vdash \\lnot \\Box \\lnot A}",
-      "description": "◇-definition: unfold ◇A to ¬□¬A and fold back. Two directions — (diamond-def N) and (diamond-def-rev N).",
-      "syntax": "(diamond-def N)",
-      "example": "1. ⊢ ◇A\n2. (diamond-def 1)  →  ⊢ ¬□¬A"
-    }
+    "diamond-def"
   ]
 }

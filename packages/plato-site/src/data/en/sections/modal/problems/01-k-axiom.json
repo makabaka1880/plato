@@ -30,19 +30,7 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "box-intro",
-      "rule": "\\frac{\\emptyset \\vdash A}{\\emptyset \\vdash \\Box A}",
-      "description": "Necessitation (NEC): from ∅ ⊢ A derive ∅ ⊢ □A. The context must be empty — necessity only applies to theorems.",
-      "syntax": "(box-intro N)",
-      "example": "1. ⊢ A\n2. (box-intro 1)  →  ⊢ □A"
-    },
-    {
-      "name": "box-elim",
-      "rule": "\\frac{\\Gamma \\vdash \\Box (A \\to B) \\quad \\Delta \\vdash \\Box A}{\\Gamma \\cup \\Delta \\vdash \\Box B}",
-      "description": "K axiom: from □(A → B) and □A derive □B. Modus ponens under the box.",
-      "syntax": "(box-elim N M)",
-      "example": "1. ⊢ □(A → B)\n2. ⊢ □A\n3. (box-elim 1 2)  →  ⊢ □B"
-    }
+    "box-intro",
+    "box-elim"
   ]
 }

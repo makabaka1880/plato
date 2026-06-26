@@ -88,9 +88,15 @@ A **step-by-step walkthrough**. The guide cards appear one at a time before the 
 
 **When to use:** synthesis/practice problems where the student should figure things out independently.
 
-### `unlocks` (array of Tactic objects)
+### `unlocks` (array of strings)
 
-The new inference rules introduced by this problem. When the student solves the problem, these tactics are added to their tactics sidebar. See [Unlocking tactics](#unlocking-tactics) below.
+The names of inference rules unlocked by this problem. When the student solves the problem, these tactic names are added to their collected tactics. The full metadata (description, rule, syntax, example) is looked up from `tactics.json` at runtime — you only need the name.
+
+```json
+"unlocks": ["->-elim", "and-intro"]
+```
+
+See [Unlocking tactics](#unlocking-tactics) below.
 
 ### Hint object
 
@@ -105,30 +111,6 @@ The new inference rules introduced by this problem. When the student solves the 
 |---|---|---|---|
 | `text` | `string` | Yes | Prose explanation. Supports text markup. |
 | `tactic` | `string` or `null` | No | The exact command the student should type. If omitted or `null`, shows an "OK" button. |
-
-### Tactic object
-
-```json
-{
-  "name": "→-intro",
-  "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}",
-  "description": "If from assuming $p$ you can reach $q$, then $p$ implies $q$."
-}
-```
-
-| Field | Type | Description |
-|---|---|---|
-| `name` | `string` | Display name, e.g. `"→-intro"`, `"∧-intro"` |
-| `rule` | `string` | KaTeX inference rule in fraction notation |
-| `description` | `string` | Plain-language explanation of what the rule means |
-
-The `rule` field is rendered by the KaTeX math renderer. Use standard LaTeX math notation inside the string:
-- `\frac{numerator}{denominator}` — inference rule bar
-- `\Gamma`, `\Delta` — context variables
-- `\vdash` — turnstile (entails)
-- `\to`, `\land`, `\lor`, `\lnot` — logical connectives
-- `\\;` — spacing
-- `\\{` and `\\}` — literal braces
 
 ---
 
@@ -579,29 +561,17 @@ When writing hint text, refer to step numbers **as they will be at that point in
 
 ## Unlocking tactics
 
-Each problem can unlock zero or more new tactics. The unlocks are added to the student's tactics sidebar (persisted in memory for the session).
+Each problem can unlock zero or more tactics by listing their names in the `unlocks` array. When the student solves the problem, these names are added to their collected tactics (persisted in `localStorage`). The full tactic metadata — description, syntax, example, and inference rule LaTeX — lives in `tactics.json`, not in the problem file.
+
+```json
+"unlocks": ["->-elim"]
+```
 
 ### When to introduce a new tactic
 
 - **One tactic per 1-2 problems.** Don't dump five new rules at once.
 - **Follow every introduction with a synthesis problem** that uses the new tactic alongside previously learned ones, without introducing anything new (`"unlocks": []`).
 - **Unlock both symmetric rules together** — `and-elim-l` and `and-elim-r` in one problem, `or-intro-l` and `or-intro-r` in one problem. The student only uses one in the guided problem, but knowing the other exists is important.
-
-### Rule LaTeX conventions
-
-Use natural deduction notation:
-
-```
-\frac{\Gamma \vdash P}{\Gamma \vdash Q}
-```
-
-- `\Gamma` for the primary context
-- `\Delta` for a secondary/merged context
-- `\vdash` for the turnstile
-- `\to`, `\land`, `\lor`, `\lnot` for connectives
-- `\cup` for context union
-- `\;` for spacing
-- `\\{` and `\\}` for literal braces (needed because `{` and `}` are JSON-special, but in this case they appear inside a LaTeX string where the engine handles the escaping differently — prefer `\{` and `\}` in the KaTeX markup)
 
 ### Progression
 
@@ -667,13 +637,7 @@ Here is a full problem file that introduces `→-elim` (modus ponens):
         }
     ],
     "hints": [],
-    "unlocks": [
-        {
-            "name": "→-elim",
-            "rule": "\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}",
-            "description": "If $p$ implies $q$, and you have $p$, then you have $q$. The classic syllogism — *modus ponens*."
-        }
-    ]
+    "unlocks": ["->-elim"]
 }
 ```
 

@@ -31,6 +31,16 @@ pub fn top_intro(ctx: &Context) -> Option<Judgement> {
     Some(Judgement::new(ctx.clone(), Rc::new(PropWWF::Top)))
 }
 
+/// Weakening (extend) — structural rule.
+///
+/// From `Γ ⊢ p` and a well-formed formula `q`, derive `Γ, q ⊢ p`.
+/// Adds a new assumption to the context without changing the conclusion.
+pub fn extend(j: &Judgement, q: Rc<PropWWF>) -> Option<Judgement> {
+    let mut ctx = j.ctx.clone();
+    ctx.insert(q.as_ref().clone());
+    Some(Judgement::new(ctx, j.prop.clone()))
+}
+
 /// Substitution — the uniform replacement of atoms in a proven judgement.
 ///
 /// From `Γ ⊢ p` and a list of `(atom, replacement)` pairs, derive

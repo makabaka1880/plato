@@ -5,7 +5,7 @@
   "guides": [],
   "hints": [
     {
-      "text": "三层嵌套的蕴含。证明是两次 `box-elim` 的直接串联。假设 $\\Box(A \\to B)$，再假设 $\\Box(B \\to C)$，再假设 $\\Box A$。用两次 `box-elim` 推到 $\\Box C$，然后按相反顺序消去所有三个假设。与命题逻辑中的 [hypothetical-syllogism|假言三段论] 比较——同样的形状，只是套上了盒子。",
+      "text": "三层嵌套的蕴含。证明是两次 `box-elim` 的直接串联。假设 $\\Box(A \\to B)$，再假设 $\\Box(B \\to C)$，再假设 $\\Box A$。用两次 `box-elim` 推到 $\\Box C$，然后按相反顺序消去所有三个假设。与命题逻辑中的 [hypothetical-syllogism|假言三段论] 比较——同样的形状，只是套上了一层必然。",
       "tactic": null
     },
     {

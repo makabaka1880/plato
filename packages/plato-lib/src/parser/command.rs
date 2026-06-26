@@ -65,6 +65,8 @@ pub enum Command {
     TopIntro,
     /// `(top-intro N)` — truth introduction in step N's context.
     TopIntroCtx(usize),
+    /// `(extend F N)` — weakening: add formula F to step N's context.
+    Extend(Rc<PropWWF>, usize),
 }
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -410,6 +412,18 @@ fn parse_command(sexpr: &SExpr, mode: Option<&str>) -> Result<Command, String> {
                         ));
                     }
                 }
+                "extend" | "weaken" => {
+                    if items.len() != 3 {
+                        return Err(format!(
+                            "extend expects 2 arguments (formula, step), got {}",
+                            items.len() - 1
+                        ));
+                    }
+                    Ok(Command::Extend(
+                        parse_formula(&items[1], mode)?,
+                        expect_usize(&items[2])?,
+                    ))
+                }
                 "help" | "?" => Ok(Command::Show(0)), // special — prints help
                 // Fallback: try parsing as a formula
                 _ => match parse_formula(sexpr, mode) {
@@ -464,6 +478,7 @@ impl Command {
             Command::DiamondDefRev(n) => ("diamond-def-rev".into(), vec![("n".into(), n.to_string())]),
             Command::TopIntro => ("top-intro".into(), vec![]),
             Command::TopIntroCtx(n) => ("top-intro".into(), vec![("n".into(), n.to_string())]),
+            Command::Extend(f, n) => ("extend".into(), vec![("F".into(), f.latex()), ("n".into(), n.to_string())]),
         }
     }
 }

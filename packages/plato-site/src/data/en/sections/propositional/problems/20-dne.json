@@ -22,12 +22,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "dne",
-      "rule": "\\frac{\\Gamma \\vdash \\lnot \\lnot p}{\\Gamma \\vdash p}",
-      "description": "From $\\lnot \\lnot p$ derive $p$. Eliminate a double negation — classical logic's escape hatch.",
-      "syntax": "(dne N)",
-      "example": "1. ⊢ ¬¬P\n2. (dne 1)  →  ⊢ P"
-    }
+    "dne"
   ]
 }

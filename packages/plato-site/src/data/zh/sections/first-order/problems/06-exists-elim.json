@@ -46,12 +46,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "exists-elim",
-      "rule": "\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, y, \\varphi[y/x] \\vdash \\psi \\quad y \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}",
-      "description": "从 $\\exists x.\\; \\varphi$ 出发，挑一个新鲜见证变量，在它的证词下证明 $\\psi$——然后消去见证，$\\psi$ 干干净净地立在那里。",
-      "syntax": "(exists-elim N M x)",
-      "example": "1. ⊢ ∃x. P(x)\n2. [P(y)] ⊢ Q\n3. (exists-elim 1 2 y)  →  ⊢ Q"
-    }
+    "exists-elim"
   ]
 }

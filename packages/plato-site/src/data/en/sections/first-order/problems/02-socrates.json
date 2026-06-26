@@ -33,12 +33,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "forall-elim",
-      "rule": "\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}",
-      "description": "From $\\forall x.\\; \\varphi$, derive $\\varphi$ with any term $t$ substituted for $x$. What holds for everything holds for any particular thing.",
-      "syntax": "(forall-elim N t)",
-      "example": "1. ⊢ ∀x. P(x)\n2. (forall-elim 1 t)  →  ⊢ P(t)"
-    }
+    "forall-elim"
   ]
 }

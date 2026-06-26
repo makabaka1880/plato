@@ -251,7 +251,95 @@
         },
         {
             "speaker": "Aristotle",
-            "text": "Then let us begin our first proof."
+            "text": "But Plato — I have a deeper question. When we proved $A \\to A$, we used the letter $A$. But $A$ was just a stand-in, wasn't it? It could have been anything."
+        },
+        {
+            "speaker": "Plato",
+            "text": "You have touched upon something profound. Yes — the letter $A$ is an atom, a placeholder. The proof of $A \\to A$ does not depend on what $A$ actually means."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So if I took that proof and replaced every $A$ with, say, $\\lnot B$ — would the proof still be valid?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Absolutely. The resulting theorem would be $\\lnot B \\to \\lnot B$, and it would require exactly the same number of steps, in exactly the same order. The structure is invariant."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "What if I replaced $A$ with something even more complicated — like $C \\land D$?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Then you would obtain $(C \\land D) \\to (C \\land D)$. Still true. In fact, you could replace $A$ with **any** well-formed formula — no matter how complex — and the proof would remain valid."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "That is remarkable. One proof generates infinitely many theorems. It's less like building a single house and more like designing a mould that can stamp out houses of any material."
+        },
+        {
+            "speaker": "Plato",
+            "text": "A perfect metaphor. This property is called **substitution invariance**. A tautology — a formula true no matter how you interpret its atoms — remains a tautology when you uniformly replace any atom with any other formula."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Why must the replacement be uniform?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Good question. If you replaced the first $A$ with $P$ and the second $A$ with $Q$, you would get $P \\to Q$, which is not a tautology at all. The substitution must be consistent — every occurrence of the atom must become the same thing."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So the atoms are like variables in an equation. They carry no meaning of their own — they are simply slots waiting to be filled."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. And the engine provides a command for this very purpose. The `(subst N (A F))` command takes step $N$ and replaces every occurrence of atom $A$ with formula $F$, yielding a new step whose conclusion is the uniformly substituted version."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Show me an example."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Certainly. Suppose at step 1 we have proved $A \\to A$. Writing `(subst 1 (A (and B C)))` transforms it into $(B \\land C) \\to (B \\land C)$ — all in a single command. No need to re-prove anything."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And I can substitute multiple atoms at once?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Indeed. `(subst 1 (P (or Q R)) (S (not T)))` would replace $P$ with $Q \\lor R$ and $S$ with $\\lnot T$ simultaneously. A theorem proved once scales to a family of theorems proved forever."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "This changes how I think about proof entirely. We are not merely verifying individual truths — we are discovering patterns that hold across all possible interpretations."
+        },
+        {
+            "speaker": "Plato",
+            "text": "You have grasped the essence of formal logic. The power is not in any single proof, but in recognising that the proof's skeleton remains valid regardless of which flesh hangs upon it. The atoms are mere names; the connectives carry all the logical weight."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Let me ask one more thing. Suppose I have already proved something — say $B$ — under some assumptions. Can I later add more assumptions without ruining the proof?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Absolutely. This is called **weakening**. If you have a proven judgement $\\Gamma \\vdash B$, you may introduce any extra formula $A$ into the context and the conclusion remains unchanged: $\\Gamma, A \\vdash B$."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So weakening is like adding extra tools to a workshop without taking anything away."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. The command is `(extend F N)` — 'add formula $F$ to the context of step $N$.' You will find it essential when you need a formula visible in two different subproofs at once, as with `not-intro`."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Then let us begin our first proof — and remember that each step we take is a template for a thousand theorems yet to be discovered."
         }
     ]
 }

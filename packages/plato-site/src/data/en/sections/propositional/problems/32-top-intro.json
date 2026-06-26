@@ -1,29 +1,23 @@
 {
-    "description": "The easiest truth.",
-    "goal": "T",
-    "premise": [],
-    "guides": [
-        {
-            "text": "We've met $\\bot$ (bottom, falsity) — the always-false formula. From $\\bot$, anything follows via [ex-falso|ex falso]. Now meet its dual: $\\top$ (top, truth). $\\top$ is **always provable** from any context. While $\\bot$ lets you conclude anything, $\\top$ can be concluded from anything. The engine parses `T` as $\\top$.",
-            "tactic": null
-        },
-        {
-            "text": "The command `top-intro` is an axiom — it takes zero arguments. Truth needs no evidence.",
-            "tactic": "(top-intro)"
-        },
-        {
-            "text": "Look at line 1: $\\vdash \\top$. Empty context, conclusion $\\top$. The simplest possible proof — truth stands on its own, no assumptions needed. Paired with $\\bot$ (problem 19), this gives us the two endpoints of logic: utter falsity and absolute truth.",
-            "tactic": null
-        }
-    ],
-    "hints": [],
-    "unlocks": [
-        {
-            "name": "top-intro",
-            "rule": "\\frac{}{\\Gamma \\vdash \\top}",
-            "description": "From anything, truth follows. ⊤ is always provable — an axiom requiring no premises. The dual of ex-falso.",
-            "syntax": "(top-intro)",
-            "example": "1. (top-intro)  →  ⊢ ⊤"
-        }
-    ]
+  "description": "The easiest truth.",
+  "goal": "T",
+  "premise": [],
+  "guides": [
+    {
+      "text": "We've met $\\bot$ (bottom, falsity) — the always-false formula. From $\\bot$, anything follows via [ex-falso|ex falso]. Now meet its dual: $\\top$ (top, truth). $\\top$ is **always provable** from any context. While $\\bot$ lets you conclude anything, $\\top$ can be concluded from anything. The engine parses `T` as $\\top$.",
+      "tactic": null
+    },
+    {
+      "text": "The command `top-intro` is an axiom — it takes zero arguments. Truth needs no evidence.",
+      "tactic": "(top-intro)"
+    },
+    {
+      "text": "Look at line 1: $\\vdash \\top$. Empty context, conclusion $\\top$. The simplest possible proof — truth stands on its own, no assumptions needed. Paired with $\\bot$ (problem 19), this gives us the two endpoints of logic: utter falsity and absolute truth.",
+      "tactic": null
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    "top-intro"
+  ]
 }

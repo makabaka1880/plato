@@ -5,7 +5,7 @@ export interface Problem {
     goal: string
     guides: Hint[]
     hints: Hint[]
-    unlocks: Tactic[]
+    unlocks: string[]
     /** Logic mode override. If absent, the section default governs. */
     logicMode?: 'fol' | 'pl'
 }

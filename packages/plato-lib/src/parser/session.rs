@@ -321,6 +321,13 @@ impl Session {
                 self.steps.push(Rc::new(j));
                 self.last_fmt()
             }
+            Command::Extend(f, n) => {
+                let jn = self.step(n)?;
+                let j = rules::misc::extend(jn, f)
+                    .ok_or_else(|| "extend failed: could not add formula to context".to_string())?;
+                self.steps.push(Rc::new(j));
+                self.last_fmt()
+            }
         })
     }
 
@@ -355,6 +362,7 @@ Commands:
   (exists-elim N M x)   existential witness elimination
   (top-intro)            truth introduction — Γ ⊢ ⊤ in empty context
   (top-intro N)          truth introduction in step N's context
+  (extend F N)           weakening: add formula F to step N's context
   (box-intro N)          necessitation (NEC) — from ∅⊢A derive ∅⊢□A
   (box-elim N M)         K axiom — from □(A→B) and □A derive □B
   (diamond-def N)        ◇-definition — from ◇A derive ¬□¬A

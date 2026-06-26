@@ -29,12 +29,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "->-elim",
-      "rule": "\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}",
-      "description": "有了 $p \\to q$ 和 $p$，你就能推出 $q$——逻辑中最自然的推理步。",
-      "syntax": "(->-elim N M)",
-      "example": "1. (assume P)  →  {P} ⊢ P\n2. 前提 P → Q\n3. (->-elim 2 1) → Q"
-    }
+    "->-elim"
   ]
 }

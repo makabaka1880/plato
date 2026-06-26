@@ -83,6 +83,7 @@ export default {
 
         commands: {
             assume: '假设一个公式，添加 {F} ⊢ F',
+            extend: '弱化 — 往步骤 N 的上下文里增加一条公式 F（结构规则）',
             fix: '引入一个项变量 {x} ⊢ x（类似 assume，但用于项）',
             subst: '在步骤 N 中统一替换原子公式',
             show: '重新显示步骤 N',
@@ -105,7 +106,7 @@ export default {
             'exists-elim': '见证消除 — 步骤 N 证明 ∃x.φ，步骤 M 在见证 x 下证明 ψ，x 不在结论中自由出现',
             'top-intro': '真引入 — 公理：⊤ 总是可证的',
             'box-intro': '必然化（NEC）— 由 ∅ ⊢ A 推出 ∅ ⊢ □A（上下文必须为空）',
-            'box-elim': '盒消除（K 公理）— 由 □(A → B) 和 □A 推出 □B',
+            'box-elim': '必然消除（K 公理）— 由 □(A → B) 和 □A 推出 □B',
             'diamond-def': '◇-定义 — 由 ◇A 推出 ¬□¬A，反之亦然',
         },
 
@@ -114,6 +115,7 @@ export default {
             axiomSetTitle: '公理集',
             axiomSetPL: '<b>命题逻辑 (PL)</b> — 你可以使用命题连接词（¬、∧、∨、→、⊤、⊥），在模态章节还可以使用模态算子（□、◇）。量词（∀、∃）和谓词应用（App）被禁用。',
             axiomSetFOL: '<b>一阶逻辑 (FOL)</b> — 所有命题连接词加上量词（∀、∃）、谓词应用（App）和项变量（fix）。模态算子（□、◇）被禁用。',
+            axiomSetMore: '为什么要分两个公理集？→',
             formulaSyntax: '公式语法',
             variablesTerms: '变量与项',
             syntaxIntro: '公式采用 <b>S-表达式</b>（前缀）记法。每个连接词用括号包裹其子公式。',

@@ -192,6 +192,9 @@ impl Prover {
     pub fn diamond_def_rev(j: &Judgement) -> Option<Judgement> {
         rules::modal::diamond_def_rev(&j.0).map(|j| Judgement(Rc::new(j)))
     }
+    pub fn extend(j: &Judgement, q: &Formula) -> Option<Judgement> {
+        rules::misc::extend(&j.0, q.0.clone()).map(|j| Judgement(Rc::new(j)))
+    }
 }
 
 // ── Command metadata ────────────────────────────────────────────

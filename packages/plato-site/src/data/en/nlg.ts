@@ -1,5 +1,6 @@
 export default {
     assume: 'If we accept {F}, then we have {conclusion}.',
+    extend: 'We add {F} to the context of step {n}, and {conclusion} still follows.',
     fix: 'Take any {x}, and we get {conclusion}.',
     subst: 'What line {n} proved doesn\'t depend on the names of things — replace them and we still get {conclusion}.',
     show: 'Look back at step {n}.',

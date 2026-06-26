@@ -9,6 +9,8 @@ import katex from 'katex'
 const props = defineProps<{
     glossaryTerm?: string
     allowedTactics?: string[]
+    startTab?: 'commands' | 'notations' | 'glossary'
+    axiomFlashMode?: 'pl' | 'fol'
 }>()
 
 const emit = defineEmits<{ close: [] }>()
@@ -37,8 +39,9 @@ const visibleGroups = computed(() => {
 })
 const backdrop = ref<HTMLDivElement | null>(null)
 const bodyRef = ref<HTMLDivElement | null>(null)
-const activeTab = ref<'commands' | 'notations' | 'glossary'>('commands')
+const activeTab = ref<'commands' | 'notations' | 'glossary'>(props.startTab ?? 'commands')
 const targetedTerm = ref<string | null>(null)
+const notationFlash = ref<'pl' | 'fol' | null>(null)
 
 function scrollToAlpha(letter: string) {
     const el = document.getElementById('gloss-key-' + letter)
@@ -75,6 +78,7 @@ const groups: { i18nGroup: string; entries: CommandEntry[] }[] = [
         i18nGroup: 'help.groups.basics',
         entries: [
             { syntax: '(assume F)', i18nKey: 'help.commands.assume', unlocked: store.collected.includes('assume'), rule: '\\frac{}{\\{p\\} \\vdash p}' },
+            { syntax: '(extend F N)', i18nKey: 'help.commands.extend', unlocked: store.collected.includes('extend'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma, q \\vdash p}' },
             { syntax: '(fix x)', i18nKey: 'help.commands.fix', unlocked: true },
             { syntax: '(subst N (A F)...)', i18nKey: 'help.commands.subst', unlocked: store.collected.includes('subst'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma[\\vec{a} := \\vec{F}] \\vdash p[\\vec{a} := \\vec{F}]}' },
             { syntax: '(show N)', i18nKey: 'help.commands.show', unlocked: true },
@@ -186,13 +190,23 @@ async function scrollToGlossaryTerm(termId: string) {
     setTimeout(() => { targetedTerm.value = null }, 2000)
 }
 
-// On mount: handle deep-link to a glossary term
+// On mount: handle deep-link to a glossary term or axiom notation
 onMounted(async () => {
     await nextTick()
     document.addEventListener('keydown', onDocKeydown)
     if (props.glossaryTerm) {
         activeTab.value = 'glossary'
         await scrollToGlossaryTerm(props.glossaryTerm)
+    } else if (props.startTab === 'notations' && props.axiomFlashMode) {
+        await nextTick()
+        const el = document.querySelector(
+            props.axiomFlashMode === 'fol' ? '.axiom-fol' : '.axiom-pl'
+        ) as HTMLElement | null
+        if (el) {
+            el.scrollIntoView({ block: 'start', behavior: 'smooth' })
+            notationFlash.value = props.axiomFlashMode
+            setTimeout(() => { notationFlash.value = null }, 2000)
+        }
     }
 })
 
@@ -302,14 +316,15 @@ function renderTex(text: string): string {
 
                 <div class="group">
                     <div class="group-label">{{ t('help.notations.axiomSetTitle') }}</div>
-                    <div class="gloss-entry axiom-pl">
+                    <div class="gloss-entry axiom-pl" :class="{ 'gloss-flash': notationFlash === 'pl' }">
                         <!-- eslint-disable-next-line vue/no-v-html -->
                         <p v-html="t('help.notations.axiomSetPL')"></p>
                     </div>
-                    <div class="gloss-entry axiom-fol" style="margin-top: 4px;">
+                    <div class="gloss-entry axiom-fol" :class="{ 'gloss-flash': notationFlash === 'fol' }" style="margin-top: 4px;">
                         <!-- eslint-disable-next-line vue/no-v-html -->
                         <p v-html="t('help.notations.axiomSetFOL')"></p>
                     </div>
+                    <a class="axiom-more" href="/#/about#why-two-axiom-sets" @click="emit('close')">{{ t('help.notations.axiomSetMore') }}</a>
                 </div>
             </div>
 
@@ -608,6 +623,19 @@ function renderTex(text: string): string {
 
 .axiom-fol :deep(b) {
     color: var(--color-fol-on);
+}
+
+.axiom-more {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+
+    &:hover {
+        color: var(--color-primary-hover);
+    }
 }
 
 .gloss-term {

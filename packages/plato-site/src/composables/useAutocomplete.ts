@@ -12,6 +12,7 @@ export interface Suggestion {
 const STATIC: Suggestion[] = [
   // ── commands ──
   { label: 'assume', insert: 'assume ', description: 'Assume a formula', kind: 'command' },
+  { label: 'extend', insert: 'extend ', description: 'Weakening — extend context with extra assumption', kind: 'command' },
   { label: 'fix', insert: 'fix ', description: 'Introduce a fresh term variable', kind: 'command' },
   { label: 'show', insert: 'show ', description: 'Re-print a step', kind: 'command' },
   { label: 'subst', insert: 'subst ', description: 'Substitute atoms with formulas', kind: 'command' },

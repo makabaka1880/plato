@@ -22,12 +22,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "diamond-def-rev",
-      "rule": "\\frac{\\Gamma \\vdash \\lnot \\Box \\lnot A}{\\Gamma \\vdash \\Diamond A}",
-      "description": "◇-definition reverse: fold ¬□¬A back into ◇A.",
-      "syntax": "(diamond-def-rev N)",
-      "example": "1. ⊢ ¬□¬A\n2. (diamond-def-rev 1)  →  ⊢ ◇A"
-    }
+    "diamond-def-rev"
   ]
 }

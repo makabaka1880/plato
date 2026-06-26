@@ -34,6 +34,7 @@ watch(items, (next) => {
     for (const name of cur) {
         if (!prev.has(name)) fresh.value.add(name)
     }
+    console.log(allowedSet.value?.size)
     prev = cur
 }, { deep: true })
 </script>

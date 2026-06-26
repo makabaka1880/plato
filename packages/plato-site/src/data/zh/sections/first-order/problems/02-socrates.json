@@ -33,12 +33,6 @@
   ],
   "hints": [],
   "unlocks": [
-    {
-      "name": "forall-elim",
-      "rule": "\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}",
-      "description": "从 $\\forall x.\\; \\varphi$，把任意项 $t$ 代入 $x$ 得到 $\\varphi$。对所有成立的东西，对每个具体对象也成立。",
-      "syntax": "(forall-elim N t)",
-      "example": "1. ⊢ ∀x. P(x)\n2. (forall-elim 1 t)  →  ⊢ P(t)"
-    }
+    "forall-elim"
   ]
 }
