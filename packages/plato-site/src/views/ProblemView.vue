@@ -51,11 +51,13 @@ watch(
             return
         }
         if (!progress.isUnlocked(sectionId, idx)) {
+            const next = (progress.highestSolved[sectionId] ?? -1) + 1
             router.replace({
                 name: 'locked',
                 query: {
                     section: sectionId,
                     n: String(idx),
+                    closest: String(next),
                 },
             })
             return
@@ -91,7 +93,9 @@ watch(
 const hasPrev = computed(() => props.problemIdx > 0)
 const hasNext = computed(() => {
     if (!section.value) return false
-    return props.problemIdx < section.value.problems.length - 1
+    const nextIdx = props.problemIdx + 1
+    if (nextIdx >= section.value.problems.length) return false
+    return progress.isUnlocked(props.sectionId, nextIdx)
 })
 
 function goPrev() {
