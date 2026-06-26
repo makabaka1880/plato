@@ -39,7 +39,7 @@ Every problem is a JSON object with these top-level keys:
 }
 ```
 
-The description, goal, premise, guides, hints, and unlocks fields are spelled out below. **Note:** the `id` field is assigned automatically by filename ordering within the section — do not include it in the JSON. The `logicMode` field is **removed**; it is governed by the section's `section.json` (see [Section config](#section-config)).
+The description, goal, premise, guides, hints, and unlocks fields are spelled out below. **Note:** the `id` field is assigned automatically by filename ordering within the section — do not include it in the JSON. The `logicMode` field is **optional** for built-in section problems (it's governed by the section's `section.json`) but should be specified for custom/standalone problems. See [Axiom set per problem](#axiom-set-per-problem).
 
 ---
 
@@ -159,6 +159,17 @@ Atom names can contain any character except whitespace, `(`, and `)`. So `A`, `B
 | Constructor | Aliases | Example | Meaning |
 |---|---|---|---|
 | `(not p)` | `neg`, `¬` | `(not A)` | Negation: $\lnot A$ |
+| `(box p)` | `□`, `nec` | `(box A)` | Necessity: $\Box A$ — available only in PL mode (modal section) |
+| `(diamond p)` | `◇`, `dia`, `poss` | `(diamond A)` | Possibility: $\Diamond A$ — available only in PL mode (modal section) |
+
+### First-order formulas
+
+| Constructor | Aliases | Example | Meaning |
+|---|---|---|---|
+| `(forall x body)` | `∀` | `(forall x (App P x))` | Universal quantifier: $\forall x.P(x)$ |
+| `(exists x body)` | `∃` | `(exists x (App P x))` | Existential quantifier: $\exists x.P(x)$ |
+| `(App P t)` | — | `(App P x)` | Predicate application: $P(x)$ |
+| `(App (App R x) y)` | — | (nested) | Binary predicate: $R(x,y)$ — curried via nested `App`
 
 ### Nesting
 
@@ -452,8 +463,10 @@ The `text` field in guides and hints supports inline markup parsed by the fronte
 | Syntax | Rendered as |
 |---|---|
 | `$latex$` | Inline KaTeX math, e.g. `$A \land B$` |
-| `**bold**` | **Bold text** |
+| `**bold**` | **Bold text**, supports nested markup inside |
 | `` `code` `` | Monospace code, usually for tactic names or step numbers |
+| `[id\|display]` | Glossary link — opens HelpModal glossary tab scrolled to entry `id`. e.g. `[modus-ponens\|modus ponens]` |
+| `[id]` | Glossary link — same as above but uses the id as the display text, e.g. `[contradiction]` |
 
 **Examples:**
 ```
@@ -728,3 +741,24 @@ The axiom set is set per-section in `section.json`. Individual problems no longe
 3. Add `discovery.json` — a dialogue between characters introducing the section's concepts (see existing sections for format).
 4. Add a `problems/` subfolder with numbered JSON files.
 5. No code changes required — sections are auto-discovered via `import.meta.glob`.
+
+## Axiom set per problem
+
+For **custom / standalone problems** (loaded via URL or file), each problem can set its own axiom set by including `"logicMode": "pl"` or `"logicMode": "fol"` in the problem JSON:
+
+```json
+{
+  "description": "A modal logic proof",
+  "goal": "(box A)",
+  "premise": ["A"],
+  "logicMode": "pl",
+  "guides": [],
+  "hints": [],
+  "unlocks": []
+}
+```
+
+- `"pl"` — **Propositional Logic.** Modal operators (`box`, `diamond`) are available; quantifiers (`forall`, `exists`, `App`) and `fix` are disabled.
+- `"fol"` — **First-Order Logic** (default). Quantifiers, predicate application, and `fix` are available; modal operators are disabled.
+
+For **built-in section problems**, the section's `section.json` provides the default `logicMode`, but individual problems can still override it with a per-problem `logicMode` field (though this is rarely needed).

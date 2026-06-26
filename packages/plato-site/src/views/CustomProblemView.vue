@@ -33,6 +33,15 @@ const problemRef = computed(() => problem.value)
 const { goalLatex, premiseLatex, updateLatex } = useProblemLatex(problemRef)
 const victory = useVictory()
 
+// ── Logic mode ────────────────────────────────────────────────────────
+const logicMode = computed(() => problem.value?.logicMode ?? 'fol')
+const axiomSetLabel = computed(() => {
+  const mode = logicMode.value
+  if (mode === 'pl') return '(PL) FOL OFF'
+  if (mode === 'fol') return '(FOL) FOL ON'
+  return mode
+})
+
 const agreed = ref(false)
 const showRepl = ref(false)
 const proofLines = ref<string[]>([])
@@ -65,6 +74,7 @@ function dataToProblem(data: ProblemData, id: number): Problem {
     guides: (data.guides as Hint[]) ?? [],
     hints: (data.hints as Hint[]) ?? [],
     unlocks: data.unlocks ?? [],
+    logicMode: data.logicMode,
   }
 }
 
@@ -204,7 +214,7 @@ function stop() {
       <div class="header">
         <button class="logo" @click="router.push('/')">Plato</button>
         <span class="spacer"></span>
-        <span v-if="problem" class="goal-chip">{{ problem.goal }}</span>
+        <span v-if="problem" class="goal-chip"><span class="axiom-chip" :class="{ 'axiom-chip--fol-off': logicMode === 'pl' }">{{ axiomSetLabel }}</span> · {{ problem.goal }}</span>
         <span v-else-if="loadedMsg" class="loaded-chip">{{ loadedMsg }}</span>
         <span class="spacer"></span>
         <button class="help-link" @click="showHelpGlobal = true">?</button>
@@ -297,6 +307,7 @@ function stop() {
             :premise="problem.premise"
             :guides="problem.guides"
             :hints="problem.hints"
+            :logic-mode="logicMode"
             @solved="onSolved"
             style="flex:1;overflow:hidden"
           />
@@ -365,6 +376,11 @@ function stop() {
 .goal-chip {
   font-size: 13px; color: var(--color-muted);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.axiom-chip {
+  font-size: 11px; font-weight: 600;
+  &:not(.axiom-chip--fol-off) { color: var(--color-primary-hover); }
+  &.axiom-chip--fol-off { color: var(--color-fol-off); }
 }
 .loaded-chip { font-size: 13px; color: var(--color-primary-hover); }
 

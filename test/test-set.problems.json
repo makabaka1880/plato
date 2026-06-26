@@ -1,0 +1,217 @@
+[
+  {
+    "description": "Identity: A implies A.",
+    "goal": "(-> A A)",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Modus ponens in practice.",
+    "goal": "B",
+    "premise": ["A", "(-> A B)"],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Conjunction intro and elim.",
+    "goal": "(-> (and A B) A)",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Disjunction intro and proof by cases.",
+    "goal": "(-> A (or A B))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Reductio: from contradiction, anything follows — in this case, not-A.",
+    "goal": "(-> (not A) (-> A B))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Double negation elimination.",
+    "goal": "(-> (not (not A)) A)",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Ex falso quodlibet under an implication.",
+    "goal": "(-> (and A (not A)) B)",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Proof by cases: or-elim.",
+    "goal": "(-> (or A B) (or B A))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Top-intro is always provable.",
+    "goal": "T",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "Currying: (A ∧ B → C) → (A → B → C).",
+    "goal": "(-> (-> (and A B) C) (-> A (-> B C)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": []
+  },
+  {
+    "description": "K axiom: necessity distributes over implication.",
+    "goal": "(-> (box (-> A B)) (-> (box A) (box B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+  },
+  {
+    "description": "Truth is necessarily true.",
+    "goal": "(box T)",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+  },
+  {
+    "description": "Diamond definition: possibility as not-necessarily-not.",
+    "goal": "(-> (diamond A) (not (box (not A))))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+  },
+  {
+    "description": "Reverse diamond definition.",
+    "goal": "(-> (not (box (not A))) (diamond A))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+  },
+  {
+    "description": "Necessity of a conjunction distributes.",
+    "goal": "(-> (box (and A B)) (and (box A) (box B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+  },
+  {
+    "description": "If necessarily not-A, then not possibly A.",
+    "goal": "(-> (box (not A)) (not (diamond A)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+  },
+  {
+    "description": "Chained K: □(A→B) → (□(B→C) → (□A → □C)).",
+    "goal": "(-> (box (-> A B)) (-> (box (-> B C)) (-> (box A) (box C))))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+  },
+  {
+    "description": "Universal generalisation: forall x, P(x) -> P(x).",
+    "goal": "(forall x (-> (App P x) (App P x)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  },
+  {
+    "description": "Socrates syllogism.",
+    "goal": "(App mortal socrates)",
+    "premise": ["(forall x (-> (App man x) (App mortal x)))", "(App man socrates)"],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  },
+  {
+    "description": "Existential generalisation.",
+    "goal": "(-> (App P a) (exists x (App P x)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  },
+  {
+    "description": "Existential elimination: renaming bound variable.",
+    "goal": "(-> (exists x (App P x)) (exists y (App P y)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  },
+  {
+    "description": "Quantifier negation: if nothing is P, everything is not P.",
+    "goal": "(-> (not (exists x (App P x))) (forall x (not (App P x))))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  },
+  {
+    "description": "Forall chain: everything is Q if everything is P and P implies Q.",
+    "goal": "(-> (forall x (-> (App P x) (App Q x))) (-> (App P a) (App Q a)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  },
+  {
+    "description": "Binary predicate symmetry instantiation.",
+    "goal": "(-> (forall x (forall y (-> (App (App R x) y) (App (App R y) x)))) (-> (App (App R a) b) (App (App R b) a)))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  },
+  {
+    "description": "Swap nested existential quantifiers.",
+    "goal": "(-> (exists x (exists y (App (App R x) y))) (exists y (exists x (App (App R x) y))))",
+    "premise": [],
+    "guides": [],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+  }
+]
