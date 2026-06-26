@@ -25,4 +25,10 @@ export default {
     'forall-elim': 'If it\'s true for everything — and line {n} says it is — then it\'s certainly true for {t}: {conclusion}.',
     'exists-intro': 'Line {n} gives us a concrete example in {t}, so we know something out there answers to {x}: {conclusion}.',
     'exists-elim': 'Line {n} tells us that something answering to {x} exists. Using the witness from line {m}, we conclude {conclusion}.',
+
+    'box-intro': 'Line {n} was proved without leaning on any worldly assumptions, so it holds necessarily: {conclusion}.',
+    'box-elim': 'Line {n} says necessity respects implication, and line {m} supplies the antecedent under necessity — so {conclusion}.',
+        'top-intro': 'Truth is always provable, no questions asked. So: {conclusion}.',
+    'diamond-def-rev': 'Folding the double negation in line {n} back through the definition gives us {conclusion}.',
+    'diamond-def': 'Unfolding the possibility in line {n} through its definition gives us {conclusion}.',
 }

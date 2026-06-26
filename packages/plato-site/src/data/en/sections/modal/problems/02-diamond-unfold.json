@@ -1,25 +1,33 @@
 {
-    "description": "Possibility means not-necessarily-not — unfolding the diamond.",
-    "goal": "(-> (diamond A) (not (box (not A))))",
-    "premise": [],
-    "guides": [
-        {
-            "text": "In modal logic, ◇A is defined as ¬□¬A. This problem proves one direction of that equivalence. If A is possible, then it's not the case that ¬A is necessary.",
-            "tactic": null
-        },
-        {
-            "text": "Assume the possibility: ◇A.",
-            "tactic": "(assume (diamond A))"
-        },
-        {
-            "text": "Use `diamond-def` to unfold ◇A into ¬□¬A.",
-            "tactic": "(diamond-def 1)"
-        },
-        {
-            "text": "Discharge to get ◇A → ¬□¬A. The diamond definition, proven in 3 steps.",
-            "tactic": "(->-intro (diamond A) 2)"
-        }
-    ],
-    "hints": [],
-    "unlocks": []
+  "description": "When there is a will, there is a loophole.",
+  "goal": "(-> (diamond A) (not (box (not A))))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "In modal logic, ◇A is defined as ¬□¬A. This problem proves one direction of that equivalence. If A is possible, then it's not the case that ¬A is necessary.",
+      "tactic": null
+    },
+    {
+      "text": "Assume the possibility: ◇A.",
+      "tactic": "(assume (diamond A))"
+    },
+    {
+      "text": "Use `diamond-def` to unfold ◇A into ¬□¬A.",
+      "tactic": "(diamond-def 1)"
+    },
+    {
+      "text": "Discharge to get ◇A → ¬□¬A. The diamond definition, proven in 3 steps.",
+      "tactic": "(->-intro (diamond A) 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "diamond-def",
+      "rule": "\\frac{\\Gamma \\vdash \\Diamond A}{\\Gamma \\vdash \\lnot \\Box \\lnot A}",
+      "description": "◇-definition: unfold ◇A to ¬□¬A and fold back. Two directions — (diamond-def N) and (diamond-def-rev N).",
+      "syntax": "(diamond-def N)",
+      "example": "1. ⊢ ◇A\n2. (diamond-def 1)  →  ⊢ ¬□¬A"
+    }
+  ]
 }

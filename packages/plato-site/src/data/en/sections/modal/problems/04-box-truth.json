@@ -1,25 +1,25 @@
 {
-    "description": "Truth is necessarily true.",
-    "goal": "(box T)",
-    "premise": [],
-    "guides": [
-        {
-            "text": "Truth (⊤) is always provable. Since it requires no assumptions, we can apply NEC to put a box on it: necessary truth is still truth.",
-            "tactic": null
-        },
-        {
-            "text": "First, prove ⊤ with `top-intro`. The context is empty — exactly what NEC needs.",
-            "tactic": "(top-intro)"
-        },
-        {
-            "text": "Apply `box-intro` to step 1. The context must be empty (it is!), so we derive □⊤.",
-            "tactic": "(box-intro 1)"
-        },
-        {
-            "text": "□⊤ — truth is necessary. The simplest possible modal theorem.",
-            "tactic": null
-        }
-    ],
-    "hints": [],
-    "unlocks": []
+  "description": "Yep.",
+  "goal": "(box T)",
+  "premise": [],
+  "guides": [
+    {
+      "text": "Truth (⊤) is always provable. Since it requires no assumptions, we can apply NEC to put a box on it: necessary truth is still truth.",
+      "tactic": null
+    },
+    {
+      "text": "First, prove ⊤ with `top-intro`. The context is empty — exactly what NEC needs.",
+      "tactic": "(top-intro)"
+    },
+    {
+      "text": "Apply `box-intro` to step 1. The context must be empty (it is!), so we derive □⊤.",
+      "tactic": "(box-intro 1)"
+    },
+    {
+      "text": "□⊤ — truth is necessary. The simplest possible modal theorem.",
+      "tactic": null
+    }
+  ],
+  "hints": [],
+  "unlocks": []
 }

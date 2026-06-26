@@ -25,4 +25,10 @@ export default {
   'forall-elim': '如果对一切都成立——第 {n} 行说确实如此——那对眼下的 {t} 自然也成立：{conclusion}。',
   'exists-intro': '第 {n} 行给了我们一个具体的例子 {t}，所以确实有东西满足 {x}：{conclusion}。',
   'exists-elim': '第 {n} 行告诉我们有东西满足 {x}。借着第 {m} 行提供的见证，我们最终得到 {conclusion}。',
+
+  'box-intro': '第 {n} 行的证明不依赖任何世俗假设，因此它必然成立：{conclusion}。',
+  'box-elim': '第 {n} 行说必然性尊重蕴含关系，而第 {m} 行给出了必然的前提——因此 {conclusion}。',
+      'top-intro': '真随时可证，无需任何前提：{conclusion}。',
+    'diamond-def-rev': '将第 {n} 行的双重否定通过定义折叠回来，得到 {conclusion}。',
+    'diamond-def': '展开第 {n} 行中可能性的定义，得到 {conclusion}。',
 }

@@ -12,9 +12,31 @@ The idea isn't to teach you *about* logic — it's to teach you to *do* logic. A
 
 You are shown a statement to prove. You type commands in an s-expression REPL — `(assume A)`, `(->-elim 2 1)`, `(and-intro 1 3)` — and the engine checks each step against the rules of natural deduction. Guide cards walk you through your first proofs. Hints appear when you're lost. Every solved problem unlocks new tactics, building your toolkit one rule at a time.
 
-There are **57 problems** across three sections — Propositional Logic, First-Order Logic, and Modal Logic (System K). Each section operates in its own **axiom set** (PL or FOL, shown in the NavBar), which determines which commands are available: propositional connectives only, or with quantifiers, or with modal operators. Problems range from the law of identity (three steps, two minutes) to the K axiom of modal logic and the distribution of necessity over implication.
+There are **61 problems** across three sections — Propositional Logic (38 problems), First-Order Logic (15 problems), and Modal Logic / System K (8 problems). Each section opens with a **discovery dialogue** — a short illustrated conversation between historical logicians (Plato & Aristotle, De Morgan & Frege, Aristotle & the Master) that sets up the section's theme before you dive into proofs. As you solve problems, you unlock **24 tactics**, each with a LaTeX inference rule and natural-language description.
+
+Plato's engine supports two **axiom sets** — PL and FOL — displayed as a colored chip in the navbar (green for FOL on, orange for FOL off). See below for why this separation matters.
 
 You can also **load your own problems** from a URL or a JSON file — the engine doesn't care where the goal came from.
+
+## Why two axiom sets?
+
+Plato lives at the intersection of three logical systems, and the way they interact — or refuse to interact — is part of what makes the design interesting.
+
+**Propositional logic (PL)** is the simplest of the three. You reason about atomic propositions connected by $\lnot$, $\land$, $\lor$, $\to$, $\top$, and $\bot$. It's decidable: a truth table can settle any propositional statement in finite time. This is the bedrock.
+
+**First-order logic (FOL)** adds quantifiers ($\forall$, $\exists$) and lets you talk about objects and their properties — "all men are mortal," "Socrates is a man." FOL is semi-decidable: if a formula is valid, there's a proof; but if it isn't, no algorithm can always tell you so. Still, for practical natural deduction, FOL is well-behaved and thoroughly understood.
+
+**Modal logic (System K)** adds $\Box$ (necessity) and $\Diamond$ (possibility) on top of propositional logic. System K is decidable — in fact, you can translate it into a fragment of first-order logic (the *standard translation* into possible-world semantics), so it's no more dangerous than FOL.
+
+The trouble starts when you try to combine them. **First-order modal logic (FOML)** — FOL plus $\Box$ and $\Diamond$ — is a different beast entirely. Quantifiers and modal operators don't play nice together. Consider the Barcan formula:
+
+$$
+\forall x \Box P(x) \to \Box \forall x P(x)
+$$
+
+Should this hold? It depends. If you think objects can pop into or out of existence as you move between possible worlds (varying domains), the answer is no. If you believe the domain of all possible objects is fixed (constant domains), the answer is yes. There is no single canonical semantics — different philosophical commitments about what "exists" means across possible worlds produce irreconcilably different logics. Worse, even the monadic fragment of FOML (only unary predicates) is undecidable — unlike monadic FOL, which is decidable. The interaction between quantifiers and modalities is so rich that it pushes the system beyond what any finite algorithm can tame.
+
+Plato's solution is simple: **don't combine them.** The propositional and modal sections run under PL (you get $\Box$ and $\Diamond$ but not quantifiers). The first-order section runs under FOL (you get $\forall$ and $\exists$ but not modal operators). Each system stays within its own decidable territory, and the axiom set chip in the navbar tells you at a glance which toolkit you're holding.
 
 ## Why natural deduction?
 
@@ -29,9 +51,9 @@ Natural deduction is legitimately hard. There is no algorithm for constructing a
 ## Tech
 
 - **Engine**: Rust, compiled to WebAssembly via `wasm-pack`. The entire logical kernel — formulas, contexts, judgements, inference rules, an s-expression parser — lives in ~3,000 lines of Rust.
-- **Frontend**: Vue 3 + TypeScript + Vite. Single-page app with no router — just a discriminated union and page transitions.
+- **Frontend**: Vue 3 + TypeScript + Vite. Single-page app with vue-router (hash history) and page transitions.
 - **Rendering**: KaTeX for math, JetBrains Mono for everything else.
-- **i18n**: Full English and Chinese support, including bilingual glossaries for every technical term.
+- **i18n**: Full English and Chinese support, including bilingual glossaries for every technical term and a Chinese natural-language generation layer for proof step explanations.
 
 ## Credits
 

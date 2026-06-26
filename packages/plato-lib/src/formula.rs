@@ -28,6 +28,10 @@ pub enum PropWWF {
     /// Predicate application: P(t) — an uppercase symbol applied to a lower one.
     /// Nested applications: ((F t1) t2) …
     App(Rc<PropWWF>, Rc<PropWWF>),
+    /// Necessity modality: □p.
+    Box(Rc<PropWWF>),
+    /// Possibility modality: ◇p.
+    Diamond(Rc<PropWWF>),
 }
 
 impl PartialEq for PropWWF {
@@ -45,6 +49,8 @@ impl PartialEq for PropWWF {
             (Self::Forall(x, body), Self::Forall(y, body2)) => x == y && body == body2,
             (Self::Exists(x, body), Self::Exists(y, body2)) => x == y && body == body2,
             (Self::App(p1, t1), Self::App(p2, t2)) => p1 == p2 && t1 == t2,
+            (Self::Box(p1), Self::Box(p2)) => p1 == p2,
+            (Self::Diamond(p1), Self::Diamond(p2)) => p1 == p2,
             (Self::Top, Self::Top) => true,
             (Self::Bottom, Self::Bottom) => true,
             _ => false,
@@ -72,6 +78,8 @@ impl Hash for PropWWF {
             Self::Forall(x, body) => { x.hash(state); body.hash(state); }
             Self::Exists(x, body) => { x.hash(state); body.hash(state); }
             Self::App(p, t) => { p.hash(state); t.hash(state); }
+            Self::Box(p) => p.hash(state),
+            Self::Diamond(p) => p.hash(state),
         }
     }
 }
@@ -105,6 +113,7 @@ impl PropWWF {
                 b2.insert(x.clone());
                 body.collect_free(out, &b2);
             }
+            Self::Box(p) | Self::Diamond(p) => p.collect_free(out, bound),
             Self::Top | Self::Bottom => {}
         }
     }
@@ -141,6 +150,8 @@ impl PropWWF {
                 p.subst_term_inner(x, t, bound),
                 a.subst_term_inner(x, t, bound),
             )),
+            Self::Box(p) => Rc::new(Self::Box(p.subst_term_inner(x, t, bound))),
+            Self::Diamond(p) => Rc::new(Self::Diamond(p.subst_term_inner(x, t, bound))),
             Self::Forall(y, body) => {
                 let mut b2 = bound.clone();
                 b2.insert(y.clone());
@@ -177,6 +188,8 @@ impl PropWWF {
                     format!("{}({})", pred.verbal(), args.join(", "))
                 }
             }
+            Self::Box(p) => format!("necessarily: {}", p.verbal()),
+            Self::Diamond(p) => format!("possibly: {}", p.verbal()),
         }
     }
 
@@ -224,6 +237,8 @@ impl PropWWF {
                     format!("{}({})", pred.latex(), args.join(", "))
                 }
             }
+            Self::Box(p) => format!("\\Box {}", p.latex_child()),
+            Self::Diamond(p) => format!("\\Diamond {}", p.latex_child()),
         }
     }
 
@@ -232,6 +247,7 @@ impl PropWWF {
             self,
             Self::Conj(..) | Self::Disj(..) | Self::Imp(..)
             | Self::Neg(..) | Self::Forall(..) | Self::Exists(..)
+            | Self::Box(..) | Self::Diamond(..)
         )
     }
 
@@ -251,6 +267,8 @@ impl PropWWF {
             Self::Imp(ant, consq) => Rc::new(Self::Imp(ant.substitute(subs), consq.substitute(subs))),
             Self::Forall(x, body) => Rc::new(Self::Forall(x.clone(), body.substitute(subs))),
             Self::Exists(x, body) => Rc::new(Self::Exists(x.clone(), body.substitute(subs))),
+            Self::Box(p) => Rc::new(Self::Box(p.substitute(subs))),
+            Self::Diamond(p) => Rc::new(Self::Diamond(p.substitute(subs))),
             Self::App(p, t) => Rc::new(Self::App(p.substitute(subs), t.substitute(subs))),
         }
     }
@@ -278,7 +296,7 @@ mod tests {
         use crate::parser::sexpr;
         let tokens = sexpr::tokenize(s);
         let sexpr = sexpr::parse_one(&tokens).unwrap();
-        crate::parser::formula::parse_formula(&sexpr).unwrap().latex()
+        crate::parser::formula::parse_formula(&sexpr, None).unwrap().latex()
     }
 
     #[test]
@@ -310,7 +328,7 @@ mod tests {
     fn free_vars_simple() {
         let tokens = crate::parser::sexpr::tokenize("(forall x (App P x))");
         let sexpr = crate::parser::sexpr::parse_one(&tokens).unwrap();
-        let fm = crate::parser::formula::parse_formula(&sexpr).unwrap();
+        let fm = crate::parser::formula::parse_formula(&sexpr, None).unwrap();
         let fv = fm.free_vars();
         // Only uppercase P is free; x is bound.
         assert!(fv.is_empty(), "expected no free vars, got {:?}", fv);
@@ -320,7 +338,7 @@ mod tests {
     fn free_vars_open() {
         let tokens = crate::parser::sexpr::tokenize("(App P x)");
         let sexpr = crate::parser::sexpr::parse_one(&tokens).unwrap();
-        let fm = crate::parser::formula::parse_formula(&sexpr).unwrap();
+        let fm = crate::parser::formula::parse_formula(&sexpr, None).unwrap();
         let fv = fm.free_vars();
         assert!(fv.contains("x"), "x should be free, got {:?}", fv);
     }
@@ -329,7 +347,7 @@ mod tests {
     fn subst_term_avoid_capture() {
         let tokens = crate::parser::sexpr::tokenize("(forall x (App P x))");
         let sexpr = crate::parser::sexpr::parse_one(&tokens).unwrap();
-        let fm = crate::parser::formula::parse_formula(&sexpr).unwrap();
+        let fm = crate::parser::formula::parse_formula(&sexpr, None).unwrap();
         // substituting x->y inside ∀x.P(x) should be a no-op
         let r = fm.subst_term("x", "y");
         assert_eq!(*fm, *r);
@@ -351,6 +369,8 @@ impl fmt::Display for PropWWF {
             Self::Imp(ant, consq) => write!(f, "({}) → ({})", ant, consq),
             Self::Forall(x, body) => write!(f, "∀{}.({})", x, body),
             Self::Exists(x, body) => write!(f, "∃{}.({})", x, body),
+            Self::Box(p) => write!(f, "□({})", p),
+            Self::Diamond(p) => write!(f, "◇({})", p),
             Self::App(p, t) => {
                 let parts = self.flatten_app();
                 if parts.len() <= 2 {

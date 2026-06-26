@@ -1,25 +1,33 @@
 {
-    "description": "Not-necessarily-not means possibly — folding back to the diamond.",
-    "goal": "(-> (not (box (not A))) (diamond A))",
-    "premise": [],
-    "guides": [
-        {
-            "text": "The converse direction: if it's not the case that ¬A is necessary, then A is possible. This uses `diamond-def-rev`.",
-            "tactic": null
-        },
-        {
-            "text": "Assume ¬□¬A.",
-            "tactic": "(assume (not (box (not A))))"
-        },
-        {
-            "text": "Use `diamond-def-rev` to fold ¬□¬A back into ◇A.",
-            "tactic": "(diamond-def-rev 1)"
-        },
-        {
-            "text": "Discharge. The two directions together establish ◇A ↔ ¬□¬A.",
-            "tactic": "(->-intro (not (box (not A))) 2)"
-        }
-    ],
-    "hints": [],
-    "unlocks": []
+  "description": "When there's a loophole, there is a way.",
+  "goal": "(-> (not (box (not A))) (diamond A))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "The converse direction: if it's not the case that ¬A is necessary, then A is possible. This uses `diamond-def-rev`.",
+      "tactic": null
+    },
+    {
+      "text": "Assume ¬□¬A.",
+      "tactic": "(assume (not (box (not A))))"
+    },
+    {
+      "text": "Use `diamond-def-rev` to fold ¬□¬A back into ◇A.",
+      "tactic": "(diamond-def-rev 1)"
+    },
+    {
+      "text": "Discharge. The two directions together establish ◇A ↔ ¬□¬A.",
+      "tactic": "(->-intro (not (box (not A))) 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "diamond-def-rev",
+      "rule": "\\frac{\\Gamma \\vdash \\lnot \\Box \\lnot A}{\\Gamma \\vdash \\Diamond A}",
+      "description": "◇-definition reverse: fold ¬□¬A back into ◇A.",
+      "syntax": "(diamond-def-rev N)",
+      "example": "1. ⊢ ¬□¬A\n2. (diamond-def-rev 1)  →  ⊢ ◇A"
+    }
+  ]
 }

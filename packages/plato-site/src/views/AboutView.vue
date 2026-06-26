@@ -4,10 +4,12 @@ import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
 import NavBar from '@/components/NavBar.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
+import HelpModal from '@/components/HelpModal.vue'
 
 const { locale } = useI18n()
 
 const prefsOpen = ref(false)
+const showHelp = ref(false)
 
 // Lazy-load ABOUT.md for the current locale
 const aboutModules = import.meta.glob(
@@ -52,7 +54,7 @@ onUnmounted(() => {
 
 <template>
     <div class="about-root">
-        <NavBar @open-prefs="prefsOpen = true" />
+        <NavBar @open-prefs="prefsOpen = true" @open-help="showHelp = true" />
         <div class="progress-bar">
             <div class="progress-fill" :style="{ width: `${progress * 100}%` }"></div>
         </div>
@@ -61,6 +63,7 @@ onUnmounted(() => {
             <div class="content" v-html="html"></div>
         </div>
         <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
+        <HelpModal v-if="showHelp" @close="showHelp = false" />
     </div>
 </template>
 

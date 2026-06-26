@@ -1,0 +1,41 @@
+{
+  "description": "一直都不是这样的呀。",
+  "goal": "(-> (box (not A)) (not (diamond A)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "□ 和 ◇ 之间的一次干净互动：如果 $\\lnot A$ 在所有可及世界成立，那么不可能存在一个 $A$ 成立的可及世界。证明使用 `diamond-def` 将 ◇ 展开为其 □-形式，然后推出矛盾。首先假设 $\\Box \\lnot A$，然后假设 $\\Diamond A$ 进行 [reductio-ad-absurdum|归谬]。",
+      "tactic": null
+    },
+    {
+      "text": "假设 $\\Box \\lnot A$。",
+      "tactic": "(assume (box (not A)))"
+    },
+    {
+      "text": "假设 $\\Diamond A$——我们将推出矛盾。",
+      "tactic": "(assume (diamond A))"
+    },
+    {
+      "text": "应用 `diamond-def` 将 $\\Diamond A$ 展开为 $\\lnot \\Box \\lnot A$。",
+      "tactic": "(diamond-def 2)"
+    },
+    {
+      "text": "对第 3 步使用 `not-elim` 拆解 [negation|否定]：$\\Box \\lnot A \\to \\bot$。",
+      "tactic": "(not-elim 3)"
+    },
+    {
+      "text": "[modus-ponens|肯定前件]：第 4 步的条件句应用于第 1 步，得到 $\\bot$。",
+      "tactic": "(->-elim 4 1)"
+    },
+    {
+      "text": "消去 $\\Diamond A$，得到 $\\Diamond A \\to \\bot$，即 $\\lnot \\Diamond A$。",
+      "tactic": "(->-intro (diamond A) 5)"
+    },
+    {
+      "text": "消去 $\\Box \\lnot A$，完成。",
+      "tactic": "(->-intro (box (not A)) 6)"
+    }
+  ],
+  "unlocks": []
+}

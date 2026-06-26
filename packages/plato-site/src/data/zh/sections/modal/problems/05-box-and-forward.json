@@ -1,0 +1,41 @@
+{
+  "description": "跑了和尚，也跑不了庙。",
+  "goal": "(-> (box (and A B)) (and (box A) (box B)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "目标：$\\Box(A \\land B) \\to (\\Box A \\land \\Box B)$。你需要证明两个重言式（在空上下文下），用 NEC 给它们加盒，假设 $\\Box(A \\land B)$，然后两次应用 K 公理。只有上下文为空时才能用 `(box-intro N)`——重言式帮你做到这一点。",
+      "tactic": null
+    },
+    {
+      "text": "首先，证明 $(A \\land B) \\to A$。假设合取，用 `and-elim-l` 提取 $A$，再用 `->-intro` 消去。",
+      "tactic": null
+    },
+    {
+      "text": "在空上下文下，用 NEC：`(box-intro 3)` 给你的第一个重言式加盒。",
+      "tactic": null
+    },
+    {
+      "text": "现在假设主前件：$\\Box(A \\land B)$。",
+      "tactic": "(assume (box (and A B)))"
+    },
+    {
+      "text": "K 公理：`(box-elim 4 5)` ——从 $\\Box((A \\land B) \\to A)$ 和 $\\Box(A \\land B)$，推出 $\\Box A$。",
+      "tactic": null
+    },
+    {
+      "text": "对右半边重复：证明 $(A \\land B) \\to B$（假设、`and-elim-r`、消去），然后 `(box-intro)` 和 `(box-elim)`，配合你在第 5 步的假设。",
+      "tactic": null
+    },
+    {
+      "text": "用 `(and-intro)` 将 $\\Box A$ 和 $\\Box B$ 合取。",
+      "tactic": null
+    },
+    {
+      "text": "用 `->-intro` 消去 $\\Box(A \\land B)$ 完成。",
+      "tactic": "(->-intro (box (and A B)) 12)"
+    }
+  ],
+  "unlocks": []
+}

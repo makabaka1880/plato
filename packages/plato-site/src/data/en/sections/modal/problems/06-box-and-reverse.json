@@ -1,0 +1,41 @@
+{
+  "description": "Out of the frying pan, straight into the fire.",
+  "goal": "(-> (and (box A) (box B)) (box (and A B)))",
+  "premise": [],
+  "guides": [],
+  "hints": [
+    {
+      "text": "The converse: $(\\Box A \\land \\Box B) \\to \\Box(A \\land B)$. Build the tautology $A \\to (B \\to (A \\land B))$ with empty context, box it with NEC, then use the K axiom twice to chain through $\\Box A$ and $\\Box B$.",
+      "tactic": null
+    },
+    {
+      "text": "Build the tautology from inside out: assume $A$, then assume $B$, then `(and-intro 1 2)`, then discharge $B$ with `(->-intro B 3)`, then discharge $A$ with `(->-intro A 4)`. Context should be empty.",
+      "tactic": null
+    },
+    {
+      "text": "NEC: `(box-intro 5)` on the tautology.",
+      "tactic": null
+    },
+    {
+      "text": "Assume the antecedent: $\\Box A \\land \\Box B$.",
+      "tactic": "(assume (and (box A) (box B)))"
+    },
+    {
+      "text": "Extract $\\Box A$ (`and-elim-l 7`) and $\\Box B$ (`and-elim-r 7`).",
+      "tactic": null
+    },
+    {
+      "text": "First K: `(box-elim 6 8)` — from $\\Box(A \\to (B \\to (A \\land B)))$ and $\\Box A$, get $\\Box(B \\to (A \\land B))$.",
+      "tactic": null
+    },
+    {
+      "text": "Second K: `(box-elim 10 9)` — from the result and $\\Box B$, get $\\Box(A \\land B)$.",
+      "tactic": null
+    },
+    {
+      "text": "Discharge with `(->-intro (and (box A) (box B)) 11)`.",
+      "tactic": "(->-intro (and (box A) (box B)) 11)"
+    }
+  ],
+  "unlocks": []
+}

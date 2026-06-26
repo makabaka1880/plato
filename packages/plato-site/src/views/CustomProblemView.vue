@@ -10,6 +10,7 @@ import InlineLatex from '@/components/InlineLatex.vue'
 import ProofRepl from '@/components/ProofRepl.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
 import TacticSidebar from '@/components/TacticSidebar.vue'
+import HelpModal from '@/components/HelpModal.vue'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -36,6 +37,7 @@ const agreed = ref(false)
 const showRepl = ref(false)
 const proofLines = ref<string[]>([])
 const prefsOpen = ref(false)
+const showHelpGlobal = ref(false)
 const loadedMsg = ref('')
 
 // ── Schema validation ───────────────────────────────────────────────
@@ -205,7 +207,8 @@ function stop() {
         <span v-if="problem" class="goal-chip">{{ problem.goal }}</span>
         <span v-else-if="loadedMsg" class="loaded-chip">{{ loadedMsg }}</span>
         <span class="spacer"></span>
-        <button class="prefs-link" @click="prefsOpen = true">{{ t('problem.preferences') }}</button>
+        <button class="help-link" @click="showHelpGlobal = true">?</button>
+                <button class="prefs-link" @click="prefsOpen = true">{{ t('problem.preferences') }}</button>
       </div>
 
       <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
@@ -331,6 +334,7 @@ function stop() {
       </div>
     </div>
 
+    <HelpModal v-if="showHelpGlobal" @close="showHelpGlobal = false" />
     <TacticSidebar />
   </div>
 </template>

@@ -43,6 +43,12 @@ pub enum DeductionRule {
     /// Ex falso quodlibet (principle of explosion):
     /// `Γ ⊢ ⊥ ⇒ Γ ⊢ p` for any `p`.
     ExFalso(Rc<Judgement>, Rc<PropWWF>),
+    /// Top introduction — axiom:
+    /// `Γ ⊢ ⊤` for any context Γ.
+    TopIntro(Context),
+    /// Top introduction in step N's context:
+    /// From step N's context, derive ⊤.
+    TopIntroCtx(Rc<Judgement>),
 }
 
 impl DeductionRule {
@@ -64,6 +70,8 @@ impl DeductionRule {
             Self::NegElim(nj) => rules::neg::neg_elim(&nj),
             Self::DNegElim(j) => rules::neg::double_neg_elim(&j),
             Self::ExFalso(j_bot, p) => rules::misc::exfalso(&j_bot, p),
+            Self::TopIntro(ctx) => rules::misc::top_intro(&ctx),
+            Self::TopIntroCtx(j) => rules::misc::top_intro(&j.ctx),
         }
     }
 }

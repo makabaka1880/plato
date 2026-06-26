@@ -7,6 +7,7 @@ import { useDiscoveryStore } from '@/stores/discovery'
 import DiscoveryDialog from '@/components/DiscoveryDialog.vue'
 import NavBar from '@/components/NavBar.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
+import HelpModal from '@/components/HelpModal.vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -18,6 +19,7 @@ const props = defineProps<{
 
 const section = computed(() => getSection(props.sectionId, locale.value))
 const prefsOpen = ref(false)
+const showHelp = ref(false)
 
 const progress = ref(0)
 const totalLines = computed(() => section.value?.discovery.lines.length ?? 1)
@@ -40,11 +42,12 @@ function onSkip() {
 <template>
     <div v-if="!section" class="not-found">Section not found.</div>
     <div v-else class="root">
-        <NavBar @open-prefs="prefsOpen = true">
+        <NavBar @open-prefs="prefsOpen = true" @open-help="showHelp = true">
             <span class="section-chip">{{ t(section.meta.nameI18nKey) }}</span>
         </NavBar>
 
         <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
+        <HelpModal v-if="showHelp" @close="showHelp = false" />
 
         <div class="progress-bar">
             <div class="progress-fill" :style="{ width: (progress * 100) + '%' }"></div>

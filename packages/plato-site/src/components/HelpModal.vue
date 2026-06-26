@@ -84,42 +84,42 @@ const groups: { i18nGroup: string; entries: CommandEntry[] }[] = [
     {
         i18nGroup: 'help.groups.implication',
         entries: [
-            { syntax: '(->-intro F N)', i18nKey: 'help.commands.->-intro', unlocked: store.collected.includes('→-intro'), rule: '\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}' },
-            { syntax: '(->-elim N M)', i18nKey: 'help.commands.->-elim', unlocked: store.collected.includes('→-elim'), rule: '\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}' },
+            { syntax: '(->-intro F N)', i18nKey: 'help.commands.->-intro', unlocked: store.collected.includes('->-intro'), rule: '\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}' },
+            { syntax: '(->-elim N M)', i18nKey: 'help.commands.->-elim', unlocked: store.collected.includes('->-elim'), rule: '\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}' },
         ],
     },
     {
         i18nGroup: 'help.groups.conjunction',
         entries: [
-            { syntax: '(and-intro N M)', i18nKey: 'help.commands.and-intro', unlocked: store.collected.includes('∧-intro'), rule: '\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}' },
-            { syntax: '(and-elim-l N)', i18nKey: 'help.commands.and-elim-l', unlocked: store.collected.includes('∧-elim-l'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}' },
-            { syntax: '(and-elim-r N)', i18nKey: 'help.commands.and-elim-r', unlocked: store.collected.includes('∧-elim-r'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}' },
+            { syntax: '(and-intro N M)', i18nKey: 'help.commands.and-intro', unlocked: store.collected.includes('and-intro'), rule: '\\frac{\\Gamma \\vdash p \\quad \\Delta \\vdash q}{\\Gamma \\cup \\Delta \\vdash p \\land q}' },
+            { syntax: '(and-elim-l N)', i18nKey: 'help.commands.and-elim-l', unlocked: store.collected.includes('and-elim-l'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash p}' },
+            { syntax: '(and-elim-r N)', i18nKey: 'help.commands.and-elim-r', unlocked: store.collected.includes('and-elim-r'), rule: '\\frac{\\Gamma \\vdash p \\land q}{\\Gamma \\vdash q}' },
         ],
     },
     {
         i18nGroup: 'help.groups.disjunction',
         entries: [
-            { syntax: '(or-intro-l N F)', i18nKey: 'help.commands.or-intro-l', unlocked: store.collected.includes('∨-intro-l'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}' },
-            { syntax: '(or-intro-r N F)', i18nKey: 'help.commands.or-intro-r', unlocked: store.collected.includes('∨-intro-r'), rule: '\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}' },
-            { syntax: '(or-elim N M K)', i18nKey: 'help.commands.or-elim', unlocked: store.collected.includes('∨-elim'), rule: '\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}' },
+            { syntax: '(or-intro-l N F)', i18nKey: 'help.commands.or-intro-l', unlocked: store.collected.includes('or-intro-l'), rule: '\\frac{\\Gamma \\vdash p}{\\Gamma \\vdash p \\lor q}' },
+            { syntax: '(or-intro-r N F)', i18nKey: 'help.commands.or-intro-r', unlocked: store.collected.includes('or-intro-r'), rule: '\\frac{\\Gamma \\vdash q}{\\Gamma \\vdash p \\lor q}' },
+            { syntax: '(or-elim N M K)', i18nKey: 'help.commands.or-elim', unlocked: store.collected.includes('or-elim'), rule: '\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}' },
         ],
     },
     {
         i18nGroup: 'help.groups.negation',
         entries: [
-            { syntax: '(not-intro F N M)', i18nKey: 'help.commands.not-intro', unlocked: store.collected.includes('¬-intro'), rule: '\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}' },
-            { syntax: '(not-elim N)', i18nKey: 'help.commands.not-elim', unlocked: store.collected.includes('¬-elim') },
-            { syntax: '(dne N)', i18nKey: 'help.commands.dne', unlocked: store.collected.includes('¬¬-elim') },
+            { syntax: '(not-intro F N M)', i18nKey: 'help.commands.not-intro', unlocked: store.collected.includes('not-intro'), rule: '\\frac{\\Gamma, p \\vdash q \\quad \\Delta, p \\vdash \\lnot q}{\\Gamma \\cup \\Delta \\vdash \\lnot p}' },
+            { syntax: '(not-elim N)', i18nKey: 'help.commands.not-elim', unlocked: store.collected.includes('not-elim') },
+            { syntax: '(dne N)', i18nKey: 'help.commands.dne', unlocked: store.collected.includes('dne') },
             { syntax: '(ex-falso N F)', i18nKey: 'help.commands.ex-falso', unlocked: store.collected.includes('ex-falso') },
         ],
     },
     {
         i18nGroup: 'help.groups.quantifiers',
         entries: [
-            { syntax: '(forall-intro x N)', i18nKey: 'help.commands.forall-intro', unlocked: store.collected.includes('∀-intro'), rule: '\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}' },
-            { syntax: '(forall-elim N t)', i18nKey: 'help.commands.forall-elim', unlocked: store.collected.includes('∀-elim'), rule: '\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}' },
-            { syntax: '(exists-intro N t x)', i18nKey: 'help.commands.exists-intro', unlocked: store.collected.includes('∃-intro'), rule: '\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}' },
-            { syntax: '(exists-elim N M x)', i18nKey: 'help.commands.exists-elim', unlocked: store.collected.includes('∃-elim'), rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}' },
+            { syntax: '(forall-intro x N)', i18nKey: 'help.commands.forall-intro', unlocked: store.collected.includes('forall-intro'), rule: '\\frac{\\Gamma, x \\vdash \\varphi \\quad x \\notin FV(\\Gamma)}{\\Gamma \\vdash \\forall x.\\; \\varphi}' },
+            { syntax: '(forall-elim N t)', i18nKey: 'help.commands.forall-elim', unlocked: store.collected.includes('forall-elim'), rule: '\\frac{\\Gamma \\vdash \\forall x.\\; \\varphi}{\\Gamma \\vdash \\varphi[t/x]}' },
+            { syntax: '(exists-intro N t x)', i18nKey: 'help.commands.exists-intro', unlocked: store.collected.includes('exists-intro'), rule: '\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}' },
+            { syntax: '(exists-elim N M x)', i18nKey: 'help.commands.exists-elim', unlocked: store.collected.includes('exists-elim'), rule: '\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, x \\vdash \\psi \\quad x \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}' },
         ],
     },
     {
@@ -301,11 +301,13 @@ function renderTex(text: string): string {
 
                 <div class="group">
                     <div class="group-label">{{ t('help.notations.axiomSetTitle') }}</div>
-                    <div class="gloss-entry">
+                    <div class="gloss-entry axiom-pl">
                         <!-- eslint-disable-next-line vue/no-v-html -->
                         <p v-html="t('help.notations.axiomSetPL')"></p>
+                    </div>
+                    <div class="gloss-entry axiom-fol" style="margin-top: 4px;">
                         <!-- eslint-disable-next-line vue/no-v-html -->
-                        <p v-html="t('help.notations.axiomSetFOL')" style="margin-top: 6px;"></p>
+                        <p v-html="t('help.notations.axiomSetFOL')"></p>
                     </div>
                 </div>
             </div>
@@ -338,139 +340,323 @@ function renderTex(text: string): string {
 
 <style lang="scss" scoped>
 .backdrop {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(0, 0, 0, 0.3); outline: none;
-  display: flex; align-items: center; justify-content: center;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.3);
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal {
-  background: var(--color-bg); border-radius: 12px;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
-  max-height: 85vh; max-width: 620px; width: 92vw;
-  display: flex; flex-direction: column;
+    background: var(--color-bg);
+    border-radius: 12px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
+    max-height: 85vh;
+    max-width: 620px;
+    width: 92vw;
+    display: flex;
+    flex-direction: column;
 }
 
 .head {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 20px; border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--color-border);
 }
 
-.tabs { display: flex; gap: 2px; }
+.tabs {
+    display: flex;
+    gap: 2px;
+}
 
 .tab {
-  font-family: inherit; font-size: 11px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--color-muted); background: none;
-  border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-  &:hover { color: var(--color-fg); }
-  &.active { color: var(--color-fg); background: var(--color-subtle-bg); }
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    background: none;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+
+    &:hover {
+        color: var(--color-fg);
+    }
+
+    &.active {
+        color: var(--color-fg);
+        background: var(--color-subtle-bg);
+    }
 }
 
-.count { font-size: 11px; color: var(--color-muted); margin-left: auto; }
+.count {
+    font-size: 11px;
+    color: var(--color-muted);
+    margin-left: auto;
+}
 
 .close-btn {
-  background: none; border: none; font-size: 20px;
-  cursor: pointer; color: var(--color-muted); margin-left: 0;
-  &:hover { color: var(--color-primary-hover); }
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--color-muted);
+    margin-left: 0;
+
+    &:hover {
+        color: var(--color-primary-hover);
+    }
 }
 
-.body { overflow-y: auto; padding: 10px 20px; }
-.group { margin-bottom: 14px; }
+.body {
+    overflow-y: auto;
+    padding: 10px 20px;
+}
+
+.group {
+    margin-bottom: 14px;
+}
 
 .group-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--color-muted);
-  margin-bottom: 6px; padding-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 6px;
+    padding-top: 4px;
 }
 
 // ── Commands ─────────────────────────────────────────────────
 .cmd {
-  padding: 6px 10px; margin-bottom: 4px; border-radius: 6px;
-  border: 1px solid var(--color-border); background: var(--color-subtle-bg);
-  &.locked {
-    opacity: 0.35; background: transparent; border-style: dashed;
-    .syntax { color: var(--color-muted); }
-  }
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-subtle-bg);
+
+    &.locked {
+        opacity: 0.35;
+        background: transparent;
+        border-style: dashed;
+
+        .syntax {
+            color: var(--color-muted);
+        }
+    }
 }
-.cmd-head { display: flex; align-items: center; gap: 6px; }
-.syntax { font-size: 12px; color: var(--color-primary-hover); }
-.lock-icon { font-size: 10px; }
-.desc { font-size: 11px; color: var(--color-muted); margin-top: 2px; }
-.rule { margin-top: 4px; font-size: 14px; padding: 4px 0; }
+
+.cmd-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.syntax {
+    font-size: 12px;
+    color: var(--color-primary-hover);
+}
+
+.lock-icon {
+    font-size: 10px;
+}
+
+.desc {
+    font-size: 11px;
+    color: var(--color-muted);
+    margin-top: 2px;
+}
+
+.rule {
+    margin-top: 4px;
+    font-size: 14px;
+    padding: 4px 0;
+}
 
 // ── Notations ────────────────────────────────────────────────
 .sym-table {
-  border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 .sym-row {
-  display: flex; align-items: center; padding: 6px 10px;
-  border-bottom: 1px solid var(--color-border);
-  &:last-child { border-bottom: none; }
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--color-border);
+
+    &:last-child {
+        border-bottom: none;
+    }
 }
-.sym-render { width: 48px; flex-shrink: 0; font-size: 16px; text-align: center; color: var(--color-fg); }
-.sym-name { width: 110px; flex-shrink: 0; font-size: 11px; color: var(--color-muted); }
-.sym-code { font-family: inherit; font-size: 12px; color: var(--color-primary-hover); }
+
+.sym-render {
+    width: 48px;
+    flex-shrink: 0;
+    font-size: 16px;
+    text-align: center;
+    color: var(--color-fg);
+}
+
+.sym-name {
+    width: 110px;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--color-muted);
+}
+
+.sym-code {
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--color-primary-hover);
+}
 
 // ── Glossary ─────────────────────────────────────────────────
-.glossary-body { padding-top: 0; }
+.glossary-body {
+    padding-top: 0;
+}
 
 .alpha-nav {
-  display: flex; flex-wrap: wrap; gap: 2px;
-  margin: 0 0 12px; padding: 0 0 10px;
-  border-bottom: 1px solid var(--color-border);
-  position: sticky; top: 0; background: var(--color-bg); z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin: 0 0 12px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    z-index: 1;
 }
 
 .alpha-btn {
-  font-family: inherit; font-size: 11px; font-weight: 600; line-height: 1;
-  color: var(--color-muted); background: none;
-  border: 1px solid transparent; border-radius: 3px;
-  width: 24px; height: 24px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: color 0.15s, border-color 0.15s;
-  &:hover { color: var(--color-fg); border-color: var(--color-border); }
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-muted);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, border-color 0.15s;
+
+    &:hover {
+        color: var(--color-fg);
+        border-color: var(--color-border);
+    }
 }
 
-.alpha-anchor { scroll-margin-top: 46px; }
+.alpha-anchor {
+    scroll-margin-top: 46px;
+}
 
-.gloss-flash { animation: glossHighlight 1.8s ease-out; }
+.gloss-flash {
+    animation: glossHighlight 1.8s ease-out;
+}
 
 @keyframes glossHighlight {
-  0% { background: var(--color-glossary-flash); border-color: #b0d0f0; }
-  100% { background: var(--color-subtle-bg); border-color: var(--color-border); }
+    0% {
+        background: var(--color-glossary-flash);
+        border-color: #b0d0f0;
+    }
+
+    100% {
+        background: var(--color-subtle-bg);
+        border-color: var(--color-border);
+    }
 }
 
 .gloss-entry {
-  padding: 8px 10px; margin-bottom: 4px; border-radius: 6px;
-  border: 1px solid var(--color-border); background: var(--color-subtle-bg);
-  scroll-margin-top: 46px;
-  code { font-family: inherit; font-size: 11px; padding: 0 3px; border: 1px solid var(--color-border); border-radius: 2px; background: var(--color-bg); }
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-subtle-bg);
+    scroll-margin-top: 46px;
+    font-size: 11px;
+
+
+    code {
+        font-family: inherit;
+        padding: 0 3px;
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+        background: var(--color-bg);
+    }
 }
 
-.gloss-term { font-size: 12px; font-weight: 600; color: var(--color-fg); margin-bottom: 3px; }
+.axiom-pl :deep(b) {
+    color: var(--color-fol-off);
+}
+
+.axiom-fol :deep(b) {
+    color: var(--color-fol-on);
+}
+
+.gloss-term {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-fg);
+    margin-bottom: 3px;
+}
 
 .gloss-intuitive {
-  font-size: 11px; color: var(--color-fg); line-height: 1.65;
-  padding: 6px 8px; margin-bottom: 6px;
-  background: var(--color-hint-bg); border-left: 3px solid var(--color-hint-border);
-  border-radius: 0 4px 4px 0;
+    font-size: 11px;
+    color: var(--color-fg);
+    line-height: 1.65;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    background: var(--color-hint-bg);
+    border-left: 3px solid var(--color-hint-border);
+    border-radius: 0 4px 4px 0;
 }
+
 .gloss-def {
-  font-size: 11px; color: var(--color-muted); line-height: 1.65;
-  code { font-family: inherit; font-size: 11px; padding: 0 3px; border: 1px solid var(--color-border); border-radius: 2px; background: var(--color-bg); }
+    font-size: 11px;
+    color: var(--color-muted);
+    line-height: 1.65;
+
+    code {
+        font-family: inherit;
+        font-size: 11px;
+        padding: 0 3px;
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+        background: var(--color-bg);
+    }
 }
 
 .foot {
-  padding: 10px 20px 14px; font-size: 11px;
-  color: var(--color-border-strong); border-top: 1px solid var(--color-border);
-  text-align: center; flex-shrink: 0;
+    padding: 10px 20px 14px;
+    font-size: 11px;
+    color: var(--color-border-strong);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+    flex-shrink: 0;
 }
 
 kbd {
-  font-family: inherit; font-size: 10px; padding: 1px 5px;
-  border: 1px solid var(--color-border-strong); border-radius: 3px;
-  background: var(--color-subtle-bg);
+    font-family: inherit;
+    font-size: 10px;
+    padding: 1px 5px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 3px;
+    background: var(--color-subtle-bg);
 }
 </style>

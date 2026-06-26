@@ -1,33 +1,33 @@
 {
-    "description": "否极泰来。",
-    "goal": "(-> (not (not A)) A)",
-    "premise": [],
-    "guides": [
-        {
-            "text": "目标是 $\\lnot \\lnot A \\to A$。在日常生活中：如果\"$A$ 是假的\"这句话本身也是假的，那 $A$ 必须是真。这就是 **[double-negation|双重否定消除]**——经典逻辑的一个标志。（在直觉主义逻辑里没这条，但柏拉图站经典派。）",
-            "tactic": null
-        },
-        {
-            "text": "假设那个双重[negation|否定的] $A$。[s-expression|S-表达式] `(not (not A))` 就是 $\\lnot \\lnot A$。",
-            "tactic": "(assume (not (not A)))"
-        },
-        {
-            "text": "`dne` 规则剥掉两层[negation|否定]。从步骤 1 的 $\\lnot \\lnot A$ 直接给出 $A$——一步到位。",
-            "tactic": "(dne 1)"
-        },
-        {
-            "text": "[discharge|消去] 假设。[double-negation|双重否定]没了，留下一个干净的[implication|蕴含式]。负负得正。",
-            "tactic": "(->-intro (not (not A)) 2)"
-        }
-    ],
-    "hints": [],
-    "unlocks": [
-        {
-            "name": "¬¬-elim",
-            "rule": "\\frac{\\Gamma \\vdash \\lnot \\lnot p}{\\Gamma \\vdash p}",
-            "description": "从 $\\lnot \\lnot p$ 推出 $p$——剥掉双重否定，经典逻辑的\"负负得正\"。",
-            "syntax": "(dne N)",
-            "example": "1. ⊢ ¬¬P\n2. (dne 1)  →  ⊢ P"
-        }
-    ]
+  "description": "否极泰来。",
+  "goal": "(-> (not (not A)) A)",
+  "premise": [],
+  "guides": [
+    {
+      "text": "目标是 $\\lnot \\lnot A \\to A$。在日常生活中：如果\"$A$ 是假的\"这句话本身也是假的，那 $A$ 必须是真。这就是 **[double-negation|双重否定消除]**——经典逻辑的一个标志。（在直觉主义逻辑里没这条，但柏拉图站经典派。）",
+      "tactic": null
+    },
+    {
+      "text": "假设那个双重[negation|否定的] $A$。[s-expression|S-表达式] `(not (not A))` 就是 $\\lnot \\lnot A$。",
+      "tactic": "(assume (not (not A)))"
+    },
+    {
+      "text": "`dne` 规则剥掉两层[negation|否定]。从步骤 1 的 $\\lnot \\lnot A$ 直接给出 $A$——一步到位。",
+      "tactic": "(dne 1)"
+    },
+    {
+      "text": "[discharge|消去] 假设。[double-negation|双重否定]没了，留下一个干净的[implication|蕴含式]。负负得正。",
+      "tactic": "(->-intro (not (not A)) 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "dne",
+      "rule": "\\frac{\\Gamma \\vdash \\lnot \\lnot p}{\\Gamma \\vdash p}",
+      "description": "从 $\\lnot \\lnot p$ 推出 $p$——剥掉双重否定，经典逻辑的\"负负得正\"。",
+      "syntax": "(dne N)",
+      "example": "1. ⊢ ¬¬P\n2. (dne 1)  →  ⊢ P"
+    }
+  ]
 }

@@ -27,10 +27,15 @@ const STATIC: Suggestion[] = [
   { label: 'not-elim', insert: 'not-elim ', description: 'Negation elimination', kind: 'command' },
   { label: 'dne', insert: 'dne ', description: 'Double negation elimination', kind: 'command' },
   { label: 'ex-falso', insert: 'ex-falso ', description: 'Ex falso quodlibet', kind: 'command' },
+  { label: 'top-intro', insert: 'top-intro ', description: 'Truth introduction (⊤)', kind: 'command' },
   { label: 'forall-intro', insert: 'forall-intro ', description: 'Universal generalisation', kind: 'command' },
   { label: 'forall-elim', insert: 'forall-elim ', description: 'Universal instantiation', kind: 'command' },
   { label: 'exists-intro', insert: 'exists-intro ', description: 'Existential generalisation', kind: 'command' },
   { label: 'exists-elim', insert: 'exists-elim ', description: 'Existential witness elimination', kind: 'command' },
+  { label: 'box-intro', insert: 'box-intro ', description: 'Necessity introduction', kind: 'command' },
+  { label: 'box-elim', insert: 'box-elim ', description: 'Necessity elimination (K axiom)', kind: 'command' },
+  { label: 'diamond-def', insert: 'diamond-def ', description: 'Unfold possibility via definition', kind: 'command' },
+  { label: 'diamond-def-rev', insert: 'diamond-def-rev ', description: 'Fold back to possibility', kind: 'command' },
   // ── formula connectives ──
   { label: '->', insert: '-> ', description: 'Implication', kind: 'formula' },
   { label: 'and', insert: 'and ', description: 'Conjunction', kind: 'formula' },
@@ -39,6 +44,8 @@ const STATIC: Suggestion[] = [
   { label: 'forall', insert: 'forall ', description: 'Universal quantifier', kind: 'formula' },
   { label: 'exists', insert: 'exists ', description: 'Existential quantifier', kind: 'formula' },
   { label: 'App', insert: 'App ', description: 'Predicate application', kind: 'formula' },
+  { label: 'box', insert: 'box ', description: 'Necessity modality (□)', kind: 'formula' },
+  { label: 'diamond', insert: 'diamond ', description: 'Possibility modality (◇)', kind: 'formula' },
   { label: '_|_', insert: '_|_', description: 'Contradiction / falsity', kind: 'formula' },
 ]
 

@@ -15,6 +15,7 @@ import PreferenceModal from '@/components/PreferenceModal.vue'
 import TacticSidebar from '@/components/TacticSidebar.vue'
 import RoadmapModal from '@/components/RoadmapModal.vue'
 import NavBar from '@/components/NavBar.vue'
+import HelpModal from '@/components/HelpModal.vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -125,6 +126,7 @@ const agreed = ref(false)
 const showRepl = ref(false)
 const proofLines = ref<string[]>([])
 const roadmapOpen = ref(false)
+const showHelpGlobal = ref(false)
 
 const sectionEntries = computed(() => {
     const bySection = roadmap.bySection
@@ -179,10 +181,11 @@ const logicMode = computed(() =>
 const axiomSetLabel = computed(() => {
     if (!section.value) return ''
     const mode = logicMode.value
-    if (mode === 'pl') return 'PL'
-    if (mode === 'fol') return 'FOL'
+    if (mode === 'pl') return '(PL) FOL OFF'
+    if (mode === 'fol') return '(FOL) FOL ON'
     return mode
 })
+
 const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 </script>
 
@@ -195,14 +198,15 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
     </div>
     <div v-else class="root-row">
         <div class="root">
-            <NavBar @open-prefs="prefsOpen = true">
-                <span class="goal-chip">{{ sectionName }} · <span class="axiom-chip">{{ axiomSetLabel }}</span> · {{ problem.goal }}</span>
+            <NavBar @open-prefs="prefsOpen = true" @open-help="showHelpGlobal = true">
+                <span class="goal-chip">{{ sectionName }} · <span class="axiom-chip" :class="{ 'axiom-chip--fol-off': logicMode === 'pl' }">{{ axiomSetLabel }}</span></span>
             </NavBar>
 
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
 
             <div class="body">
-                <button @click="goPrev" :disabled="!hasPrev" class="nav-btn nav-btn-top">{{ t('problem.prev') }}</button>
+                <button @click="goPrev" :disabled="!hasPrev" class="nav-btn nav-btn-top">{{ t('problem.prev')
+                    }}</button>
 
                 <Transition name="fade-up">
                     <div v-if="!agreed" class="prompt">
@@ -225,19 +229,10 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
                 </Transition>
 
                 <Transition name="fade-in">
-                    <ProofRepl
-                        v-if="agreed && showRepl"
-                        :goal-latex="goalLatex"
-                        :premise-latex="premiseLatex"
-                        :goal="problem.goal"
-                        :premise="problem.premise"
-                        :guides="problem.guides"
-                        :hints="problem.hints"
-                        :logic-mode="logicMode"
-                        :allowed-tactics="allowedTactics"
-                        @solved="onSolved"
-                        style="flex:1;overflow:hidden"
-                    />
+                    <ProofRepl v-if="agreed && showRepl" :goal-latex="goalLatex" :premise-latex="premiseLatex"
+                        :goal="problem.goal" :premise="problem.premise" :guides="problem.guides" :hints="problem.hints"
+                        :logic-mode="logicMode" :allowed-tactics="allowedTactics" @solved="onSolved"
+                        style="flex:1;overflow:hidden" />
                 </Transition>
 
                 <Transition name="fade-in">
@@ -249,11 +244,7 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
                                     <InlineLatex :text="line" />
                                 </div>
                             </div>
-                            <button
-                                v-if="hasNext"
-                                class="victory-btn"
-                                @click="goNext"
-                            >
+                            <button v-if="hasNext" class="victory-btn" @click="goNext">
                                 {{ t('problem.nextProblem') }}
                             </button>
                             <button v-else class="victory-btn" @click="goNextSection">
@@ -263,19 +254,16 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
                     </div>
                 </Transition>
 
-                <button @click="goNext" :disabled="!hasNext" class="nav-btn nav-btn-bot">{{ t('problem.next') }}</button>
+                <button @click="goNext" :disabled="!hasNext" class="nav-btn nav-btn-bot">{{ t('problem.next')
+                    }}</button>
             </div>
 
             <div class="footer">
                 <button @click="goPrev" :disabled="!hasPrev" class="nav-btn nav-btn-ft">{{ t('problem.prev') }}</button>
                 <div class="footer-roadmap" @click="roadmapOpen = true">
                     <div class="mini-track">
-                        <div
-                            v-for="(entry, i) in sectionEntries"
-                            :key="entry.sectionIdx"
-                            class="mini-dot"
-                            :class="{ latest: i === sectionEntries.length - 1 }"
-                        >
+                        <div v-for="(entry, i) in sectionEntries" :key="entry.sectionIdx" class="mini-dot"
+                            :class="{ latest: i === sectionEntries.length - 1 }">
                             <span class="mini-dot-num">{{ entry.sectionIdx + 1 }}</span>
                         </div>
                     </div>
@@ -285,123 +273,389 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
         </div>
 
         <TacticSidebar :allowed-tactics="allowedTactics" />
-        <RoadmapModal
-            v-if="roadmapOpen"
-            :section-id="props.sectionId"
-            @close="roadmapOpen = false"
-        />
+        <HelpModal v-if="showHelpGlobal" @close="showHelpGlobal = false" :allowed-tactics="allowedTactics" />
+        <RoadmapModal v-if="roadmapOpen" :section-id="props.sectionId" @close="roadmapOpen = false" />
     </div>
 </template>
 
 <style lang="scss" scoped>
-.root-row { display: flex; flex-direction: row; height: 100%; }
-.root { display: flex; flex-direction: column; height: 100%; flex: 1; overflow: hidden; }
-.goal-chip { font-size: 13px; color: var(--color-muted); }
-.axiom-chip { font-size: 11px; color: var(--color-primary-hover); font-weight: 600; }
-.body { flex: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
-.not-found { padding: 32px; }
+.root-row {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+.goal-chip {
+    font-size: 13px;
+    color: var(--color-muted);
+}
+
+.axiom-chip {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-fol-on);
+
+    &--fol-off {
+        color: var(--color-fol-off);
+    }
+}
+
+.body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.not-found {
+    padding: 32px;
+}
 
 // ── Footer ────────────────────────────────────────────────────
-.footer { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--color-border); }
-.footer-roadmap {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  gap: 2px; cursor: pointer; transition: opacity 0.15s; min-width: 0;
-  &:hover { opacity: 0.7; }
+.footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--color-border);
 }
-.nav-btn { padding: 4px 12px; font-family: inherit; font-size: 13px; cursor: pointer; }
+
+.footer-roadmap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    min-width: 0;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.nav-btn {
+    padding: 4px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
 
 // Flanking buttons — hidden on desktop, shown flanking the card on narrow
-.nav-btn-top, .nav-btn-bot { display: none; flex-shrink: 0; }
+.nav-btn-top,
+.nav-btn-bot {
+    display: none;
+    flex-shrink: 0;
+}
 
 @media (max-width: 500px) {
-  .nav-btn-top, .nav-btn-bot { display: block; width: 100%; padding: 6px 12px; }
-  .nav-btn-top { margin-bottom: 6px; }
-  .nav-btn-bot { margin-top: 6px; }
-  .nav-btn-ft { display: none; }
-  .footer { justify-content: center; padding: 6px 8px; }
+
+    .nav-btn-top,
+    .nav-btn-bot {
+        display: block;
+        width: 100%;
+        padding: 6px 12px;
+    }
+
+    .nav-btn-top {
+        margin-bottom: 6px;
+    }
+
+    .nav-btn-bot {
+        margin-top: 6px;
+    }
+
+    .nav-btn-ft {
+        display: none;
+    }
+
+    .footer {
+        justify-content: center;
+        padding: 6px 8px;
+    }
 }
-.mini-track { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+
+.mini-track {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
 
 .mini-dot {
-  width: 22px; height: 22px; border-radius: 100%;
-  background: var(--color-subtle-bg); border: 1px solid var(--color-border);
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.3s ease; animation: dotAppear 0.4s ease both;
-  &:nth-child(1) { animation-delay: 0s; }
-  &:nth-child(2) { animation-delay: 0.05s; }
-  &:nth-child(3) { animation-delay: 0.1s; }
-  &:nth-child(4) { animation-delay: 0.15s; }
-  &:nth-child(5) { animation-delay: 0.2s; }
-  &:nth-child(6) { animation-delay: 0.25s; }
-  &.latest {
-    background: var(--color-primary); border-color: var(--color-primary);
-    .mini-dot-num { color: var(--color-primary-fg); }
-  }
+    width: 22px;
+    height: 22px;
+    border-radius: 100%;
+    background: var(--color-subtle-bg);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    animation: dotAppear 0.4s ease both;
+
+    &:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    &:nth-child(2) {
+        animation-delay: 0.05s;
+    }
+
+    &:nth-child(3) {
+        animation-delay: 0.1s;
+    }
+
+    &:nth-child(4) {
+        animation-delay: 0.15s;
+    }
+
+    &:nth-child(5) {
+        animation-delay: 0.2s;
+    }
+
+    &:nth-child(6) {
+        animation-delay: 0.25s;
+    }
+
+    &.latest {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+
+        .mini-dot-num {
+            color: var(--color-primary-fg);
+        }
+    }
 }
-.mini-dot-num { font-size: 10px; font-weight: 600; color: var(--color-muted); }
+
+.mini-dot-num {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-muted);
+}
 
 @keyframes dotAppear {
-  0% { transform: scale(0); opacity: 0; }
-  60% { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 // ── Prompt ────────────────────────────────────────────────────
 .prompt {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; text-align: center; padding: 40px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
 }
-.prove-label { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; color: var(--color-muted); margin-bottom: 16px; }
-.prove-desc { font-size: clamp(20px, 4vw, 32px); max-width: 700px; line-height: 1.45; margin-bottom: 32px; }
-.goal-line { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--color-subtle); margin-bottom: 32px; }
-.premise-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--color-border-strong); }
-.premise-katex { font-size: 16px; color: var(--color-muted); margin-right: 16px; }
-.goal-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #aaa; }
-.goal-katex { font-size: 18px; color: var(--color-primary-hover); }
+
+.prove-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    margin-bottom: 16px;
+}
+
+.prove-desc {
+    font-size: clamp(20px, 4vw, 32px);
+    max-width: 700px;
+    line-height: 1.45;
+    margin-bottom: 32px;
+}
+
+.goal-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--color-subtle);
+    margin-bottom: 32px;
+}
+
+.premise-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--color-border-strong);
+}
+
+.premise-katex {
+    font-size: 16px;
+    color: var(--color-muted);
+    margin-right: 16px;
+}
+
+.goal-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #aaa;
+}
+
+.goal-katex {
+    font-size: 18px;
+    color: var(--color-primary-hover);
+}
 
 .agree-btn {
-  font-family: inherit; font-size: 14px; padding: 8px 32px; cursor: pointer;
-  background: var(--color-primary); color: var(--color-primary-fg); border: none; border-radius: 4px;
-  &:hover { background: var(--color-primary-hover); }
+    font-family: inherit;
+    font-size: 14px;
+    padding: 8px 32px;
+    cursor: pointer;
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+    border: none;
+    border-radius: 4px;
+
+    &:hover {
+        background: var(--color-primary-hover);
+    }
 }
 
 // ── Victory ───────────────────────────────────────────────────
 .victory-overlay {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  background: rgba(255, 255, 255, 0.92); z-index: 10;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.92);
+    z-index: 10;
 }
-.victory { text-align: center; max-height: 90vh; overflow-y: auto; padding: 20px 16px; }
-.victory-text { font-size: clamp(28px, 5vw, 48px); font-weight: 400; margin-bottom: 16px; }
+
+.victory {
+    text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px 16px;
+}
+
+.victory-text {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 400;
+    margin-bottom: 16px;
+}
+
 .proof-scroll {
-  max-height: 35vh; overflow-y: auto; text-align: left; font-size: 13px; line-height: 2; color: var(--color-subtle);
-  padding: 16px 18px; margin: 0 auto 24px; background: var(--color-subtle-bg);
-  border: 1px solid var(--color-border); border-radius: 8px; width: min(560px, 85vw); white-space: pre-wrap;
+    max-height: 35vh;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 13px;
+    line-height: 2;
+    color: var(--color-subtle);
+    padding: 16px 18px;
+    margin: 0 auto 24px;
+    background: var(--color-subtle-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    width: min(560px, 85vw);
+    white-space: pre-wrap;
 }
 
 .victory-btn {
-  font-family: inherit; font-size: 15px; padding: 8px 28px; cursor: pointer;
-  background: var(--color-primary); color: var(--color-primary-fg); border: none; border-radius: 4px; display: inline-block;
-  &:hover { background: var(--color-primary-hover); }
+    font-family: inherit;
+    font-size: 15px;
+    padding: 8px 28px;
+    cursor: pointer;
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+    border: none;
+    border-radius: 4px;
+    display: inline-block;
+
+    &:hover {
+        background: var(--color-primary-hover);
+    }
 }
 
 // ── Transitions ───────────────────────────────────────────────
-.fade-up-enter-active, .fade-up-leave-active { transition: all 0.4s ease; }
-.fade-up-enter-from { opacity: 0; transform: translateY(12px); }
-.fade-up-leave-to { opacity: 0; transform: translateY(-12px); }
+.fade-up-enter-active,
+.fade-up-leave-active {
+    transition: all 0.4s ease;
+}
 
-.fade-in-enter-active { transition: opacity 0.4s ease 0.3s; }
-.fade-in-leave-active { transition: opacity 0.15s ease; }
-.fade-in-enter-from, .fade-in-leave-to { opacity: 0; }
+.fade-up-enter-from {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.fade-up-leave-to {
+    opacity: 0;
+    transform: translateY(-12px);
+}
+
+.fade-in-enter-active {
+    transition: opacity 0.4s ease 0.3s;
+}
+
+.fade-in-leave-active {
+    transition: opacity 0.15s ease;
+}
+
+.fade-in-enter-from,
+.fade-in-leave-to {
+    opacity: 0;
+}
 
 // ── Responsive ────────────────────────────────────────────────
 @media (max-width: 600px) {
-  .goal-chip { display: none; }
-  .prompt { padding: 24px 12px; }
-  .prove-desc { font-size: clamp(17px, 5vw, 24px); }
-  .goal-line { flex-wrap: wrap; justify-content: center; gap: 6px; }
-  .premise-katex { margin-right: 0; }
-  .victory-text { font-size: clamp(22px, 7vw, 36px); }
-  .proof-scroll { width: 94vw; padding: 12px; font-size: 11px; }
-  .victory { padding: 12px 8px; }
+    .goal-chip {
+        display: none;
+    }
+
+    .prompt {
+        padding: 24px 12px;
+    }
+
+    .prove-desc {
+        font-size: clamp(17px, 5vw, 24px);
+    }
+
+    .goal-line {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .premise-katex {
+        margin-right: 0;
+    }
+
+    .victory-text {
+        font-size: clamp(22px, 7vw, 36px);
+    }
+
+    .proof-scroll {
+        width: 94vw;
+        padding: 12px;
+        font-size: 11px;
+    }
+
+    .victory {
+        padding: 12px 8px;
+    }
 }
 </style>

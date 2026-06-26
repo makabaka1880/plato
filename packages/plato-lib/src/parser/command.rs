@@ -53,6 +53,18 @@ pub enum Command {
     ExistsIntro(usize, String, String),
     /// `(exists-elim n m x)` — existential witness elimination.
     ExistsElim(usize, usize, String),
+    /// `(box-intro n)` — necessitation (NEC).
+    BoxIntro(usize),
+    /// `(box-elim n m)` — K axiom.
+    BoxElim(usize, usize),
+    /// `(diamond-def n)` — ◇-definition: ◇A → ¬□¬A.
+    DiamondDef(usize),
+    /// `(diamond-def-rev n)` — reverse ◇-definition: ¬□¬A → ◇A.
+    DiamondDefRev(usize),
+    /// `(top-intro)` — truth introduction with empty context.
+    TopIntro,
+    /// `(top-intro N)` — truth introduction in step N's context.
+    TopIntroCtx(usize),
 }
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -68,10 +80,10 @@ fn expect_usize(sexpr: &SExpr) -> Result<usize, String> {
 
 // ── Command parsing ─────────────────────────────────────────────
 
-fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
+fn parse_command(sexpr: &SExpr, mode: Option<&str>) -> Result<Command, String> {
     match sexpr {
         // A bare atom is always a formula
-        SExpr::Atom(_) => Ok(Command::Formula(parse_formula(sexpr)?)),
+        SExpr::Atom(_) => Ok(Command::Formula(parse_formula(sexpr, mode)?)),
         SExpr::List(items) => {
             if items.is_empty() {
                 return Err("empty list".into());
@@ -88,7 +100,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                             items.len() - 1
                         ));
                     }
-                    Ok(Command::Assume(parse_formula(&items[1])?))
+                    Ok(Command::Assume(parse_formula(&items[1], mode)?))
                 }
                 "var" => {
                     if items.len() != 3 {
@@ -99,7 +111,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     }
                     Ok(Command::Var(
                         expect_usize(&items[1])?,
-                        parse_formula(&items[2])?,
+                        parse_formula(&items[2], mode)?,
                     ))
                 }
                 "and-intro" => {
@@ -141,7 +153,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     }
                     Ok(Command::OrIntroL(
                         expect_usize(&items[1])?,
-                        parse_formula(&items[2])?,
+                        parse_formula(&items[2], mode)?,
                     ))
                 }
                 "or-intro-r" => {
@@ -153,7 +165,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     }
                     Ok(Command::OrIntroR(
                         expect_usize(&items[1])?,
-                        parse_formula(&items[2])?,
+                        parse_formula(&items[2], mode)?,
                     ))
                 }
                 "or-elim" => {
@@ -177,7 +189,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                         ));
                     }
                     Ok(Command::ImpIntro(
-                        parse_formula(&items[1])?,
+                        parse_formula(&items[1], mode)?,
                         expect_usize(&items[2])?,
                     ))
                 }
@@ -210,7 +222,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                         ));
                     }
                     Ok(Command::NotIntro(
-                        parse_formula(&items[1])?,
+                        parse_formula(&items[1], mode)?,
                         expect_usize(&items[2])?,
                         expect_usize(&items[3])?,
                     ))
@@ -242,7 +254,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     }
                     Ok(Command::ExFalso(
                         expect_usize(&items[1])?,
-                        parse_formula(&items[2])?,
+                        parse_formula(&items[2], mode)?,
                     ))
                 }
                 "show" | "print" | "p" => {
@@ -255,12 +267,18 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     Ok(Command::Show(expect_usize(&items[1])?))
                 }
                 "fix" => {
+                    if mode == Some("pl") {
+                        return Err("fix is not available in PL mode — switch to FOL mode".into());
+                    }
                     if items.len() != 2 {
                         return Err(format!("fix expects 1 argument, got {}", items.len() - 1));
                     }
-                    Ok(Command::Fix(parse_formula(&items[1])?))
+                    Ok(Command::Fix(parse_formula(&items[1], mode)?))
                 }
                 "forall-intro" | "∀-intro" | "forall" => {
+                    if mode == Some("pl") {
+                        return Err("forall-intro is not available in PL mode — switch to FOL mode".into());
+                    }
                     if items.len() != 3 {
                         return Err(format!("forall-intro expects 2 arguments (var, step), got {}", items.len() - 1));
                     }
@@ -271,6 +289,9 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     Ok(Command::ForallIntro(var, expect_usize(&items[2])?))
                 }
                 "forall-elim" | "∀-elim" => {
+                    if mode == Some("pl") {
+                        return Err("forall-elim is not available in PL mode — switch to FOL mode".into());
+                    }
                     if items.len() != 3 {
                         return Err(format!("forall-elim expects 2 arguments (step, term), got {}", items.len() - 1));
                     }
@@ -282,6 +303,9 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     Ok(Command::ForallElim(n, t))
                 }
                 "exists-intro" | "∃-intro" => {
+                    if mode == Some("pl") {
+                        return Err("exists-intro is not available in PL mode — switch to FOL mode".into());
+                    }
                     if items.len() != 4 {
                         return Err(format!("exists-intro expects 3 arguments (step, old-term, new-var), got {}", items.len() - 1));
                     }
@@ -297,6 +321,9 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     Ok(Command::ExistsIntro(n, t, x))
                 }
                 "exists-elim" | "∃-elim" => {
+                    if mode == Some("pl") {
+                        return Err("exists-elim is not available in PL mode — switch to FOL mode".into());
+                    }
                     if items.len() != 4 {
                         return Err(format!("exists-elim expects 3 arguments (step-ex, step-witness, var), got {}", items.len() - 1));
                     }
@@ -322,7 +349,7 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                                     SExpr::Atom(s) => s.clone(),
                                     _ => return Err("subst pair first element must be an atom".into()),
                                 };
-                                let repl = parse_formula(&pair[1])?;
+                                let repl = parse_formula(&pair[1], mode)?;
                                 pairs.push((atom, repl));
                             }
                             _ => return Err("subst expects (atom formula) pairs".into()),
@@ -330,9 +357,62 @@ fn parse_command(sexpr: &SExpr) -> Result<Command, String> {
                     }
                     Ok(Command::Subst(n, pairs))
                 }
+                "box-intro" | "□-intro" | "nec" => {
+                    if mode == Some("fol") {
+                        return Err("box-intro is not available in FOL mode — switch to PL mode".into());
+                    }
+                    if items.len() != 2 {
+                        return Err(format!("box-intro expects 1 argument, got {}", items.len() - 1));
+                    }
+                    Ok(Command::BoxIntro(expect_usize(&items[1])?))
+                }
+                "box-elim" | "□-elim" | "k" => {
+                    if mode == Some("fol") {
+                        return Err("box-elim is not available in FOL mode — switch to PL mode".into());
+                    }
+                    if items.len() != 3 {
+                        return Err(format!("box-elim expects 2 arguments, got {}", items.len() - 1));
+                    }
+                    Ok(Command::BoxElim(
+                        expect_usize(&items[1])?,
+                        expect_usize(&items[2])?,
+                    ))
+                }
+                "diamond-def" | "◇-def" | "dia-def" => {
+                    if mode == Some("fol") {
+                        return Err("diamond-def is not available in FOL mode — switch to PL mode".into());
+                    }
+                    if items.len() != 2 {
+                        return Err(format!("diamond-def expects 1 argument, got {}", items.len() - 1));
+                    }
+                    Ok(Command::DiamondDef(expect_usize(&items[1])?))
+                }
+                "diamond-def-rev" | "◇-def-rev" | "dia-def-rev" => {
+                    if mode == Some("fol") {
+                        return Err("diamond-def-rev is not available in FOL mode — switch to PL mode".into());
+                    }
+                    if items.len() != 2 {
+                        return Err(format!("diamond-def-rev expects 1 argument, got {}", items.len() - 1));
+                    }
+                    Ok(Command::DiamondDefRev(expect_usize(&items[1])?))
+                }
+                "top-intro" | "⊤-intro" => {
+                    if items.len() == 1 {
+                        // Zero-param: top in empty context
+                        Ok(Command::TopIntro)
+                    } else if items.len() == 2 {
+                        // One-param: top in step N's context
+                        Ok(Command::TopIntroCtx(expect_usize(&items[1])?))
+                    } else {
+                        return Err(format!(
+                            "top-intro expects 0 or 1 arguments, got {}",
+                            items.len() - 1
+                        ));
+                    }
+                }
                 "help" | "?" => Ok(Command::Show(0)), // special — prints help
                 // Fallback: try parsing as a formula
-                _ => match parse_formula(sexpr) {
+                _ => match parse_formula(sexpr, mode) {
                     Ok(f) => Ok(Command::Formula(f)),
                     Err(_) => Err(format!(
                         "unknown command '{}'. Try typing an s-expression formula, or 'help'.",
@@ -378,12 +458,20 @@ impl Command {
             Command::ForallElim(n, t) => ("forall-elim".into(), vec![("n".into(), n.to_string()), ("t".into(), t.clone())]),
             Command::ExistsIntro(n, t, x) => ("exists-intro".into(), vec![("n".into(), n.to_string()), ("t".into(), t.clone()), ("x".into(), x.clone())]),
             Command::ExistsElim(n, m, x) => ("exists-elim".into(), vec![("n".into(), n.to_string()), ("m".into(), m.to_string()), ("x".into(), x.clone())]),
+            Command::BoxIntro(n) => ("box-intro".into(), vec![("n".into(), n.to_string())]),
+            Command::BoxElim(n, m) => ("box-elim".into(), vec![("n".into(), n.to_string()), ("m".into(), m.to_string())]),
+            Command::DiamondDef(n) => ("diamond-def".into(), vec![("n".into(), n.to_string())]),
+            Command::DiamondDefRev(n) => ("diamond-def-rev".into(), vec![("n".into(), n.to_string())]),
+            Command::TopIntro => ("top-intro".into(), vec![]),
+            Command::TopIntroCtx(n) => ("top-intro".into(), vec![("n".into(), n.to_string())]),
         }
     }
 }
 
 /// Parse an input string into a command.
-pub fn parse_input(s: &str) -> Result<Command, String> {
+/// `mode` is an optional logic-mode gate: `"pl"` rejects quantifier constructs,
+/// `"fol"` rejects modal constructs. `None` allows everything (legacy).
+pub fn parse_input(s: &str, mode: Option<&str>) -> Result<Command, String> {
     let s = s.trim();
     if s.is_empty() {
         return Err("empty input".into());
@@ -393,5 +481,5 @@ pub fn parse_input(s: &str) -> Result<Command, String> {
         return Err("empty input".into());
     }
     let sexpr = super::sexpr::parse_one(&tokens)?;
-    parse_command(&sexpr)
+    parse_command(&sexpr, mode)
 }

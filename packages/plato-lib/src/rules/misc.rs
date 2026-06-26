@@ -24,6 +24,13 @@ pub fn exfalso(j_bot: &Judgement, p: Rc<PropWWF>) -> Option<Judgement> {
     None
 }
 
+/// Top introduction — axiom.
+///
+/// ⊤ (truth) is always provable under any context: `Γ ⊢ ⊤`.
+pub fn top_intro(ctx: &Context) -> Option<Judgement> {
+    Some(Judgement::new(ctx.clone(), Rc::new(PropWWF::Top)))
+}
+
 /// Substitution — the uniform replacement of atoms in a proven judgement.
 ///
 /// From `Γ ⊢ p` and a list of `(atom, replacement)` pairs, derive

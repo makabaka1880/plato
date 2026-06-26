@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Plato is a gamified natural deduction proof assistant — users prove logical statements step-by-step using inference rules in an s-expression REPL. It is a pnpm monorepo with two packages:
 
 - **`plato-lib`** — Rust library compiled to WASM (`wasm-pack`) implementing the natural deduction engine (formulas, contexts, judgements, inference rules, S-expression parser).
-- **`plato-site`** — Vue 3 + Vite + TypeScript SPA providing the UI: REPL, 45 guided proof problems, hint system, tactic collection, custom problem loader.
+- **`plato-site`** — Vue 3 + Vite + TypeScript SPA providing the UI: REPL, guided proof problems, hint system, tactic collection, custom problem loader.
 
 ## Commands
 
@@ -32,17 +32,53 @@ Node requirement: `^22.18.0 || >=24.12.0`. Package manager: `pnpm` (workspaces).
 
 ## Architecture
 
-### Navigation
+### Routing
 
-No vue-router. `App.vue` uses a `ref<Page>` discriminated union with three variants:
-```ts
-type Page =
-    | { type: 'home' }
-    | { type: 'problem'; idx: number }
-    | { type: 'custom' }
+Uses `vue-router` with hash history (`createWebHashHistory`). Routes defined in `src/router.ts`:
+
+| Route | View | Notes |
+|---|---|---|
+| `/` | `HomeView` | |
+| `/section/:sectionId/discovery` | `DiscoveryView` | Discovery dialogue shown before first problem |
+| `/section/:sectionId/problem/:idx` | `ProblemView` | |
+| `/custom` | `CustomProblemView` | |
+| `/about` | `AboutView` | Renders locale-specific `ABOUT.md` |
+| `/locked` | `LockedView` | Shown when section not yet unlocked |
+| `/problem/:idx` | — | Legacy redirect; resolves global index to section route |
+| `/:pathMatch(.*)*` | `NotFoundView` | Catch-all |
+
+Legacy redirect: `/problem/:idx` uses `resolveGlobalIndex()` from `@/data` to map old flat problem indices to the section-based routes.
+
+### Navigation flow
+
+Sections have an optional discovery dialogue (loaded from `discovery.json`). On first visit to a section, the app routes to `/section/:id/discovery`. The `DiscoveryView` plays through a dialogue (Plato/Aristotle characters) and on completion marks the section as viewed in the `discovery` store, then navigates to the first problem. Subsequent visits skip the discovery and go straight to problems.
+
+### Sections & data
+
+Problems are organized into sections (e.g., `propositional`, `first-order`, `modal`). Each section lives under `src/data/{locale}/sections/{section-id}/`:
+
+```
+sections/
+  propositional/
+    section.json        # SectionMeta: nameI18nKey, logicMode, allowedTactics, order
+    discovery.json      # DiscoveryData: title, lines (speaker + text)
+    problems/
+      01-identity.json  # Problem: description, premise, goal, guides, hints, unlocks
+      ...
 ```
 
-Views emit events (`@start`, `@continue`, `@next`, `@prev`, `@home`, `@go-custom`) that `App.vue` handles to change pages. `<Transition>` provides page transitions.
+`src/data/index.ts` uses `import.meta.glob` to auto-discover sections, problems, glossary, tactics, and NLG data across locales. Key exports: `loadSections()`, `getSection()`, `getNextSection()`, `resolveGlobalIndex()`, `loadGlossary()`, `loadTactics()`.
+
+`src/types.ts` defines the core types: `Problem`, `Hint`, `Tactic`, `SectionMeta`, `DiscoveryLine`, `DiscoveryData`, `Section`.
+
+### Logic modes
+
+Each section has a `logicMode` in its `section.json` — either `"pl"` (propositional logic, FOL off) or `"fol"` (first-order logic, FOL on). Individual problems can override via their own `logicMode` field. The mode is displayed in the NavBar as a colored chip:
+
+- `--color-fol-on` (`#22c55e`, green) — FOL ON
+- `--color-fol-off` (`#f97316`, orange) — FOL OFF
+
+The mode controls which tactics are relevant; quantifier tactics (forall-intro, forall-elim, exists-intro, exists-elim) only apply in FOL mode.
 
 ### i18n
 
@@ -55,7 +91,8 @@ Views emit events (`@start`, `@continue`, `@next`, `@prev`, `@home`, `@go-custom
 | `progress.ts` | `highestSolved` index | `localStorage` key `plato-highest` |
 | `tactics.ts` | `collected: string[]` of tactic names | `localStorage` key `plato-tactics` |
 | `preferences.ts` | `viewMode: 'tex' \| 'text'`, `locale: string` | `locale` in `localStorage` key `plato-locale` |
-| `roadmap.ts` | `entries: RoadmapEntry[]` — proof history (idx, description, goal, proofLines) | `localStorage` key `plato-roadmap` |
+| `roadmap.ts` | `entries: RoadmapEntry[]` — proof history (sectionId, sectionIdx, description, goal, proofLines) | `localStorage` key `plato-roadmap` |
+| `discovery.ts` | `viewed: Record<string, boolean>` — which section discoveries have been seen; `position: Record<string, number>` — saved scroll/line position | `localStorage` key `plato-discoveries` |
 
 A debug cheat `window.__plato_unlockAll__` unlocks all problems and tactics (exposed in `main.ts`).
 
@@ -86,9 +123,13 @@ The `Session` class is the main JS API: `execute(tactic)`, `stepLatex(n)` / `ste
 
 ### Adding a new problem
 
-Create a JSON file in `src/data/en/problems/` and `src/data/zh/problems/` matching the `Problem` type (`src/types.ts`). The `import.meta.glob` in `src/data/index.ts` auto-discovers it. Filename sort order determines the problem number (IDs are assigned at runtime, 1-based).
+Create a JSON file in the appropriate section's `problems/` directory under each locale (e.g., `src/data/en/sections/propositional/problems/` and `src/data/zh/sections/propositional/problems/`). The `import.meta.glob` in `src/data/index.ts` auto-discovers it. Filename sort order determines the problem index within the section (0-based).
 
 Problem JSON schema: `{ description, premise: string[], goal: string, guides: Hint[], hints: Hint[], unlocks: Tactic[] }`. Each `Hint` has `{ text: string, tactic: string | undefined }`. Guide cards are an enforced step-by-step walkthrough (shown one at a time); hints are optional reveals. Descriptions and hint/guide text use the inline markup syntax described above.
+
+### Adding a new section
+
+Create a new directory under `src/data/en/sections/` (and `zh/sections/`) with at minimum `section.json` and `problems/`. Optionally add `discovery.json`. The section must have a unique `order` in `section.json` and an `i18nKey` for localization.
 
 ### Adding a new inference rule
 
@@ -101,21 +142,29 @@ Requires coordinated changes:
 ```
 App.vue
 ├── HomeView.vue
+├── DiscoveryView.vue
+│   └── DiscoveryDialog.vue
 ├── ProblemView.vue
 │   ├── PreferenceModal.vue
+│   ├── HelpModal.vue          (triggered from NavBar ? button)
 │   ├── ProofRepl.vue
 │   │   ├── GuideCard.vue
-│   │   ├── HintCard.vue
-│   │   └── HelpModal.vue
+│   │   └── HintCard.vue
 │   ├── TacticSidebar.vue
 │   │   └── TacticCard.vue (×N)
 │   └── RoadmapModal.vue
-└── CustomProblemView.vue
-    ├── PreferenceModal.vue
-    ├── ProofRepl.vue
-    ├── TacticSidebar.vue
-    └── (no RoadmapModal — custom problems don't write to roadmap)
+├── CustomProblemView.vue
+│   ├── PreferenceModal.vue
+│   ├── ProofRepl.vue
+│   └── TacticSidebar.vue
+├── AboutView.vue
+│   ├── PreferenceModal.vue
+│   └── HelpModal.vue          (triggered from NavBar ? button)
+├── LockedView.vue
+└── NotFoundView.vue
 ```
+
+Shared components: `NavBar.vue` (logo, slot, `?` help button, GitHub link, preferences button) is used in ProblemView, DiscoveryView, and AboutView. `HelpModal.vue` has three tabs (Commands, Notations, Glossary) and accepts optional `allowedTactics` and `glossaryTerm` props.
 
 ### Responsive breakpoint
 
@@ -123,7 +172,17 @@ App.vue
 
 ### Styling
 
-CSS custom properties in `style.css` define the design system. Single monospace font stack (JetBrains Mono). KaTeX for math rendering. Yellow background for hint cards. Glossary links in body text are styled with dotted underline and open the HelpModal glossary tab.
+CSS custom properties are defined in `src/style.scss`. Single monospace font stack (JetBrains Mono). KaTeX for math rendering. Yellow background for hint cards. Glossary links in body text are styled with dotted underline and open the HelpModal glossary tab.
+
+Notable custom properties beyond the typical foreground/background set:
+
+| Variable | Value | Usage |
+|---|---|---|
+| `--color-fol-on` | `#22c55e` | FOL ON chip in NavBar / HelpModal |
+| `--color-fol-off` | `#f97316` | FOL OFF chip in NavBar / HelpModal |
+| `--color-glossary-flash` | `#cb9559` | Flash highlight when deep-linking to glossary term |
+| `--color-hint-bg` | `#fefef0` | Hint card background |
+| `--color-hint-border` | `#f0f0d0` | Hint card border |
 
 ### CI/CD
 

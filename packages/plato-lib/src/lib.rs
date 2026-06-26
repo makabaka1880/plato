@@ -40,6 +40,12 @@ impl Formula {
             consequent.0.clone(),
         )))
     }
+    pub fn box_(p: &Formula) -> Self {
+        Self(Rc::new(formula::PropWWF::Box(p.0.clone())))
+    }
+    pub fn diamond(p: &Formula) -> Self {
+        Self(Rc::new(formula::PropWWF::Diamond(p.0.clone())))
+    }
     pub fn equals(&self, other: &Formula) -> bool {
         self.0 == other.0
     }
@@ -174,6 +180,18 @@ impl Prover {
     pub fn ex_falso(j_bot: &Judgement, p: &Formula) -> Option<Judgement> {
         rules::misc::exfalso(&j_bot.0, p.0.clone()).map(|j| Judgement(Rc::new(j)))
     }
+    pub fn box_intro(j: &Judgement) -> Option<Judgement> {
+        rules::modal::box_intro(&j.0).map(|j| Judgement(Rc::new(j)))
+    }
+    pub fn box_elim(j_imp: &Judgement, j_box_a: &Judgement) -> Option<Judgement> {
+        rules::modal::box_elim(&j_imp.0, &j_box_a.0).map(|j| Judgement(Rc::new(j)))
+    }
+    pub fn diamond_def_fwd(j: &Judgement) -> Option<Judgement> {
+        rules::modal::diamond_def_fwd(&j.0).map(|j| Judgement(Rc::new(j)))
+    }
+    pub fn diamond_def_rev(j: &Judgement) -> Option<Judgement> {
+        rules::modal::diamond_def_rev(&j.0).map(|j| Judgement(Rc::new(j)))
+    }
 }
 
 // ── Command metadata ────────────────────────────────────────────
@@ -224,7 +242,7 @@ impl Session {
     /// Returns `undefined` (null in JS) on parse error.
     pub fn parse_meta(&self, input: &str) -> Option<CmdMeta> {
         use parser::command::parse_input;
-        let cmd = parse_input(input).ok()?;
+        let cmd = parse_input(input, self.0.mode()).ok()?;
         let (name, params) = cmd.meta();
         // Manual JSON serialization — avoid pulling in serde_json
         let mut json = String::from("{");
@@ -289,5 +307,12 @@ impl Session {
     #[wasm_bindgen(js_name = isGoalResolved)]
     pub fn is_goal_resolved(&self, goal: &str) -> bool {
         self.0.last_step_satisfies_goal(goal)
+    }
+
+    /// Set the logic mode. `"pl"` = propositional (modal allowed, quantifiers blocked).
+    /// `"fol"` = first-order (quantifiers allowed, modal blocked).
+    #[wasm_bindgen(js_name = setMode)]
+    pub fn set_mode(&mut self, mode: &str) {
+        self.0.set_mode(mode);
     }
 }

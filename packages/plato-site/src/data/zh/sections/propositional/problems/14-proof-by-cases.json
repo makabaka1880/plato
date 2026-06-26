@@ -1,53 +1,53 @@
 {
-    "description": "殊途同归。",
-    "goal": "(-> (or A B) (or B A))",
-    "premise": [],
-    "guides": [
-        {
-            "text": "目标：$(A \\lor B) \\to (B \\lor A)$。[disjunction|析取]不在乎顺序——\"$A$ 或 $B$\" 和 \"$B$ 或 $A$\" 是同一回事。但要证明它，需要一个新工具。",
-            "tactic": null
-        },
-        {
-            "text": "新规则叫 `or-elim`，也叫**分情况证明**。如果你有一个析取 $p \\lor q$，而且从 $p$ 或 $q$ 单独出发都能推出同一个结论，那这个结论就必然成立——不管岔路口走了哪条路。",
-            "tactic": null
-        },
-        {
-            "text": "[implication|蕴含式]的标准开局：假设 $A \\lor B$。这就是我们要用分情况来消去的析取。",
-            "tactic": "(assume (or A B))"
-        },
-        {
-            "text": "现在把 $B \\lor A$ 证明**两次**——一次从假设 $A$ 出发，一次从假设 $B$ 出发。第一个情况：假设左边的析取项 $A$。",
-            "tactic": "(assume A)"
-        },
-        {
-            "text": "从 $A$ 构造 $B \\lor A$。$A$ 在**右边**，所以用 `or-intro-r`。左边可以是任意公式——就让它是 $B$。",
-            "tactic": "(or-intro-r 2 B)"
-        },
-        {
-            "text": "第一个情况搞定。现在第二个情况：假设 $B$。",
-            "tactic": "(assume B)"
-        },
-        {
-            "text": "从 $B$ 也需要 $B \\lor A$。这次 $B$ 在左边——用 `or-intro-l`，$A$ 放在右边。",
-            "tactic": "(or-intro-l 4 A)"
-        },
-        {
-            "text": "收网。$A \\lor B$ 在第 1 步。从 $A$ 推出了 $B \\lor A$（第 3 步），从 $B$ 也推出了 $B \\lor A$（第 5 步）。用 `or-elim`，三个参数：析取式、$A$-情况证明、$B$-情况证明。",
-            "tactic": "(or-elim 1 3 5)"
-        },
-        {
-            "text": "消去假设，证明完成。",
-            "tactic": "(->-intro (or A B) 6)"
-        }
-    ],
-    "hints": [],
-    "unlocks": [
-        {
-            "name": "∨-elim",
-            "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}",
-            "description": "从 $p \\lor q$ 和两个分别从 $p$、$q$ 推出 $r$ 的子证明，你可以确切地得出 $r$——无论走哪条路。",
-            "syntax": "(or-elim N M K)",
-            "example": "1. ⊢ P ∨ Q\n2. [P] ⊢ R\n3. [Q] ⊢ R\n4. (or-elim 1 2 3)  →  ⊢ R"
-        }
-    ]
+  "description": "殊途同归。",
+  "goal": "(-> (or A B) (or B A))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "目标：$(A \\lor B) \\to (B \\lor A)$。[disjunction|析取]不在乎顺序——\"$A$ 或 $B$\" 和 \"$B$ 或 $A$\" 是同一回事。但要证明它，需要一个新工具。",
+      "tactic": null
+    },
+    {
+      "text": "新规则叫 `or-elim`，也叫**分情况证明**。如果你有一个析取 $p \\lor q$，而且从 $p$ 或 $q$ 单独出发都能推出同一个结论，那这个结论就必然成立——不管岔路口走了哪条路。",
+      "tactic": null
+    },
+    {
+      "text": "[implication|蕴含式]的标准开局：假设 $A \\lor B$。这就是我们要用分情况来消去的析取。",
+      "tactic": "(assume (or A B))"
+    },
+    {
+      "text": "现在把 $B \\lor A$ 证明**两次**——一次从假设 $A$ 出发，一次从假设 $B$ 出发。第一个情况：假设左边的析取项 $A$。",
+      "tactic": "(assume A)"
+    },
+    {
+      "text": "从 $A$ 构造 $B \\lor A$。$A$ 在**右边**，所以用 `or-intro-r`。左边可以是任意公式——就让它是 $B$。",
+      "tactic": "(or-intro-r 2 B)"
+    },
+    {
+      "text": "第一个情况搞定。现在第二个情况：假设 $B$。",
+      "tactic": "(assume B)"
+    },
+    {
+      "text": "从 $B$ 也需要 $B \\lor A$。这次 $B$ 在左边——用 `or-intro-l`，$A$ 放在右边。",
+      "tactic": "(or-intro-l 4 A)"
+    },
+    {
+      "text": "收网。$A \\lor B$ 在第 1 步。从 $A$ 推出了 $B \\lor A$（第 3 步），从 $B$ 也推出了 $B \\lor A$（第 5 步）。用 `or-elim`，三个参数：析取式、$A$-情况证明、$B$-情况证明。",
+      "tactic": "(or-elim 1 3 5)"
+    },
+    {
+      "text": "消去假设，证明完成。",
+      "tactic": "(->-intro (or A B) 6)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "or-elim",
+      "rule": "\\frac{\\Gamma \\vdash p \\lor q \\quad \\Delta_1, p \\vdash r \\quad \\Delta_2, q \\vdash r}{\\Gamma \\cup \\Delta_1 \\cup \\Delta_2 \\vdash r}",
+      "description": "从 $p \\lor q$ 和两个分别从 $p$、$q$ 推出 $r$ 的子证明，你可以确切地得出 $r$——无论走哪条路。",
+      "syntax": "(or-elim N M K)",
+      "example": "1. ⊢ P ∨ Q\n2. [P] ⊢ R\n3. [Q] ⊢ R\n4. (or-elim 1 2 3)  →  ⊢ R"
+    }
+  ]
 }

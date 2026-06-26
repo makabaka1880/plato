@@ -1,37 +1,37 @@
 {
-    "description": "From a concrete example, we may infer that something exists.",
-    "goal": "(-> (App P a) (exists x (App P x)))",
-    "premise": [],
-    "guides": [
-        {
-            "text": "$\\exists$ is the **[existential-quantifier|existential quantifier]** — it says 'there exists' or 'at least one.' The counterpart to $\\forall$: one says 'all,' the other says 'some.' The goal $P(a) \\to \\exists x.\\; P(x)$ captures a fundamental principle: from a concrete example, you can claim existence.",
-            "tactic": null
-        },
-        {
-            "text": "If $a$ satisfies $P$, then there exists *something* that satisfies $P$. This is called [existential-generalisation|existential generalisation] — from a specific [witness|witness], you infer that something with that property exists.",
-            "tactic": null
-        },
-        {
-            "text": "Start by assuming the concrete instance: $P(a)$.",
-            "tactic": "(assume (App P a))"
-        },
-        {
-            "text": "The rule `exists-intro` takes three arguments: a step number, the concrete term you're generalising from, and a fresh variable name. Replace the term `a` with the binding variable `x` to get $\\exists x.\\; P(x)$.",
-            "tactic": "(exists-intro 1 a x)"
-        },
-        {
-            "text": "[assumption|Discharge] $P(a)$ to finish. From any specific $a$ that is $P$, existence follows.",
-            "tactic": "(->-intro (App P a) 2)"
-        }
-    ],
-    "hints": [],
-    "unlocks": [
-        {
-            "name": "∃-intro",
-            "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}",
-            "description": "If you have a concrete example $\\varphi$ involving term $t$, generalise it to $\\exists x.\\; \\varphi$ by replacing $t$ with a fresh variable $x$. From the particular to the existential.",
-            "syntax": "(exists-intro N t x)",
-            "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)"
-        }
-    ]
+  "description": "From a concrete example, we may infer that something exists.",
+  "goal": "(-> (App P a) (exists x (App P x)))",
+  "premise": [],
+  "guides": [
+    {
+      "text": "$\\exists$ is the **[existential-quantifier|existential quantifier]** — it says 'there exists' or 'at least one.' The counterpart to $\\forall$: one says 'all,' the other says 'some.' The goal $P(a) \\to \\exists x.\\; P(x)$ captures a fundamental principle: from a concrete example, you can claim existence.",
+      "tactic": null
+    },
+    {
+      "text": "If $a$ satisfies $P$, then there exists *something* that satisfies $P$. This is called [existential-generalisation|existential generalisation] — from a specific [witness|witness], you infer that something with that property exists.",
+      "tactic": null
+    },
+    {
+      "text": "Start by assuming the concrete instance: $P(a)$.",
+      "tactic": "(assume (App P a))"
+    },
+    {
+      "text": "The rule `exists-intro` takes three arguments: a step number, the concrete term you're generalising from, and a fresh variable name. Replace the term `a` with the binding variable `x` to get $\\exists x.\\; P(x)$.",
+      "tactic": "(exists-intro 1 a x)"
+    },
+    {
+      "text": "[assumption|Discharge] $P(a)$ to finish. From any specific $a$ that is $P$, existence follows.",
+      "tactic": "(->-intro (App P a) 2)"
+    }
+  ],
+  "hints": [],
+  "unlocks": [
+    {
+      "name": "exists-intro",
+      "rule": "\\frac{\\Gamma \\vdash \\varphi[t/x]}{\\Gamma \\vdash \\exists x.\\; \\varphi}",
+      "description": "If you have a concrete example $\\varphi$ involving term $t$, generalise it to $\\exists x.\\; \\varphi$ by replacing $t$ with a fresh variable $x$. From the particular to the existential.",
+      "syntax": "(exists-intro N t x)",
+      "example": "1. ⊢ P(a)\n2. (exists-intro 1 a x)  →  ⊢ ∃x. P(x)"
+    }
+  ]
 }
