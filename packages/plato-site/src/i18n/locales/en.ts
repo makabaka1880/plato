@@ -12,7 +12,7 @@ export default {
     home: {
         title: '? ⊢ Plato',
         continue: 'Continue',
-        begin: 'Begin Your Journey →',
+        begin: 'Begin →',
         startFresh: '→ Start Fresh',
         allDone: 'All problems solved. Well done!',
         customProblem: '→ Go custom',
