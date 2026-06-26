@@ -19,10 +19,10 @@ Plato is an interactive natural-deduction proof assistant. This guide explains h
 
 ## Quick start
 
-1. Create a new JSON file in `packages/plato-site/src/data/problems/`.
-2. Name it `NN-slug.json` where `NN` is a two-digit number (e.g. `17-my-problem.json`).
-3. It will be auto-discovered — no imports to update.
-4. The file order is alphabetical, so `17-...` appears after `16-...`.
+1. Create a new JSON file under the appropriate section: `packages/plato-site/src/data/{locale}/sections/{section}/problems/`.
+2. Name it `NN-slug.json` where `NN` is a two-digit number within the section (e.g. `17-my-problem.json`).
+3. It will be auto-discovered — no imports to update. The file order is alphabetical within each section.
+4. The section's `section.json` defines the **axiom set** (PL or FOL) and allowed tactics for all problems in that section.
 
 ## File structure
 
@@ -39,7 +39,7 @@ Every problem is a JSON object with these top-level keys:
 }
 ```
 
-The description, goal, premise, guides, hints, and unlocks fields are spelled out below. **Note:** the `id` field is assigned automatically by filename ordering — do not include it in the JSON.
+The description, goal, premise, guides, hints, and unlocks fields are spelled out below. **Note:** the `id` field is assigned automatically by filename ordering within the section — do not include it in the JSON. The `logicMode` field is **removed**; it is governed by the section's `section.json` (see [Section config](#section-config)).
 
 ---
 
@@ -341,6 +341,108 @@ help
 
 Opens the command reference panel. Does not create a proof step.
 
+### fix
+
+```
+(fix x)
+```
+
+Introduce a fresh term variable into the context — the term analogue of `(assume P)`. Produces `{x} ⊢ x`. The variable must be fresh (not free in any existing assumption).
+
+**Example:** `(fix x)` → step 1: `{x} ⊢ x`
+
+### forall-intro
+
+```
+(forall-intro x N)
+```
+
+**Universal generalisation.** From step N, which proves φ for an arbitrary variable x (not free in other assumptions), produce ∀x.φ. This is the introduction rule for the universal quantifier.
+
+**Example:** `(forall-intro x 3)` — step 3 proves φ(x) from `{x}` → produce ∀x.φ
+
+### forall-elim
+
+```
+(forall-elim N t)
+```
+
+**Universal instantiation.** Step N must be ∀x.φ. Substitute term t for x to produce φ[t/x]. What holds for everything holds for any particular thing.
+
+**Example:** `(forall-elim 1 socrates)` — step 1 is ∀x.Mortal(x) → produce Mortal(socrates)
+
+### exists-intro
+
+```
+(exists-intro N t x)
+```
+
+**Existential generalisation.** From step N (proving φ[t/x] for a concrete term t), produce ∃x.φ. You provide the step, the example term, and a fresh variable name.
+
+**Example:** `(exists-intro 2 socrates x)` — step 2 proves Mortal(socrates) → produce ∃x.Mortal(x)
+
+### exists-elim
+
+```
+(exists-elim N M x)
+```
+
+**Existential witness elimination.** Step N proves ∃x.φ. Step M proves ψ under the assumption that a fresh witness x satisfies φ. The witness x must not appear free in the conclusion ψ or any open assumption.
+
+**Example:** `(exists-elim 1 3 y)` — step 1 gives ∃x.P(x), step 3 proves Q from `{y, P(y)}` → produce Q
+
+### subst
+
+```
+(subst N (A F)...)
+```
+
+**Uniform substitution.** Replace every occurrence of atom A with formula F in step N's conclusion. Multiple (atom formula) pairs may be given. The proof structure is independent of the particular symbols used.
+
+**Example:** `(subst 1 (P (and A B)))` — step 1 proves P → P → produce (A∧B) → (A∧B)
+
+### top-intro
+
+```
+(top-intro)
+```
+
+**Truth introduction.** ⊤ (top/truth) is always provable, with no premises required. An axiom.
+
+### box-intro
+
+```
+(box-intro N)
+```
+
+**Necessitation.** Step N must prove P with an **empty context** (no assumptions). Produces □P. This is the introduction rule for necessity.
+
+Available only in PL mode (modal section). **Requires:** `∅ ⊢ P`.
+
+### box-elim
+
+```
+(box-elim N M)
+```
+
+**K axiom.** Step N proves □(P → Q). Step M proves □P. Produces □Q. Necessity distributes over implication.
+
+Available only in PL mode (modal section).
+
+### diamond-def
+
+```
+(diamond-def N)
+```
+
+**Diamond definition (unfold).** Step N proves ◇P. Produces ¬□¬P.
+
+```
+(diamond-def-rev N)
+```
+
+**Diamond definition (fold).** Step N proves ¬□¬P. Produces ◇P.
+
 ---
 
 ## Text markup
@@ -490,22 +592,33 @@ Use natural deduction notation:
 
 ### Progression
 
-The recommended order for introducing tactics in Plato:
+The recommended order for introducing tactics across the three sections:
 
+**Propositional Logic section** (PL axiom set):
 1. `assume`, `→-intro` — the foundational moves
 2. `∧-intro` — building conjunctions
 3. (synthesis) — combine assume, →-intro, ∧-intro
 4. `∧-elim-l`, `∧-elim-r` — breaking conjunctions
-5–7. (practice problems) — nested elimination, swapping, combinations
+5–7. (practice problems)
 8. `→-elim` — modus ponens
-9–10. (practice problems) — chained MP, MP with conjunction
+9–10. (practice problems)
 11. `∨-intro-l`, `∨-intro-r` — building disjunctions
-12–13. (practice problems) — mirror, conjunction-to-disjunction combos
+12–13. (practice problems)
 14. `∨-elim` — proof by cases
-15. (practice) — nested or-elim
-16. (grand combo) — all tactics together
+15. (practice)
+16. (grand combo) — all prop tactics
+17+. negation (`not-intro`, `not-elim`, `dne`, `ex-falso`), `subst`, `top-intro`
 
-After problem 16, you can introduce negation (`not-intro`, `not-elim`, `dne`, `ex-falso`) following the same pattern.
+**First-Order Logic section** (FOL axiom set):
+- `fix` — introduce fresh term variables (like `assume` for terms)
+- `App` — predicate application, `(App P x)` for unary, `(App (App R x) y)` for nested
+- `∀-intro`, `∀-elim` — universal quantifier rules
+- `∃-intro`, `∃-elim` — existential quantifier rules
+
+**Modal Logic section** (PL axiom set, with modal operators):
+- `box-intro` — necessitation (requires empty context: `∅ ⊢ P`)
+- `box-elim` — K axiom: `□(P → Q) → (□P → □Q)`
+- `diamond-def` — unfold/fold `◇` via `¬□¬`
 
 ---
 
@@ -568,3 +681,50 @@ Here is a full problem file that introduces `→-elim` (modus ponens):
 6. **Context is invisible but important.** The engine tracks contexts (sets of assumptions) behind the scenes. `->-intro` discharges one formula; `or-elim` unions three contexts. Be aware of what's in scope at each step.
 
 7. **Test your problem.** The fastest way to verify a problem is to run the app and solve it yourself. Make sure every guide/hint tactic works, step numbers are correct, and the goal resolves properly.
+
+---
+
+## Section config
+
+Each section folder contains a `section.json` defining the axiom set and available tactics:
+
+```json
+{
+  "nameI18nKey": "sections.firstOrder",
+  "logicMode": "fol",
+  "order": 1,
+  "allowedTactics": [
+    "assume", "ex-falso", "top-intro", "subst", "fix",
+    "->-intro", "->-elim",
+    "and-intro", "and-elim-l", "and-elim-r",
+    "or-intro-l", "or-intro-r", "or-elim",
+    "not-intro", "not-elim", "dne",
+    "forall-intro", "forall-elim",
+    "exists-intro", "exists-elim"
+  ]
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `nameI18nKey` | `string` | i18n key for the section name, e.g. `"sections.propositional"` |
+| `logicMode` | `"pl"` or `"fol"` | **Axiom set.** PL: propositional connectives only (plus modal operators in the modal section). FOL: propositional connectives + quantifiers + predicate application + term variables. The mode is displayed in the NavBar and gates which commands are accepted. |
+| `order` | `number` | Linear progression order (0, 1, 2…). Sections are unlocked sequentially — completing all problems in one section reveals the next. |
+| `allowedTactics` | `string[]` | The exact set of commands available in this section. This filters the autocomplete, tactic sidebar, and help modal. Tactics not listed here are disabled even if the student has collected them. |
+
+### Axiom set (PL vs FOL)
+
+Plato has two axiom sets that determine which logical operations are available:
+
+- **PL (Propositional Logic):** `¬`, `∧`, `∨`, `→`, `⊤`, `⊥` are always available. In the modal section, `□` and `◇` are additionally available.
+- **FOL (First-Order Logic):** All of PL plus `∀`, `∃`, predicate application `(App P t)`, and term variables `(fix x)`. Modal operators are disabled in FOL mode.
+
+The axiom set is set per-section in `section.json`. Individual problems no longer carry a `logicMode` field — the section default governs. This ensures all problems within a section operate under the same rules, and the axiom set label (PL or FOL) shown in the NavBar accurately reflects what the student can use.
+
+### Adding a new section
+
+1. Create a folder at `src/data/{locale}/sections/{id}/` for each locale.
+2. Add `section.json` with the appropriate `logicMode` and `allowedTactics`.
+3. Add `discovery.json` — a dialogue between characters introducing the section's concepts (see existing sections for format).
+4. Add a `problems/` subfolder with numbered JSON files.
+5. No code changes required — sections are auto-discovered via `import.meta.glob`.

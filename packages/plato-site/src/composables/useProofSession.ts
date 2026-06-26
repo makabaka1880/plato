@@ -14,14 +14,20 @@ let loaded = false
 async function ensureWasm() {
   if (!loaded) {
     const mod = await import('plato-lib')
-    await mod.default()
-    SessionClass = mod.Session
-    loaded = true
+    try {
+      await mod.default()
+      SessionClass = mod.Session
+      loaded = true
+    } catch (e: any) {
+      console.error('[plato] WASM init failed:', e)
+      throw new Error('WASM initialization failed: ' + (e.message || String(e)))
+    }
   }
 }
 
 export function useProofSession(logicMode?: Ref<'fol' | 'pl'>, goal?: Ref<string | undefined>) {
   const ready = ref(false)
+  const wasmError = ref<string | null>(null)
   const input = ref('')
   const entries = ref<Entry[]>([])
   let session: any
@@ -88,14 +94,19 @@ export function useProofSession(logicMode?: Ref<'fol' | 'pl'>, goal?: Ref<string
   const SessionClassRef = ref<any>(null)
   const sessionRef = ref<any>(null)
   onMounted(async () => {
-    await ensureWasm()
-    session = new (SessionClass as any)()
-    SessionClassRef.value = SessionClass
-    sessionRef.value = session
-    if (logicMode) {
-      session.setMode(logicMode.value)
+    try {
+      await ensureWasm()
+      session = new (SessionClass as any)()
+      SessionClassRef.value = SessionClass
+      sessionRef.value = session
+      if (logicMode) {
+        session.setMode(logicMode.value)
+      }
+      ready.value = true
+    } catch (e: any) {
+      wasmError.value = e.message || 'Failed to load WASM'
+      ready.value = true
     }
-    ready.value = true
   })
 
   // Sync logic mode with WASM session on toggle
@@ -106,7 +117,7 @@ export function useProofSession(logicMode?: Ref<'fol' | 'pl'>, goal?: Ref<string
   }
 
   return {
-    ready, input, entries,
+    ready, wasmError, input, entries,
     stepLatex, run, reset, insertTactic, isGoalResolved,
     SessionClass: SessionClassRef as Ref<any>,
     session: sessionRef as Ref<any>,

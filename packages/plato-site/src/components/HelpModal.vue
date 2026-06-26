@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useTacticsStore } from '@/stores/tactics'
 import { loadGlossary, type GlossaryEntry } from '@/data'
 import Katex from './Katex.vue'
-import InlineLatex from './InlineLatex.vue'
+import katex from 'katex'
 
 const props = defineProps<{
     glossaryTerm?: string
@@ -189,13 +189,22 @@ async function scrollToGlossaryTerm(termId: string) {
 // On mount: handle deep-link to a glossary term
 onMounted(async () => {
     await nextTick()
-    backdrop.value?.focus()
     document.addEventListener('keydown', onDocKeydown)
     if (props.glossaryTerm) {
         activeTab.value = 'glossary'
         await scrollToGlossaryTerm(props.glossaryTerm)
     }
 })
+
+function renderTex(text: string): string {
+    return text.replace(/\$([^$]+)\$/g, (_: string, expr: string) => {
+        try {
+            return katex.renderToString(expr, { throwOnError: false, displayMode: false })
+        } catch {
+            return expr
+        }
+    })
+}
 </script>
 
 <template>
@@ -312,8 +321,8 @@ onMounted(async () => {
                     <div v-for="entry in entries" :key="entry.id" :data-glossary-id="entry.id"
                         :class="['gloss-entry', { 'gloss-flash': targetedTerm === entry.id }]">
                         <div class="gloss-term">{{ entry.term }}</div>
-                        <div class="gloss-intuitive"><InlineLatex :text="entry.intuitive" /></div>
-                        <div class="gloss-def"><InlineLatex :text="entry.definition" /></div>
+                        <div class="gloss-intuitive" v-html="renderTex(entry.intuitive)"></div>
+                        <div class="gloss-def" v-html="renderTex(entry.definition)"></div>
                     </div>
                 </div>
             </div>

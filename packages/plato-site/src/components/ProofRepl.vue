@@ -36,7 +36,7 @@ const inpEl = ref<HTMLInputElement | null>(null)
 
 const logicModeRef = computed(() => props.logicMode ?? 'fol' as const)
 const {
-    ready, input, entries, session,
+    ready, wasmError, input, entries, session,
     stepLatex, run: sessionRun, reset: sessionReset,
     insertTactic: _insertTactic, isGoalResolved, SessionClass,
 } = useProofSession(logicModeRef)
@@ -254,7 +254,7 @@ defineExpose({ insertTactic })
 </script>
 
 <template>
-    <div v-if="!ready" class="loading">{{ t('common.loading') }}</div>
+    <div v-if="!ready" class="loading">{{ wasmError || t('common.loading') }}</div>
     <div v-else class="repl">
         <div class="goal">
             <div v-if="props.premiseLatex" class="premise-line">
