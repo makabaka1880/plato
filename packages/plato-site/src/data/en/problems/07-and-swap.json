@@ -1,0 +1,34 @@
+{
+    "description": "The order of knowing doesn't change what you know.",
+    "goal": "(-> (and A B) (and B A))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "The goal is $A \\land B \\to B \\land A$. [conjunction|Conjunction] is commutative — it doesn't care about order — but proving it requires both breaking apart and rebuilding. Start by assuming the left side.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $A \\land B$.",
+            "tactic": "(assume (and A B))"
+        },
+        {
+            "text": "You need both pieces individually before you can swap them. Extract $A$ with `and-elim-l`.",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Now extract $B$ with `and-elim-r`. You now have both halves, just in the wrong order.",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "Use `and-intro` to put them back together — but this time put the step that gives $B$ first, and $A$ second.",
+            "tactic": "(and-intro 3 2)"
+        },
+        {
+            "text": "Discharge the [assumption|assumption] to finish.",
+            "tactic": "(->-intro (and A B) 4)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

@@ -1,0 +1,58 @@
+{
+    "description": "Even the most tangled knot has its threads.",
+    "goal": "(-> (and (or A B) (-> A C)) (or C B))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "This one brings everything together. The goal is an [implication|implication] whose left side is a [conjunction|conjunction] of two things: $A \\lor B$ and $A \\to C$. The right side is $C \\lor B$. You'll need $\\land$-elimination, $\\lor$-introduction, $\\to$-elimination, and $\\lor$-elimination. Start by assuming the whole left side.",
+            "tactic": null
+        },
+        {
+            "text": "Assume the entire [conjunction|conjunction]: $A \\lor B$ **and** $A \\to C$.",
+            "tactic": "(assume (and (or A B) (-> A C)))"
+        },
+        {
+            "text": "A [conjunction|conjunction] tells you both halves are true. Break it open with `and-elim-l` and `and-elim-r` to get $A \\lor B$ and $A \\to C$ individually.",
+            "tactic": null
+        },
+        {
+            "text": "First, extract $A \\lor B$ from the left side of the [conjunction|conjunction].",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Now extract $A \\to C$ from the right side.",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "You have a [disjunction|disjunction] ($A \\lor B$) and you need to reach $C \\lor B$. Proof by cases is the natural move. Handle the $A$ case first: assume $A$.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "From $A \\to C$ at step 3 and $A$ at step 4, apply [modus-ponens|modus ponens] to get $C$.",
+            "tactic": "(->-elim 3 4)"
+        },
+        {
+            "text": "From $C$, form $C \\lor B$ by slotting $C$ on the left of $\\lor$ with $B$ on the right.",
+            "tactic": "(or-intro-l 5 B)"
+        },
+        {
+            "text": "Now handle the $B$ case: assume $B$.",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "From $B$, we also need $C \\lor B$. This time $B$ goes on the right — use `or-intro-r` with $C$ on the left.",
+            "tactic": "(or-intro-r 7 C)"
+        },
+        {
+            "text": "Both cases — $A$ and $B$ — led to $C \\lor B$. Use `or-elim` with the [disjunction|disjunction] at step 2 and your two case-proofs at steps 6 and 8.",
+            "tactic": "(or-elim 2 6 8)"
+        },
+        {
+            "text": "You proved $C \\lor B$ from the [conjunction|conjunction]. Discharge the [assumption|assumption] to finish the [implication|implication].",
+            "tactic": "(->-intro (and (or A B) (-> A C)) 9)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

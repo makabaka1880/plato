@@ -1,57 +1,397 @@
 {
-    "title": "Beyond Propositions",
+    "title": "Opening the Box",
     "lines": [
         {
-            "speaker": "plato",
-            "text": "Aristotle, we have mastered the logic of propositions — of statements that are simply true or false. But the world is richer than this."
+            "speaker": "De Morgan",
+            "text": "Herr Frege, we have become quite adept at reasoning with propositions. Yet something continues to bother me."
         },
         {
-            "speaker": "aristotle",
-            "text": "You mean we must speak of **things** — of objects and their properties? A horse is not merely a true or false thing; it has qualities."
+            "speaker": "Frege",
+            "text": "And what might that be?"
         },
         {
-            "speaker": "plato",
-            "text": "Precisely! Consider: 'All men are mortal. Socrates is a man. Therefore, Socrates is mortal.' This reasoning cannot be captured by propositional logic alone."
+            "speaker": "De Morgan",
+            "text": "Our propositions are sealed boxes. I may call one $P$, another $Q$, but logic never asks what lies inside them."
         },
         {
-            "speaker": "aristotle",
-            "text": "Because 'all men are mortal' speaks of every man — it quantifies over the domain of men. We need a way to say **for all** $x$, something holds of $x$."
+            "speaker": "Frege",
+            "text": "Quite right. To propositional logic, 'Socrates is mortal' and 'The moon is made of cheese' are equally indivisible."
         },
         {
-            "speaker": "plato",
-            "text": "Yes! That is the **[universal quantifier|universal quantifier]** $\\forall x$. And its companion: **[existential quantifier|existential quantifier]** $\\exists x$ — 'there exists some $x$ such that...'."
+            "speaker": "De Morgan",
+            "text": "Yet surely they have structure."
         },
         {
-            "speaker": "aristotle",
-            "text": "So we can say $\\forall x.\\; \\text{Man}(x) \\to \\text{Mortal}(x)$ — every man is mortal. And $\\text{Man}(\\text{Socrates})$ — Socrates is a man."
+            "speaker": "Frege",
+            "text": "Indeed they do. Let us open the box."
         },
         {
-            "speaker": "plato",
-            "text": "And from these, we derive $\\text{Mortal}(\\text{Socrates})$. This is **[universal instantiation|universal instantiation]** — what holds for all holds for any particular. The command is `(forall-elim N t)`."
+            "speaker": "De Morgan",
+            "text": "Then 'Socrates is mortal' is no longer a single proposition?"
         },
         {
-            "speaker": "aristotle",
-            "text": "And the reverse? If I prove something about an arbitrary $x$, I can generalise to $\\forall x$?"
+            "speaker": "Frege",
+            "text": "Rather, it consists of a [term|term]—Socrates—and a property—being mortal."
         },
         {
-            "speaker": "plato",
-            "text": "Exactly — **[universal generalisation|universal generalisation]**. But be careful: the variable must be **fresh** — not appearing free in any assumption. Otherwise you'd be proving something about a specific $x$ and claiming it holds for all."
+            "speaker": "De Morgan",
+            "text": "So the property is incomplete until a term fills its place?"
         },
         {
-            "speaker": "aristotle",
-            "text": "And for the existential $\\exists$? If I have a concrete example, I can say 'there exists something with this property' — [existential generalisation|existential generalisation]."
+            "speaker": "Frege",
+            "text": "Precisely. Such an incomplete statement is called a **[predicate|predicate]**."
         },
         {
-            "speaker": "plato",
-            "text": "Yes. And the trickier one: if you know $\\exists x.\\; \\varphi$, you can **open a witness** — assume $\\varphi[y/x]$ for a fresh $y$, prove your goal, and [discharge|discharge] the witness. This is **[existential elimination|existential elimination]**."
+            "speaker": "De Morgan",
+            "text": "And we usually write it as something like $M(x)$?"
         },
         {
-            "speaker": "aristotle",
-            "text": "So first-order logic gives us predicates, terms, and quantifiers — a language rich enough to capture the [syllogism|syllogism] and much more."
+            "speaker": "Frege",
+            "text": "Exactly. Here $M$ means 'is mortal,' while $x$ is a [variable|variable] representing an arbitrary term. In our notation, that is `(App M x)`."
         },
         {
-            "speaker": "plato",
-            "text": "Indeed. And you will need a new command: `(fix x)` introduces a fresh term variable, like `(assume F)` but for terms. Now, let us quantify."
+            "speaker": "De Morgan",
+            "text": "Then if I replace $x$ with Socrates, I recover an ordinary proposition."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Indeed. We say that we [application|apply] the predicate to a term."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Can predicates have more than one missing place?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "At first glance, yes. We write $L(x, y)$ for 'x loves y.'"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So predicates may take multiple arguments."
+        },
+        {
+            "speaker": "Frege",
+            "text": "That is the standard notation. But I dislike it."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Why?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Because it is not uniform. It treats predicates as if they had different [arity|arities], and that forces us to add meta-level rules describing how each position behaves."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "And that is a problem?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Yes. I want a system where every predicate behaves the same way: a single input, a single output. Nothing more."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Then how do you express relations like 'loves' without breaking uniformity?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "I do not yet know."
+        },
+        {
+            "speaker": "Curry",
+            "text": "You do not need to break it."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "And you are?"
+        },
+        {
+            "speaker": "Curry",
+            "text": "Haskell Curry. I make logic run."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Interessant."
+        },
+        {
+            "speaker": "Curry",
+            "text": "Take $L(x, y)$. Instead of two inputs, think of it as: $L(x)$ first, which produces a new function waiting for $y$."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So $L(x)$ returns not a proposition, but the predicate 'x loves _'?"
+        },
+        {
+            "speaker": "Curry",
+            "text": "Yep."
+        },
+        {
+            "speaker": "Frege",
+            "text": "A function that returns another function… interesting."
+        },
+        {
+            "speaker": "Curry",
+            "text": "Exactly. Nothing special is required for multiple arguments. Only repetition of the same rule."
+        },
+        {
+            "speaker": "Curry",
+            "text": "You already have the notation: `(App L x)` gives you a new predicate, and `(App (App L x) y)` completes the application. Or just `(App L x y)` — the machine [syntactic-sugar|desugars] it for you. No new machinery needed."
+        },
+        {
+            "speaker": "Curry",
+            "text": "Oh and one more thing. You'll want to introduce fresh terms the way you introduce assumptions. The command is `(fix x)` — gives you $\\{x\\} \\vdash x$."
+        },
+        {
+            "speaker": "Curry",
+            "text": "And now I must return to my own abstractions. Good luck with yours."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "He appeared, changed the shape of our thinking, and left just as quickly."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "But wait — `(fix x)`. He said it was like assuming a term. I understand assuming a proposition: we pretend $P$ is true and see what follows. But what does it mean to *assume a variable*?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "An excellent question. So far we have used the [context|context] only to hold truths — statements we borrow temporarily. But the context can hold more."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "More?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "It can hold an inventory of things. Objects we have named. When you write `(fix x)`, you are not claiming $x$ is true — you are simply declaring that $x$ exists as a thing we may speak about."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So the context collects both what is true and what exists?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Precisely. Think of it as a workshop. On the left side of $\\vdash$, we keep assumptions about truth — $P$, $Q \\to R$ — and also the names of objects we have introduced — $x$, $y$. On the right, we build what follows."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "And once $x$ is in the workshop, we can feed it to a predicate — `(App P x)` — and reason about the result."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Yes. You see now why Curry mentioned `(fix x)` right after application. The two belong together: introduce a thing, then apply predicates to it."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So `(assume P)` borrows a truth. `(fix x)` borrows an object. Both go into the context, both are discharged later."
+        },
+        {
+            "speaker": "Frege",
+            "text": "And that uniformity is precisely what makes the system elegant."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Curious. Every predicate now follows exactly the same rule. Every variable introduction follows the same pattern. The context is no longer just a list of borrowed truths — it is a full inventory of our reasoning."
+        },
+        {
+            "speaker": "Frege",
+            "text": "And now that predicates and terms are uniform, a deeper question opens."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Which is?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "We can now speak of properties of individual objects. But how do we make assertions about **all** objects, or merely **some**?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "For that, we require an entirely new idea."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "A new connective?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Not quite. We must speak about all possible terms."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "That sounds ambitious."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Suppose I wish to say, 'Every human is mortal.' Rather than naming every human individually, I introduce a temporary variable, $x$."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Much like algebra."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Exactly. I then declare that no matter which object $x$ denotes, if it is human, then it is mortal."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "And this declaration has its own notation?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Indeed. We write the **[universal-quantifier|universal quantifier]**, $\\forall x$."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Thus $\\forall x.\\ Human(x) \\to Mortal(x)$ means that every human is mortal."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Precisely. And the proof rules are simpler than they sound. Let me show you."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Go on."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Suppose from nothing but `(fix x)`, we prove `(-> (App Human x) (App Mortal x))` — 'if x is human, x is mortal.'"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "But we know nothing about x. It's just an arbitrary person."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Exactly! That is the point. Because the proof works for a completely arbitrary $x$, it works for **anyone**. At that moment, we may write `(forall-intro x 3)` — 'from step 3, generalise to all $x$'."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So `(forall-intro ...)` says: I proved this for an arbitrary thing, therefore it holds for every thing."
+        },
+        {
+            "speaker": "Frege",
+            "text": "And the reverse is even simpler. Say step 1 proves `(forall x (-> (App Human x) (App Mortal x)))` — all humans are mortal."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Now I wish to apply that to Socrates."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Then write `(forall-elim 1 socrates)`. The command strips off the $\\forall x$ and substitutes `socrates` for $x$. You get `(-> (App Human socrates) (App Mortal socrates))` — if Socrates is human, Socrates is mortal."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So `(forall-elim ...)` is just substitution. What holds for all holds for the one."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Precisely. And now the existential."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "The universal speaks of all. The existential speaks of some."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Yes — **[existential-quantifier|existential quantifier]** $\\exists x$. Where $\\forall x. (\\to Human(x) Mortal(x))$ means every human is mortal, $\\exists x. Mortal(x)$ means merely that at least one mortal exists."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "It promises existence without naming who."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Exactly. And like the universal, it comes with an introduction rule and an elimination rule."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "From one mortal, I want to say 'something is mortal.'"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Exactly. Write `(exists-intro 2 socrates x)`. You give the step with the example, the term that serves as your evidence, and a fresh variable name. The result is `(exists x (App Mortal x))` — there exists something mortal."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So `(exists-intro ...)` says: here is a concrete example, therefore something with this property exists."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "That sounds straightforward. But the elimination rule seems harder."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Only in description, not in use. Let me walk through it."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Please."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Step 3 proves `(exists x (App P x))` — 'something has property P.' But which thing? We don't know."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So we cannot use the existential directly — we don't know who the witness is."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Correct. So we open a temporary witness. We write `(fix y)` — here is a fresh name, $y$, standing in for the unknown thing. Then we assume $y$ has the property: `(App P y)`. Under that assumption, we prove some conclusion — call it $\\psi$."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "And if we can reach $\\psi$ from that assumption?"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Then `(exists-elim 3 5 y)` says: the existential at step 3, together with the subproof at step 5 that used witness $y$, yields $\\psi$. The critical rule: $y$ must not appear free in $\\psi$ or any other assumption. It was only a stand-in."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Exactly. And that is why the four quantifier rules are all variations on the same idea: a variable enters the context, serves its purpose, and is discharged."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "These variables seem rather like assumptions in a proof. They appear, serve their purpose, and disappear."
+        },
+        {
+            "speaker": "Frege",
+            "text": "An excellent analogy. A variable has meaning only within the region governed by its [quantifier|quantifier]."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Outside that region, it is meaningless."
+        },
+        {
+            "speaker": "Frege",
+            "text": "Precisely. We say that the quantifier creates a **[bound-variable|bound variable]**."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So first-order logic is no longer merely about combining propositions."
+        },
+        {
+            "speaker": "Frege",
+            "text": "No. It is about reasoning directly about objects, their properties, and the relations between them."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "We have opened the box. On a related note, Plato's core reasoning engine will now switch from the propositional logic (PL) axiom set to first-order logic (FOL). This unlocks inference rules for quantifiers, variables, and predicates."
+        },
+        {
+            "speaker": "Curry",
+            "text": "Propositional logic will return in a later section. I will not spoil it for you — you'll have to explore that yourself."
+        },
+        {
+            "speaker": "Frege",
+            "text": "And once one can reason about the contents of propositions, logic becomes powerful enough to describe vast portions of mathematics itself."
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Then I suspect our journey has only just begun."
         }
     ]
 }

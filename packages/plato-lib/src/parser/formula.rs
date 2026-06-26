@@ -77,13 +77,18 @@ pub fn parse_formula(sexpr: &SExpr) -> Result<Rc<PropWWF>, String> {
                     Ok(Rc::new(PropWWF::Exists(var, parse_formula(&items[2])?)))
                 }
                 "App" => {
-                    if items.len() != 3 {
-                        return Err(format!("'App' expects 2 arguments, got {}", items.len() - 1));
+                    if items.len() < 3 {
+                        return Err(format!("'App' expects at least 2 arguments, got {}", items.len() - 1));
                     }
-                    Ok(Rc::new(PropWWF::App(
+                    // Chained application: (App P a b c …)  ≡  (App (…(App (App P a) b)…) …)
+                    let mut result = Rc::new(PropWWF::App(
                         parse_formula(&items[1])?,
                         parse_formula(&items[2])?,
-                    )))
+                    ));
+                    for arg in &items[3..] {
+                        result = Rc::new(PropWWF::App(result, parse_formula(arg)?));
+                    }
+                    Ok(result)
                 }
                 "->" | "→" | "imp" | "⊃" => {
                     if items.len() != 3 {

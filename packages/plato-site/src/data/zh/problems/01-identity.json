@@ -1,0 +1,45 @@
+{
+    "description": "我在故我在。",
+    "goal": "(-> I I)",
+    "premise": [],
+    "guides": [
+        {
+            "text": "我们先来理解一下目标。 $I \\to I$ 的意思是 '$I$ [implication|蕴涵了] $I$' ——如果 $I$ 成立, 那 $I$ 也成立。很合理吧。"
+        },
+        {
+            "text": "要想证明一个 [implication|蕴含关系], 我们先假设左边的[proposition|命题], 然后试图推出右边的命题。先来假设(assume) $I$。",
+            "tactic": "(assume I)"
+        },
+        {
+            "text": "现在看看第 1 行。这一整行——$\\{I\\} \\vdash I$——叫做一个 **[judgement|断言]**。断言是一个完整的声明：用左边的东西，证明右边的东西。证明区里的每一行都是一个断言。"
+        },
+        {
+            "text": "中间的 $\\vdash$ 叫做**断言符**（turnstile，读作 '[judgement|推出]'）。它把断言一分为二：左边是 **[context|上下文]**（$\\{I\\}$ ——我们可以使用的假设），右边是 **[conclusion|结论]**（$I$ ——这一步要证明的东西）。"
+        },
+        {
+            "text": "所以 $\\{I\\} \\vdash I$ 读作：上下文 $\\{I\\}$ [judgement|推出] 结论 $I$。用人话说就是：假设 $I$ 成立，能证明 $I$。虽然是废话，但逻辑上没毛病。"
+        },
+        {
+            "text": "现在来收尾：'$A$ [implication|蕴含] $B$' 的**意思**就是：假设 $A$ 成立, 能推出 $B$。在第 1 步我们已经有了 $\\{I\\} \\vdash I$。用 `->-intro` 来 [discharge|消去] 假设 $I$，证明就结束了。它的第一个参数是要消去的[formula|公式]，第二个是步骤号：",
+            "tactic": "(->-intro I 1)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "assume",
+            "rule": "\\frac{}{\\{p\\} \\vdash p}",
+            "description": "如果你假设一个命题成立，那你自然可以推出它——因为你刚刚声明它是真的。",
+            "syntax": "(assume F)",
+            "example": "1. (assume P)  →  {P} ⊢ P"
+        },
+        {
+            "name": "→-intro",
+            "rule": "\\frac{\\Gamma,\\; p \\vdash q}{\\Gamma \\vdash p \\to q}",
+            "description": "如果从假设 $p$ 成立你能推出 $q$，那么 $p$ 蕴含 $q$——而且你可以放心地把 $p$ 从上下文里拿掉了。",
+            "syntax": "(->-intro F N)",
+            "example": "1. (assume Q)  →  {Q} ⊢ Q\n2. (->-intro Q 1)  →  ⊢ Q → Q"
+        }
+    ],
+    "logicMode": "fol"
+}

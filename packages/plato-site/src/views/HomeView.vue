@@ -20,12 +20,11 @@ function setLocale(loc: string) {
     prefs.setLocale(loc)
 }
 
-// ── Section data ────────────────────────────────────────────────────
 const allSections = computed(() => loadSections(locale.value))
 
-const visibleSections = computed(() =>
-    allSections.value.filter(s => progress.isSectionAccessible(s.id, allSections.value)),
-)
+const visibleSections = computed(() => allSections.value)
+
+const isSectionAccessible = (sectionId: string) => progress.isSectionAccessible(sectionId, allSections.value)
 
 const hasProgress = computed(() => {
     for (const sec of allSections.value) {
@@ -34,7 +33,14 @@ const hasProgress = computed(() => {
     return false
 })
 
-// ── Continue target ─────────────────────────────────────────────────
+const allComplete = computed(() => visibleSections.value.length > 0 &&
+    visibleSections.value.every(s => {
+        if (!isSectionAccessible(s.id)) return false
+        const highest = progress.highestSolved[s.id] ?? -1
+        return highest + 1 >= s.problems.length
+    })
+)
+
 const continueTarget = computed(() =>
     progress.continueTarget(allSections.value),
 )
@@ -60,33 +66,21 @@ function onStartFresh() {
     }
 }
 
-// ── Section card interaction ────────────────────────────────────────
 function onSectionClick(sectionId: string) {
-    const sec = allSections.value.find(s => s.id === sectionId)
-    if (!sec) return
-    const highest = progress.highestSolved[sectionId] ?? -1
-    const nextIdx = highest + 1
-    if (nextIdx < sec.problems.length) {
-        if (!discovery.isViewed(sectionId) && nextIdx === 0) {
-            router.push(`/section/${sectionId}/discovery`)
-        } else {
-            router.push(`/section/${sectionId}/problem/${nextIdx}`)
-        }
-    }
+    router.push(`/section/${sectionId}/problem/0`)
 }
 
 function replayDiscovery(sectionId: string) {
     router.push(`/section/${sectionId}/discovery`)
 }
 
-function isSectionComplete(sectionId: string): boolean {
+function sectionProgressPercent(sectionId: string): number {
     const sec = allSections.value.find(s => s.id === sectionId)
-    if (!sec) return false
-    const highest = progress.highestSolved[sectionId] ?? -1
-    return highest + 1 >= sec.problems.length
+    if (!sec || sec.problems.length === 0) return 0
+    const solved = (progress.highestSolved[sectionId] ?? -1) + 1
+    return Math.min(100, (solved / sec.problems.length) * 100)
 }
 
-// ── Focus ───────────────────────────────────────────────────────────
 const continueBtn = ref<HTMLButtonElement | null>(null)
 const startBtn = ref<HTMLButtonElement | null>(null)
 
@@ -105,20 +99,13 @@ onMounted(() => {
         <h1>{{ t('home.title') }}</h1>
 
         <div class="actions">
-            <button
-                v-if="hasProgress"
-                ref="continueBtn"
-                class="hero-btn"
-                @click="goContinue"
-            >
+            <button v-if="!hasProgress" ref="startBtn" class="hero-btn" @click="onStartFresh">
+                {{ t('home.begin') }}
+            </button>
+            <button v-if="hasProgress && !allComplete" ref="continueBtn" class="hero-btn" @click="goContinue">
                 {{ t('home.continue') }}
             </button>
-            <button
-                ref="startBtn"
-                class="hero-btn"
-                :class="hasProgress ? 'secondary' : ''"
-                @click="onStartFresh"
-            >
+            <button v-if="hasProgress" class="hero-btn secondary" @click="onStartFresh">
                 {{ t('home.startFresh') }}
             </button>
             <button class="hero-btn custom-btn" @click="router.push('/custom')">
@@ -126,37 +113,33 @@ onMounted(() => {
             </button>
         </div>
 
-        <!-- Section cards -->
+        <div v-if="allComplete" class="all-done">{{ t("home.allDone") }}</div>
+
         <div v-if="visibleSections.length > 0" class="sections">
-            <div
-                v-for="section in visibleSections"
-                :key="section.id"
-                class="section-card"
-                :class="{ complete: isSectionComplete(section.id) }"
-                @click="onSectionClick(section.id)"
-            >
-                <div class="section-name">{{ t(section.meta.nameI18nKey) }}</div>
-                <div class="section-progress">
-                    <span
-                        v-for="i in section.problems.length"
-                        :key="i"
-                        class="section-dot"
-                        :class="{ solved: (progress.highestSolved[section.id] ?? -1) >= i - 1 }"
-                    ></span>
-                </div>
-                <div class="section-meta">
-                    <span class="section-count">{{ t('sections.solved', {
-                        solved: Math.min((progress.highestSolved[section.id] ?? -1) + 1, section.problems.length),
-                        total: section.problems.length
-                    }) }}</span>
-                    <button
-                        v-if="discovery.isViewed(section.id)"
-                        class="replay-btn"
-                        @click.stop="replayDiscovery(section.id)"
-                    >
-                        {{ t('discovery.replay') }}
-                    </button>
-                </div>
+            <div v-for="section in visibleSections" :key="section.id" class="section-card"
+                :class="{ locked: !isSectionAccessible(section.id) }"
+                @click="isSectionAccessible(section.id) && onSectionClick(section.id)">
+                <template v-if="isSectionAccessible(section.id)">
+                    <div class="section-head">
+                        <div class="section-name">{{ t(section.meta.nameI18nKey) }}</div>
+                        <button class="replay-btn" @click.stop="replayDiscovery(section.id)">
+                            {{ discovery.isViewed(section.id) ? t('discovery.replay') : t('discovery.play') }}
+                        </button>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" :style="{ width: sectionProgressPercent(section.id) + '%' }"></div>
+                    </div>
+                    <div class="section-count">
+                        {{ (progress.highestSolved[section.id] ?? -1) + 1 }} / {{ section.problems.length }}
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="section-head">
+                        <div class="section-name locked-name">???</div>
+                    </div>
+                    <div class="progress-track locked-track"></div>
+                    <div class="section-count locked-count">{{ t('locked.title') }}</div>
+                </template>
             </div>
         </div>
 
@@ -172,67 +155,129 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .hero {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: flex-start; height: 100%; padding-top: 6vh; overflow-y: auto;
-  h1 { font-size: clamp(28px, 6vw, 56px); font-weight: 400; letter-spacing: -0.02em; margin-bottom: 32px; }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow-y: auto;
+
+    h1 {
+        font-size: clamp(28px, 6vw, 56px);
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        margin-bottom: 28px;
+    }
 }
 
 .lang-switch {
-  margin-bottom: 20px; display: flex; gap: 2px;
-  button {
-    font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-    color: var(--color-muted); background: none; border: 1px solid transparent;
-    border-radius: 3px; padding: 3px 8px; cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-    &:hover { color: var(--color-fg); border-color: var(--color-border); }
-    &.active { color: var(--color-fg); border-color: var(--color-border); background: var(--color-subtle-bg); }
-  }
+    margin-bottom: 20px;
+    display: flex;
+    gap: 2px;
+
+    button {
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--color-muted);
+        background: none;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        padding: 3px 8px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+
+        &:hover { color: var(--color-fg); border-color: var(--color-border); }
+        &.active { color: var(--color-fg); border-color: var(--color-border); background: var(--color-subtle-bg); }
+    }
 }
 
-.actions { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-bottom: 32px; }
+.actions {
+    display: flex; flex-direction: column; gap: 8px;
+    align-items: center; margin-bottom: 28px;
+}
 
 .hero-btn {
-  font-family: inherit; font-size: 15px; padding: 8px 0; cursor: pointer;
-  width: 200px; background: var(--color-primary); color: var(--color-primary-fg);
-  border: none; border-radius: 4px;
-  &:hover { background: var(--color-primary-hover); }
-  &.secondary, &.custom-btn {
-    background: transparent; border: 1px solid var(--color-border); color: var(--color-muted);
-    &:hover { background: var(--color-subtle-bg); border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
-  }
+    font-family: inherit; font-size: 15px; padding: 8px 0; cursor: pointer;
+    width: 200px; background: var(--color-primary); color: var(--color-primary-fg);
+    border: none; border-radius: 4px;
+
+    &:hover { background: var(--color-primary-hover); }
+
+    &.secondary, &.custom-btn {
+        background: transparent; border: 1px solid var(--color-border); color: var(--color-muted);
+        &:hover { background: var(--color-subtle-bg); border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
+    }
+}
+
+.all-done {
+    font-size: 14px; color: var(--color-primary-hover);
+    font-weight: 500; text-align: center;
+    margin-bottom: 20px; opacity: 0.85;
 }
 
 // ── Section cards ─────────────────────────────────────────────
-.sections { display: flex; flex-direction: column; gap: 8px; width: min(320px, 80vw); margin-bottom: 16px; }
+.sections {
+    display: flex; flex-direction: column; gap: 6px;
+    width: min(400px, 80vw); margin-bottom: 20px;
+}
 
 .section-card {
-  padding: 12px 16px; border: 1px solid var(--color-border);
-  border-radius: 6px; cursor: pointer; transition: border-color 0.15s, background 0.15s;
-  &:hover { border-color: var(--color-primary-hover); background: var(--color-subtle-bg); }
-  &.complete { opacity: 0.7; }
-}
-.section-name { font-size: 14px; font-weight: 600; color: var(--color-fg); margin-bottom: 8px; }
-.section-progress { display: flex; gap: 4px; margin-bottom: 8px; }
-.section-dot {
-  width: 8px; height: 8px; border-radius: 100%; background: var(--color-border); transition: background 0.3s;
-  &.solved { background: var(--color-primary); }
-}
-.section-meta { display: flex; align-items: center; justify-content: space-between; }
-.section-count { font-size: 11px; color: var(--color-muted); }
-.replay-btn {
-  font-family: inherit; font-size: 11px; padding: 2px 8px; cursor: pointer;
-  background: none; border: 1px solid var(--color-border); border-radius: 3px;
-  color: var(--color-muted); transition: color 0.15s, border-color 0.15s;
-  &:hover { color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+    padding: 10px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover:not(.locked) { border-color: var(--color-primary-hover); background: var(--color-subtle-bg); }
+    &.locked { cursor: default; opacity: 0.35; }
 }
 
+.section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.section-name {
+    font-size: 13px; font-weight: 600; color: var(--color-fg);
+}
+
+.replay-btn {
+    font-family: inherit; font-size: 10px; padding: 2px 8px; cursor: pointer;
+    background: none; border: 1px solid var(--color-border); border-radius: 3px;
+    color: var(--color-muted);
+    transition: color 0.15s, border-color 0.15s;
+
+    &:hover { color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+}
+
+.progress-track {
+    height: 3px; background: var(--color-border); border-radius: 2px;
+    overflow: hidden; margin-bottom: 6px;
+}
+
+.progress-fill {
+    height: 100%; width: 0; background: var(--color-primary);
+    border-radius: 2px; transition: width 0.5s ease;
+}
+
+.section-count {
+    font-size: 10px; color: var(--color-muted); text-align: right;
+}
+.locked-name { color: var(--color-border-strong) !important; }
+.locked-track { background: var(--color-border) !important; opacity: 0.3; }
+.locked-count { text-align: right; opacity: 0.5; }
+
 .sub-actions {
-  display: flex; gap: 0; align-items: center; justify-content: center;
-  margin-top: 16px; font-size: 12px; color: var(--color-border-strong);
-  a {
-    color: inherit; text-decoration: none; padding: 2px 6px; cursor: pointer; transition: color 0.15s;
-    &:hover { color: var(--color-muted); }
-  }
-  .sub-sep { color: var(--color-border); user-select: none; }
+    display: flex; gap: 0; align-items: center; justify-content: center;
+    margin-top: 8px; font-size: 12px; color: var(--color-border-strong);
+
+    a {
+        color: inherit; text-decoration: none; padding: 2px 6px; cursor: pointer;
+        transition: color 0.15s;
+        &:hover { color: var(--color-muted); }
+    }
+
+    .sub-sep { color: var(--color-border); user-select: none; }
 }
 </style>

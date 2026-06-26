@@ -1,0 +1,38 @@
+{
+    "description": "一传二，二传三，三传万物。",
+    "goal": "C",
+    "premise": [
+        "A",
+        "(-> A B)",
+        "(-> B C)"
+    ],
+    "guides": [],
+    "hints": [
+        {
+            "text": "你被给到了三条[premise|前提]：$A \\to B$，$B \\to C$，和 $A$。目标：推出 $C$。需要搭两座桥。",
+            "tactic": null
+        },
+        {
+            "text": "$A \\to B$ 和 $A$ 在一起能干什么？[modus-ponens|肯定前件] 直接给出 $B$。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "现在你有了 $B$，手上还有一条[premise|前提] $B \\to C$。再搭一座桥。",
+            "tactic": "(assume (-> A B))"
+        },
+        {
+            "text": "再用一次 `->-elim`，从 $B \\to C$ 和 $B$ 推出 $C$。",
+            "tactic": "(assume (-> B C))"
+        },
+        {
+            "text": "两次 [modus-ponens|肯定前件]，像接力赛一样地把真值从 $A$ 传到了 $C$。",
+            "tactic": "(->-elim 2 1)"
+        },
+        {
+            "text": "这就是\"链式推理\"。如果你知道 $A \\to B$ 且 $B \\to C$，那么 $A$ 为真时 $C$ 必定为真。",
+            "tactic": "(->-elim 3 4)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

@@ -27,3 +27,27 @@ app.mount('#app')
   }
   console.log(`[plato] all ${total} problems across ${sections.length} sections unlocked`)
 }
+
+;(window as any).__plato_goto__ = (section: string | null, problem: number) => {
+  if (!section) {
+    const sections = loadSections(i18n.global.locale.value as string)
+    let offset = 0
+    for (const sec of sections) {
+      if (problem < offset + sec.problems.length) {
+        router.push(`/section/${sec.id}/problem/${problem - offset}`)
+        return
+      }
+      offset += sec.problems.length
+    }
+    console.log(`[plato] problem ${problem} not found`)
+    return
+  }
+  router.push(`/section/${section}/problem/${problem}`)
+}
+
+;(window as any).__plato_help__ = () => {
+  console.log('[plato] debug cheats:')
+  console.log('  __plato_unlockAll()           — unlock all problems')
+  console.log('  __plato_goto(section, idx)    — jump to problem (e.g. __plato_goto("propositional", 5))')
+  console.log('  __plato_goto(null, globalIdx) — jump by old global index')
+}

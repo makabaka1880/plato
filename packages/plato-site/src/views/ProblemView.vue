@@ -172,6 +172,13 @@ function onSolved(lines: string[]) {
 const logicMode = computed(() =>
     problem.value?.logicMode ?? section.value?.meta.logicMode ?? 'fol',
 )
+const axiomSetLabel = computed(() => {
+    if (!section.value) return ''
+    const mode = logicMode.value
+    if (mode === 'pl') return 'PL'
+    if (mode === 'fol') return 'FOL'
+    return mode
+})
 const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 </script>
 
@@ -185,7 +192,7 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
     <div v-else class="root-row">
         <div class="root">
             <NavBar @open-prefs="prefsOpen = true">
-                <span class="goal-chip">{{ sectionName }} · {{ problem.goal }}</span>
+                <span class="goal-chip">{{ sectionName }} · <span class="axiom-chip">{{ axiomSetLabel }}</span> · {{ problem.goal }}</span>
             </NavBar>
 
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
@@ -282,6 +289,7 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 .root-row { display: flex; flex-direction: row; height: 100%; }
 .root { display: flex; flex-direction: column; height: 100%; flex: 1; overflow: hidden; }
 .goal-chip { font-size: 13px; color: var(--color-muted); }
+.axiom-chip { font-size: 11px; color: var(--color-primary-hover); font-weight: 600; }
 .body { flex: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
 .not-found { padding: 32px; }
 

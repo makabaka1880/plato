@@ -12,7 +12,9 @@ export default {
     home: {
         title: '? ⊢ 柏拉图',
         continue: '继续',
+        begin: '开始你的旅程 →',
         startFresh: '→ 重新开始',
+        allDone: '你牛逼，我都还没通关',
         customProblem: '→ 自定义题目',
         contribute: '参与贡献',
         about: '关于',
@@ -107,6 +109,9 @@ export default {
 
         notations: {
             typingSymbols: '符号输入',
+            axiomSetTitle: '公理集',
+            axiomSetPL: '<b>命题逻辑 (PL)</b> — 你可以使用命题连接词（¬、∧、∨、→、⊤、⊥），在模态章节还可以使用模态算子（□、◇）。量词（∀、∃）和谓词应用（App）被禁用。',
+            axiomSetFOL: '<b>一阶逻辑 (FOL)</b> — 所有命题连接词加上量词（∀、∃）、谓词应用（App）和项变量（fix）。模态算子（□、◇）被禁用。',
             formulaSyntax: '公式语法',
             variablesTerms: '变量与项',
             syntaxIntro: '公式采用 <b>S-表达式</b>（前缀）记法。每个连接词用括号包裹其子公式。',
@@ -171,8 +176,8 @@ export default {
     discovery: {
         skip: '跳过',
         begin: '开始',
+        play: '发现',
         replay: '重播',
-        plato: '柏拉图',
-        aristotle: '亚里士多德',
+        tapToContinue: '点击继续'
     },
 }

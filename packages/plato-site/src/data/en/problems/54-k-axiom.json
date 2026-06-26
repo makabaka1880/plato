@@ -1,0 +1,56 @@
+{
+    "description": "Necessary implication distributes over necessary propositions — the K axiom.",
+    "goal": "(-> (box (-> A B)) (-> (box A) (box B)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "This is the **K axiom** of modal logic: if $A \\to B$ is necessarily true and $A$ is necessarily true, then $B$ is necessarily true. All in propositional logic mode — the □ operator is our new primitive. We'll prove it as an implication.",
+            "tactic": null
+        },
+        {
+            "text": "Two nested implications. Assume the outermost: $\\Box (A \\to B)$.",
+            "tactic": "(assume (box (-> A B)))"
+        },
+        {
+            "text": "Now prove the inner implication $\\Box A \\to \\Box B$. Assume the antecedent: $\\Box A$.",
+            "tactic": "(assume (box A))"
+        },
+        {
+            "text": "We have $\\Box (A \\to B)$ at step 1 and $\\Box A$ at step 2. The rule `box-elim` is modus ponens under the box — from $\\Box (A \\to B)$ and $\\Box A$, derive $\\Box B$.",
+            "tactic": "(box-elim 1 2)"
+        },
+        {
+            "text": "Discharge the inner assumption $\\Box A$ to form $\\Box A \\to \\Box B$.",
+            "tactic": "(->-intro (box A) 3)"
+        },
+        {
+            "text": "Discharge the outer assumption $\\Box (A \\to B)$ to complete the K axiom.",
+            "tactic": "(->-intro (box (-> A B)) 4)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "box-intro",
+            "rule": "\\frac{\\emptyset \\vdash A}{\\emptyset \\vdash \\Box A}",
+            "description": "Necessitation (NEC): from ∅ ⊢ A derive ∅ ⊢ □A. The premise must be proved with an empty context.",
+            "syntax": "(box-intro N)",
+            "example": "1. ⊢ A\n2. (box-intro 1)  →  ⊢ □A"
+        },
+        {
+            "name": "box-elim",
+            "rule": "\\frac{\\Gamma \\vdash \\Box (A \\to B) \\quad \\Delta \\vdash \\Box A}{\\Gamma \\cup \\Delta \\vdash \\Box B}",
+            "description": "K: from □(A → B) and □A derive □B. Modus ponens under the box.",
+            "syntax": "(box-elim N M)",
+            "example": "1. ⊢ □(A → B)\n2. ⊢ □A\n3. (box-elim 1 2)  →  ⊢ □B"
+        },
+        {
+            "name": "diamond-def",
+            "rule": "\\frac{\\Gamma \\vdash \\Diamond A}{\\Gamma \\vdash \\lnot \\Box \\lnot A}",
+            "description": "◇-definition: from ◇A derive ¬□¬A. Unfolds possibility into its dual form.",
+            "syntax": "(diamond-def N)",
+            "example": "1. ⊢ ◇A\n2. (diamond-def 1)  →  ⊢ ¬□¬A"
+        }
+    ],
+    "logicMode": "pl"
+}

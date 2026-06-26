@@ -1,0 +1,58 @@
+{
+    "description": "If something exists, then something exists — no matter what you call it.",
+    "goal": "(-> (exists x (App P x)) (exists y (App P y)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "The goal: $\\exists x.\\; P(x) \\to \\exists y.\\; P(y)$. Obviously true — if something is $P$, then something is $P$, no matter what variable name you use. But proving it requires `exists-elim`, the most complex first-order rule.",
+            "tactic": null
+        },
+        {
+            "text": "`exists-elim` works like this: you have an existential claim ('something exists'). You say 'let's call that thing $y$' (a fresh [witness|witness]), prove your conclusion using $y$, and then close the witness. The conclusion must not depend on which specific thing $y$ was — because you never knew its identity.",
+            "tactic": null
+        },
+        {
+            "text": "Assume the existential claim: something is $P$.",
+            "tactic": "(assume (exists x (App P x)))"
+        },
+        {
+            "text": "Introduce a fresh [witness|witness] $y$ with `fix` — 'let $y$ be some thing.'",
+            "tactic": "(fix y)"
+        },
+        {
+            "text": "Assume this witness satisfies $P$: $P(y)$. This is the body of the existential, instantiated under the fresh name $y$.",
+            "tactic": "(assume (App P y))"
+        },
+        {
+            "text": "Merge the witness atom $y$ with $P(y)$ using `and-intro` so both are in the same context.",
+            "tactic": "(and-intro 2 3)"
+        },
+        {
+            "text": "Extract $P(y)$ from the merged context.",
+            "tactic": "(and-elim-r 4)"
+        },
+        {
+            "text": "From $P(y)$, form $\\exists y.\\; P(y)$ using `exists-intro`. Replace the concrete term $y$ with the binding variable $y$.",
+            "tactic": "(exists-intro 5 y y)"
+        },
+        {
+            "text": "Now `exists-elim` closes the witness. It takes the existential (step 1), the witness subproof (step 6), and the variable name $y$. The engine checks $y$ doesn't leak into the conclusion, then discharges both the witness atom and $P(y)$.",
+            "tactic": "(exists-elim 1 6 y)"
+        },
+        {
+            "text": "Discharge the existential assumption to finish.",
+            "tactic": "(->-intro (exists x (App P x)) 7)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "∃-elim",
+            "rule": "\\frac{\\Gamma \\vdash \\exists x.\\; \\varphi \\quad \\Delta, y, \\varphi[y/x] \\vdash \\psi \\quad y \\notin FV(\\Delta, \\psi)}{\\Gamma \\cup \\Delta \\vdash \\psi}",
+            "description": "From an existential claim, open a witness $y$, prove the conclusion $\\psi$ under the assumption $\\varphi[y/x]$, and discharge — provided $y$ doesn't escape into $\\Delta$ or $\\psi$.",
+            "syntax": "(exists-elim N M x)",
+            "example": "1. ⊢ ∃x. P(x)\n2. [P(y)] ⊢ Q\n3. (exists-elim 1 2 y)  →  ⊢ Q"
+        }
+    ],
+    "logicMode": "fol"
+}

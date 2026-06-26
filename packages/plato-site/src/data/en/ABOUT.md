@@ -12,7 +12,9 @@ The idea isn't to teach you *about* logic — it's to teach you to *do* logic. A
 
 You are shown a statement to prove. You type commands in an s-expression REPL — `(assume A)`, `(->-elim 2 1)`, `(and-intro 1 3)` — and the engine checks each step against the rules of natural deduction. Guide cards walk you through your first proofs. Hints appear when you're lost. Every solved problem unlocks new tactics, building your toolkit one rule at a time.
 
-There are **45 problems** ranging from the law of identity (three steps, two minutes) to Peirce's law and the law of excluded middle. There are predicate logic problems about Socrates and about De Morgan's laws. You can also **load your own problems** from a URL or a JSON file — the engine doesn't care where the goal came from.
+There are **57 problems** across three sections — Propositional Logic, First-Order Logic, and Modal Logic (System K). Each section operates in its own **axiom set** (PL or FOL, shown in the NavBar), which determines which commands are available: propositional connectives only, or with quantifiers, or with modal operators. Problems range from the law of identity (three steps, two minutes) to the K axiom of modal logic and the distribution of necessity over implication.
+
+You can also **load your own problems** from a URL or a JSON file — the engine doesn't care where the goal came from.
 
 ## Why natural deduction?
 

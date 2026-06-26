@@ -167,8 +167,33 @@ impl PropWWF {
             Self::Imp(ant, consq) => format!("if {} then {}", ant.verbal(), consq.verbal()),
             Self::Forall(x, body) => format!("for all {}: {}", x, body.verbal()),
             Self::Exists(x, body) => format!("there exists {}: {}", x, body.verbal()),
-            Self::App(p, t) => format!("{}({})", p.verbal(), t.verbal()),
+            Self::App(p, t) => {
+                let parts = self.flatten_app();
+                if parts.len() <= 2 {
+                    format!("{}({})", p.verbal(), t.verbal())
+                } else {
+                    let pred = &parts[0];
+                    let args: Vec<String> = parts[1..].iter().map(|a| a.verbal()).collect();
+                    format!("{}({})", pred.verbal(), args.join(", "))
+                }
+            }
         }
+    }
+
+    /// Flatten nested (App (App (App P t1) t2) …) into (P, [t1, t2, …]).
+    fn flatten_app(&self) -> Vec<Rc<PropWWF>> {
+        let mut parts: Vec<Rc<PropWWF>> = vec![];
+        // Walk the chain: push each leaf argument, then recurse into p.
+        match self {
+            Self::App(p, t) => {
+                parts.extend(p.flatten_app());
+                parts.push(Rc::clone(t));
+            }
+            _ => {
+                parts.push(Rc::new(self.clone()));
+            }
+        }
+        parts
     }
 
     pub fn latex(&self) -> String {
@@ -189,7 +214,16 @@ impl PropWWF {
             Self::Imp(ant, consq) => format!("{} \\to {}", ant.latex_child(), consq.latex_child()),
             Self::Forall(x, body) => format!("\\forall {} \\; {}", x, body.latex_child()),
             Self::Exists(x, body) => format!("\\exists {} \\; {}", x, body.latex_child()),
-            Self::App(p, t) => format!("{}({})", p.latex(), t.latex()),
+            Self::App(p, t) => {
+                let parts = self.flatten_app();
+                if parts.len() <= 2 {
+                    format!("{}({})", p.latex(), t.latex())
+                } else {
+                    let pred = &parts[0];
+                    let args: Vec<String> = parts[1..].iter().map(|a| a.latex()).collect();
+                    format!("{}({})", pred.latex(), args.join(", "))
+                }
+            }
         }
     }
 
@@ -301,7 +335,7 @@ mod tests {
         assert_eq!(*fm, *r);
         // substituting P->Q should work normally
         let r2 = fm.substitute(&[("P".into(), Rc::new(PropWWF::Atom("Q".into())))]);
-        assert_eq!(r2.to_string(), "Q(x)");
+        assert_eq!(r2.to_string(), "∀x.(Q(x))");
     }
 }
 
@@ -317,7 +351,19 @@ impl fmt::Display for PropWWF {
             Self::Imp(ant, consq) => write!(f, "({}) → ({})", ant, consq),
             Self::Forall(x, body) => write!(f, "∀{}.({})", x, body),
             Self::Exists(x, body) => write!(f, "∃{}.({})", x, body),
-            Self::App(p, t) => write!(f, "{}({})", p, t),
+            Self::App(p, t) => {
+                let parts = self.flatten_app();
+                if parts.len() <= 2 {
+                    write!(f, "{}({})", p, t)
+                } else {
+                    write!(f, "{}(", parts[0])?;
+                    for (i, a) in parts[1..].iter().enumerate() {
+                        if i > 0 { write!(f, ", ")?; }
+                        write!(f, "{}", a)?;
+                    }
+                    write!(f, ")")
+                }
+            }
         }
     }
 }

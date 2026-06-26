@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onUnmounted, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { DiscoveryData } from '@/types'
-import { usePreferencesStore } from '@/stores/preferences'
+import { useDiscoveryStore } from '@/stores/discovery'
 import InlineLatex from '@/components/InlineLatex.vue'
+import HelpModal from '@/components/HelpModal.vue'
 
 const props = defineProps<{
     discovery: DiscoveryData
@@ -11,33 +12,31 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+    progress: [idx: number]
     complete: []
     skip: []
 }>()
 
-const { t, locale } = useI18n()
-const prefs = usePreferencesStore()
+const { t } = useI18n()
+const discoveryStore = useDiscoveryStore()
 
-function setLocale(loc: string) {
-    locale.value = loc
-    prefs.setLocale(loc)
+// ── Glossary popup ──────────────────────────────────────────────
+const showHelp = ref(false)
+const glossaryTerm = ref<string | null>(null)
+
+function onGlossaryClick(term: string) {
+    glossaryTerm.value = term
+    showHelp.value = true
 }
 
 const total = computed(() => props.discovery.lines.length)
 
-// ── Speaker colour palette ──────────────────────────────────────────
+// ── Speaker colour palette ──────────────────────────────────────
 const SPEAKER_PALETTE = [
-    '#4a90d9', // blue
-    '#c06d4f', // terracotta
-    '#5d9b6c', // sage green
-    '#9b6fb0', // lavender
-    '#d48c3c', // amber
-    '#6d8a9e', // slate
-    '#b8556e', // rose
-    '#4e9b8c', // teal
+    '#4a90d9', '#c06d4f', '#5d9b6c', '#9b6fb0',
+    '#d48c3c', '#6d8a9e', '#b8556e', '#4e9b8c',
 ]
 
-/** Deterministic hash — same speaker always gets the same colour index. */
 function speakerColor(name: string): string {
     let hash = 0
     for (let i = 0; i < name.length; i++) {
@@ -47,287 +46,233 @@ function speakerColor(name: string): string {
     return SPEAKER_PALETTE[Math.abs(hash) % SPEAKER_PALETTE.length]!
 }
 
-// ── Conveyor-belt card model ────────────────────────────────────────
-// Phases:
-//   'enter'  – card just appeared; sits below the bottom slot
-//   'active' – card at its target position (fully visible)
-//   'exit'   – card sliding up off-screen
-
-interface CardState {
-    lineIdx: number
-    pos: number       // 0 = top, 1 = bottom
-    phase: 'enter' | 'active' | 'exit'
+function speakerBgColor(name: string): string {
+    const hex = speakerColor(name)
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    const a = 20 / 255
+    const toHex = (c: number) => Math.round(c * a + 255 * (1 - a)).toString(16).padStart(2, '0')
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
 
-const cards = ref<CardState[]>([])
-const currentIdx = ref(-1)
-const isComplete = computed(() => currentIdx.value >= total.value)
-let transitionBusy = false
+// ── Single-card model with typewriter ───────────────────────────
+const TYPING_SPEED = 28
+const savedPos = discoveryStore.getPosition(props.sectionId)
+const currentIdx = ref(Math.max(0, Math.min(savedPos, total.value - 1)))
+const isComplete = computed(() => currentIdx.value >= total.value - 1 && !isTyping.value)
+const typedLen = ref(0)
+let timer: ReturnType<typeof setInterval> | null = null
+let skipTyping = false
 
-// Show first line immediately on mount
-onMounted(() => {
-    if (total.value > 0) {
-        currentIdx.value = 0
-        pushCard(0)
-    }
-})
+onMounted(() => emit('progress', currentIdx.value))
+watch(currentIdx, (val) => {
+    emit('progress', val)
+    discoveryStore.setPosition(props.sectionId, val)
+}, { immediate: true })
+
+function fullText(): string {
+    if (currentIdx.value < total.value) return props.discovery.lines[currentIdx.value]!.text
+    return ''
+}
+
+function startTyping() {
+    stopTyping()
+    typedLen.value = 0
+    const target = fullText().length
+    if (target === 0) return
+    timer = setInterval(() => {
+        if (typedLen.value < target) typedLen.value++
+        else stopTyping()
+    }, TYPING_SPEED)
+}
+
+function stopTyping() {
+    if (timer !== null) { clearInterval(timer); timer = null }
+}
 
 function advance() {
-    if (transitionBusy) return
-
-    if (currentIdx.value < total.value) {
-        currentIdx.value++
-        pushCard(currentIdx.value)
+    stopTyping()
+    const target = fullText().length
+    if (typedLen.value < target) {
+        typedLen.value = target
         return
     }
-    if (isComplete.value) {
-        emit('complete')
+    if (currentIdx.value < total.value) {
+        currentIdx.value++
+        startTyping()
     }
 }
 
-function doSkip() {
-    emit('skip')
-}
-
-// ── Conveyor logic ──────────────────────────────────────────────────
-function pushCard(lineIdx: number) {
-    transitionBusy = true
-
-    for (const c of cards.value) {
-        if (c.phase === 'active') {
-            if (c.pos === 0) {
-                c.phase = 'exit'
-            } else {
-                c.pos = 0
-            }
-        }
+function goPrev() {
+    if (currentIdx.value > 0) {
+        skipTyping = true
+        currentIdx.value--
+        stopTyping()
+        typedLen.value = fullText().length
     }
-
-    cards.value.push({ lineIdx, pos: 1, phase: 'enter' })
-
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            const latest = cards.value[cards.value.length - 1]
-            if (latest) latest.phase = 'active'
-
-            setTimeout(() => {
-                cards.value = cards.value.filter(c => c.phase !== 'exit')
-                transitionBusy = false
-            }, 480)
-        })
-    })
 }
 
-// ── Visual positioning ──────────────────────────────────────────────
-const TOP_CENTRE    = 'calc(50% - 46px)'
-const BOTTOM_CENTRE = 'calc(50% + 46px)'
-const BELOW         = 'calc(50% + 100px)'
-const ABOVE         = 'calc(50% - 106px)'
+watch(currentIdx, (val) => {
+    if (skipTyping) { skipTyping = false; return }
+    if (val > 0 && typedLen.value === 0) {
+        typedLen.value = fullText().length
+        return
+    }
+    startTyping()
+}, { immediate: true })
+onUnmounted(() => stopTyping())
 
-function cardTop(pos: number, phase: string): string {
-    if (phase === 'enter') return BELOW
-    if (phase === 'exit')  return ABOVE
-    return pos === 0 ? TOP_CENTRE : BOTTOM_CENTRE
-}
+const displayText = computed(() => {
+    let t = fullText().slice(0, typedLen.value)
+    const dollarCount = (t.match(/\$/g) || []).length
+    if (dollarCount % 2 !== 0) t = t.slice(0, t.lastIndexOf('$'))
+    const starPairCount = (t.match(/\*\*/g) || []).length
+    if (starPairCount % 2 !== 0) t = t.slice(0, t.lastIndexOf('**'))
+    const backtickCount = (t.match(/`/g) || []).length
+    if (backtickCount % 2 !== 0) t = t.slice(0, t.lastIndexOf('`'))
+    let open = 0
+    for (let i = 0; i < t.length; i++) {
+        if (t[i] === '[') open++
+        else if (t[i] === ']') { if (open > 0) open-- }
+    }
+    if (open > 0) t = t.slice(0, t.lastIndexOf('['))
+    return t
+})
+const isTyping = computed(() => typedLen.value < fullText().length)
 
-function cardOpacity(phase: string): string {
-    return phase === 'enter' || phase === 'exit' ? '0' : '1'
+const currentLine = computed(() =>
+    props.discovery.lines[Math.min(currentIdx.value, total.value - 1)] ?? null,
+)
+
+function onKeydown(e: KeyboardEvent) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        advance()
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault()
+        goPrev()
+    }
 }
 </script>
 
 <template>
-    <div class="discovery-dialog" @click="advance">
+    <div class="discovery-dialog" tabindex="0" @keydown="onKeydown" >
         <div class="discovery-header">
             <h2 class="discovery-title">{{ discovery.title }}</h2>
-            <div class="lang-switch" @click.stop>
-                <button :class="{ active: locale === 'en' }" @click.stop="setLocale('en')">EN</button>
-                <button :class="{ active: locale === 'zh' }" @click.stop="setLocale('zh')">中文</button>
-            </div>
-            <button class="skip-btn" @click.stop="doSkip">{{ t('discovery.skip') }}</button>
+            <button class="header-btn skip-btn" @click.stop="emit('skip')">{{ t('discovery.skip') }}</button>
         </div>
 
         <div class="stage">
-            <div
-                v-for="card in cards"
-                :key="card.lineIdx"
-                class="card"
-                :style="{
-                    top: cardTop(card.pos, card.phase),
-                    opacity: cardOpacity(card.phase),
-                    backgroundColor: speakerColor(discovery.lines[card.lineIdx]!.speaker) + '14',
-                }"
-            >
-                <div class="card-speaker" :style="{ color: speakerColor(discovery.lines[card.lineIdx]!.speaker) }">
-                    {{ discovery.lines[card.lineIdx]!.speaker }}
+            <div class="stage-spacer"></div>
+
+            <Transition name="card-fade" mode="out-in">
+                <div
+                    v-if="currentLine"
+                    :key="currentIdx"
+                    class="card"
+                    :style="{ backgroundColor: speakerBgColor(currentLine.speaker) }"
+                >
+                    <div class="card-speaker" :style="{ color: speakerColor(currentLine.speaker) }">
+                        {{ currentLine.speaker }}
+                    </div>
+                    <div class="card-body">
+                        <InlineLatex :text="displayText" @glossary-click="onGlossaryClick" />
+                        <span v-if="isTyping" class="cursor">|</span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <InlineLatex :text="discovery.lines[card.lineIdx]!.text" />
-                </div>
+            </Transition>
+
+            <div class="card-nav">
+                <button class="nav-btn" :disabled="currentIdx <= 0" @click.stop="goPrev" title="Previous">▲</button>
+                <button class="nav-btn" :disabled="currentIdx >= total - 1" @click.stop="advance" title="Next">▼</button>
             </div>
         </div>
 
         <div class="bottom-bar">
-            <button
-                v-if="isComplete"
-                class="begin-btn"
-                @click.stop="emit('complete')"
-            >
+            <button v-if="isComplete" class="begin-btn" @click.stop="emit('complete')">
                 {{ t('discovery.begin') }}
             </button>
-            <div v-else-if="!isComplete" class="tap-hint">{{ t('discovery.tapToContinue') }}</div>
         </div>
     </div>
+
+    <HelpModal v-if="showHelp" :glossary-term="glossaryTerm ?? undefined" @close="showHelp = false; glossaryTerm = null" />
 </template>
 
 <style lang="scss" scoped>
 .discovery-dialog {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 24px 16px;
-    cursor: pointer;
-    user-select: none;
+    display: flex; flex-direction: column; height: 100%;
+    padding: 24px 32px; outline: none;
 }
 
 .discovery-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 24px;
-    gap: 12px;
-    flex-shrink: 0;
+    display: flex; align-items: center; margin-bottom: 24px; gap: 12px; flex-shrink: 0;
 }
-
 .discovery-title {
-    font-size: 20px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    margin: 0;
-    color: var(--color-fg);
-}
-
-.lang-switch {
-    display: flex;
-    gap: 2px;
-    margin-left: auto;
-}
-
-.lang-switch button {
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--color-muted);
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    padding: 3px 8px;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-}
-
-.lang-switch button:hover {
-    color: var(--color-fg);
-    border-color: var(--color-border);
-}
-
-.lang-switch button.active {
-    color: var(--color-fg);
-    border-color: var(--color-border);
-    background: var(--color-subtle-bg);
+    font-size: 20px; font-weight: 400; letter-spacing: -0.01em; margin: 0; color: var(--color-fg);
+    flex: 1;
 }
 
 .skip-btn {
-    font-family: inherit;
-    font-size: 12px;
-    padding: 4px 12px;
-    cursor: pointer;
-    background: none;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
+    font-family: inherit; font-size: 12px; padding: 4px 12px; cursor: pointer;
+    background: none; border: 1px solid var(--color-border); border-radius: 4px;
     color: var(--color-muted);
-    flex-shrink: 0;
     transition: color 0.15s, border-color 0.15s;
+    &:hover { color: var(--color-fg); border-color: var(--color-border-strong); }
 }
 
-.skip-btn:hover {
-    color: var(--color-fg);
-    border-color: var(--color-border-strong);
-}
-
-/* ── stage & cards ────────────────── */
+// ── Stage ────────────────────────────────────────────────────
 .stage {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    min-height: 200px;
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    gap: 12px;
 }
-
+.stage-spacer { width: 36px; flex-shrink: 0; }
 .card {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 520px;
-    background: var(--color-subtle-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 16px 22px;
-    transition: top 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                background 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
+    width: 520px; flex-shrink: 0; border: 1px solid var(--color-border);
+    border-radius: 8px; padding: 16px 22px;
 }
-
 .card-speaker {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    transition: color 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 8px;
+}
+.card-body { font-size: 15px; line-height: 1.65; color: var(--color-fg); }
+
+// ── Card nav buttons ──────────────────────────────────────────
+.card-nav {
+    display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+}
+.nav-btn {
+    font-family: inherit; font-size: 12px; width: 30px; height: 30px; cursor: pointer;
+    background: var(--color-subtle-bg); border: 1px solid var(--color-border);
+    border-radius: 100%; color: var(--color-muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s, color 0.15s;
+    &:hover:not(:disabled) { border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
+    &:disabled { opacity: 0.25; cursor: not-allowed; }
 }
 
-.card-body {
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--color-fg);
+// ── Typewriter cursor ─────────────────────────────────────────
+.cursor {
+    display: inline-block; font-weight: 300;
+    color: var(--color-primary-hover); animation: blink 0.8s step-end infinite;
 }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-/* ── bottom bar ───────────────────── */
+// ── Bottom bar ────────────────────────────────────────────────
 .bottom-bar {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 56px;
+    flex-shrink: 0; display: flex; justify-content: center;
+    align-items: center; height: 56px;
 }
-
 .begin-btn {
-    font-family: inherit;
-    font-size: 16px;
-    padding: 10px 40px;
-    cursor: pointer;
-    background: var(--color-primary);
-    color: var(--color-primary-fg);
-    border: none;
-    border-radius: 6px;
-    transition: background 0.15s;
+    font-family: inherit; font-size: 16px; padding: 10px 40px; cursor: pointer;
+    background: var(--color-primary); color: var(--color-primary-fg);
+    border: none; border-radius: 6px; transition: background 0.15s;
+    &:hover { background: var(--color-primary-hover); }
 }
 
-.begin-btn:hover {
-    background: var(--color-primary-hover);
-}
-
-.tap-hint {
-    font-size: 13px;
-    color: var(--color-muted);
-    animation: pulse-text 1.8s ease-in-out infinite;
-}
-
-@keyframes pulse-text {
-    0%, 100% { opacity: 0.35; }
-    50%      { opacity: 1.0; }
-}
+// ── Card transitions ──────────────────────────────────────────
+.card-fade-enter-active { transition: opacity 0.35s ease; }
+.card-fade-leave-active { transition: opacity 0.25s ease; }
+.card-fade-enter-from,
+.card-fade-leave-to { opacity: 0; }
 </style>

@@ -2,48 +2,256 @@
     "title": "The Nature of Truth",
     "lines": [
         {
-            "speaker": "plato",
-            "text": "Aristotle, my dear friend. Let us speak of truth itself. What is the simplest truth you can think of?"
+            "speaker": "Plato",
+            "text": "Aristotle, my dear friend. Let us speak of truth itself. Tell me, what is the simplest truth you can imagine?"
         },
         {
-            "speaker": "aristotle",
-            "text": "That a thing is itself, Plato. If it is a horse, it is a horse. If it is a man, it is a man. In the language you have devised: $I \\to I$."
+            "speaker": "Aristotle",
+            "text": "That a horse is a horse. A thing is itself."
         },
         {
-            "speaker": "plato",
-            "text": "Indeed! And how would one **prove** such a thing? We cannot simply declare it true — we must demonstrate it."
+            "speaker": "Plato",
+            "text": "Excellent. Statements like that, which can be either true or false, are called propositions."
         },
         {
-            "speaker": "aristotle",
-            "text": "We begin by assuming $I$. From that [assumption|assume], $I$ follows immediately — we just said it was true. Then we [discharge|discharge] the assumption, forming the [implication|implication] $I \\to I$."
+            "speaker": "Aristotle",
+            "text": "But surely philosophers don't write every proposition out in full?"
         },
         {
-            "speaker": "plato",
-            "text": "Excellent. This is the essence of a **[judgement|judgement]**: from a [context|context] of assumptions $\\Gamma$, we derive a [conclusion|conclusion] $p$. We write this as $\\Gamma \\vdash p$."
+            "speaker": "Plato",
+            "text": "Indeed not. We usually give them simple names like $A$, $B$, and $C$. Today, $A$ might mean 'the clouds have gathered.' Tomorrow it could mean something entirely different."
         },
         {
-            "speaker": "aristotle",
-            "text": "So the turnstile $\\vdash$ divides what we assume from what we prove. Every line in a proof is a judgement."
+            "speaker": "Aristotle",
+            "text": "So the letters are merely placeholders for ordinary statements."
         },
         {
-            "speaker": "plato",
-            "text": "Precisely. Now, truth is richer than mere identity. We have **conjunction** $A \\land B$ — both things hold together. We have **disjunction** $A \\lor B$ — at least one holds. We have **negation** $\\lnot A$ — the thing is false. And we have the grand **implication** $A \\to B$ — if $A$ holds, then $B$ must follow."
+            "speaker": "Plato",
+            "text": "Precisely. Now tell me, how might we prove a statement such as 'If the clouds gather, then it rains'?"
         },
         {
-            "speaker": "aristotle",
-            "text": "And for each connective, there are rules: how to **introduce** it into a proof, and how to **eliminate** it — to use what it asserts."
+            "speaker": "Aristotle",
+            "text": "I cannot simply declare it true. I must somehow test the connection."
         },
         {
-            "speaker": "plato",
-            "text": "Yes! The [introduction rule|introduction rule] tells us how to **build** a formula. The [elimination rule|elimination rule] tells us how to **use** a formula we already have. This is the heart of [natural deduction|natural deduction]."
+            "speaker": "Plato",
+            "text": "Exactly. We perform a thought experiment. We temporarily pretend that the clouds have gathered."
         },
         {
-            "speaker": "aristotle",
-            "text": "So a proof is a tree of these rule applications, each step justified by the steps before it?"
+            "speaker": "Aristotle",
+            "text": "Even if I do not know whether they actually have?"
         },
         {
-            "speaker": "plato",
-            "text": "Exactly. And here, you will write your proofs as **s-expressions** — commands like `(assume I)` or `(->-intro I 1)`. The machine will check each step. Now, shall we begin?"
+            "speaker": "Plato",
+            "text": "Yes. Such a temporary belief is called an **[assume|assumption]**. Inside our thought experiment, we may use it freely."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "A sandbox for reasoning! Outside the sandbox, the assumption disappears."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Just so. Now suppose that, using our assumption, we eventually prove that it is raining."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Then we have shown that whenever the clouds gather, rain follows."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Exactly. Such a statement is called an **[implication|implication]**, written $A \\to B$, and read 'if $A$, then $B$.'"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And because the experiment is finished, we **[discharge|discharge]** the temporary assumption."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Correct. A proof always keeps track of which assumptions are currently active."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Our proofs have become rather cluttered. We keep saying 'under these assumptions, we have proved this conclusion.' "
+        },
+        {
+            "speaker": "Plato",
+            "text": "Perhaps we should invent a concise notation."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "A kind of shorthand? Mathematicians are rather fond of those."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Indeed. Let us separate the assumptions from the conclusion with a symbol. This little mark, $\\vdash$, is called the **[turnstile|judgement turnstile]**."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So everything to the left of the turnstile is what we are temporarily assuming, and everything to the right is what we have successfully proved."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. We call the collection of active assumptions the context, traditionally written as $\\Gamma$. Thus, $\\Gamma \\vdash P$ simply means: 'from the assumptions in $\\Gamma$, we have proved $P$.'"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "It is less a statement about the world than a record of the current state of our proof."
+        },
+        {
+            "speaker": "Plato",
+            "text": "A beautiful observation. Logic is not merely a catalogue of truths; it is a disciplined record of **how** we arrive at them."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So every proof is like a carefully kept journal, never forgetting which assumptions it has borrowed and which it has already returned."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. Once we understand how to reason about a single proposition, we may ask a richer question."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Can propositions themselves be combined into larger ones?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Indeed they can. Let us begin with the simplest combination imaginable: 'and.' Suppose I claim, 'It is sunny **and** warm.'"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Both parts must be true together, like two horses pulling the same chariot."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Exactly. This is called a **[conjunction|conjunction]**, written $A \\land B$. To prove a conjunction, you must prove both parts. Once you possess one, you may use either half whenever you wish."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So proving both gives me the pair, and owning the pair lets me separate them again."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Now imagine I say, 'The treasure is in the cave **or** beneath the old oak.'"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Only one location needs to be correct."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. This is a **[disjunction|disjunction]**, written $A \\lor B$. If you already know $A$, then you certainly know '$A$ or $B$.'"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "But if all I know is '$A$ or $B$', I do not know which one reality chose."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Then you open two thought experiments. In one, assume $A$. In the other, assume $B$. If both paths reach the same conclusion, then the conclusion is true no matter which possibility was real."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Two separate journeys leading to the same destination."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Exactly."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Now consider denial. Suppose someone claims a proposition is impossible. How might we prove that?"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Perhaps by pretending it is true, and seeing whether everything falls apart?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "An excellent strategy. We temporarily assume $A$, and if that assumption inevitably leads to a contradiction, then $A$ cannot be true."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And this denial is called **[negation|negation]**, written $\\lnot A$."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Indeed."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "But how do we write a contradiction itself?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "We use the symbol **[bottom|bottom]**, written $\\bot$. It represents the impossible—the point where our reasoning has broken reality."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And once reality has broken?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Then nothing can be trusted. From a contradiction, every statement becomes provable. This is known as the principle of explosion."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Curious! Is there also a symbol for something that is always true?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "There is. We call it **[top|top]**, written $\\top$. Unlike every other proposition, it requires no proof at all. You may introduce it whenever you wish."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So we have learned the language of logic. But how shall we speak to the machine?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Machines are rather poor at reading mathematics written for humans. They prefer every expression to have exactly the same shape."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Like building everything out of identical wooden blocks?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. We represent every expression as a tree made of nested lists. Such a notation is called an **[s-expression|sexpr]**."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "A tree? Then each pair of parentheses is like a branch containing smaller branches."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Exactly. We also place the operation before its arguments. This style is called **[prefix notation|prefix]**."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Humans usually write $A \\land B$, but the machine prefers `(and A B)` because the operation comes first."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Just so. Likewise, an implication becomes `(-> A B)`, a negation becomes `(not A)`, and the constants are simply `top` and `bot`."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And our proof commands follow the same pattern?"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Indeed. To begin a thought experiment, we write `(assume A)`. To close it and build an implication, we might write `(->-intro A 3)`, referring to the assumption we are discharging."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Every instruction is simply another little tree for the machine to inspect."
+        },
+        {
+            "speaker": "Plato",
+            "text": "Exactly. Once you learn to think in these trees, the machine can verify every step of your reasoning with perfect mathematical certainty."
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Then let us begin our first proof."
         }
     ]
 }

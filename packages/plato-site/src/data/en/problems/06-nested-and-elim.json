@@ -1,0 +1,30 @@
+{
+    "description": "Truths within truths are still truths.",
+    "goal": "(-> (and (and A B) C) B)",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "The goal is $(A \\land B) \\land C \\to B$. $B$ is buried two layers deep inside a nested [conjunction|conjunction]. Start by assuming everything on the left side.",
+            "tactic": null
+        },
+        {
+            "text": "Assume the nested [conjunction|conjunction] $(A \\land B) \\land C$.",
+            "tactic": "(assume (and (and A B) C))"
+        },
+        {
+            "text": "First, peel off the outer layer with `and-elim-l`. This gives you $A \\land B$ — the inner [conjunction|conjunction].",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Now the inner layer. You want $B$, which is the **right** half of $A \\land B$. Use `and-elim-r` on your new step.",
+            "tactic": "(and-elim-r 2)"
+        },
+        {
+            "text": "$B$ is reached. Discharge the original [assumption|assumption] to get the [implication|implication].",
+            "tactic": "(->-intro (and (and A B) C) 3)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

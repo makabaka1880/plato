@@ -8,7 +8,7 @@ const { t } = useI18n()
     <div class="app">
         <div class="main">
             <router-view v-slot="{ Component, route }">
-                <Transition name="page" mode="out-in">
+                <Transition name="page">
                     <component :is="Component" :key="route.fullPath" />
                 </Transition>
             </router-view>

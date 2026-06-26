@@ -1,0 +1,50 @@
+{
+    "description": "城门失火，殃及池鱼。",
+    "goal": "(-> (and (not A) (not (not A))) B)",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "目标：$\\lnot A \\to (A \\to B)$。如果 $A$ 是假的，那 $A$ 就能推出任何东西。这跟我们之前在 18 和 19 题见过的道理是一样的——现在靠自己推一遍。",
+            "tactic": null
+        },
+        {
+            "text": "假设 $\\lnot A$（即 $A$ 是假的）。再假设 $A$。现在 [context|上下文] 是矛盾的——你同时有 $A$ 和 $\\lnot A$。",
+            "tactic": "(assume (and (not A) (not (not A))))"
+        },
+        {
+            "text": "在 $\\lnot A$ 上使用 `not-elim`，把它变成 $A \\to \\bot$。\"非 $A$\"的真面目：其实是一个\"从 $A$ 爆到矛盾\"的承诺。",
+            "tactic": null
+        },
+        {
+            "text": "用 `->-elim`：从 $A \\to \\bot$（步骤 3）和 $A$（步骤 2），推出 $\\bot$。你手里攥着[contradiction|矛盾]了。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "从 $\\bot$ 用 `ex-falso` 推出 $B$。$B$ 可以是任何公式——但恰好也是我们的目标。",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "逐个消去假设：先用 `->-intro` 消 $A$，再消 $\\lnot A$。",
+            "tactic": "(not-elim 2)"
+        },
+        {
+            "text": "现在你有了 $A \\to \\bot$ 和 $A$。[modus-ponens|肯定前件] 给出 $\\bot$。",
+            "tactic": "(dne 3)"
+        },
+        {
+            "text": "你走到了 $\\bot$。从 $\\bot$ 出发，`ex-falso` 让你拿到**任何** [formula|公式]——包括 $B$。",
+            "tactic": "(->-elim 4 5)"
+        },
+        {
+            "text": "消去最初的 [assumption|假设] 就结束了。这个证明体现了\"矛盾传递律\"：假命题可以通过矛盾链推出任何东西。",
+            "tactic": "(ex-falso 6 B)"
+        },
+        {
+            "text": "Discharge the original [assumption|assumption] and you're done.",
+            "tactic": "(->-intro (and (not A) (not (not A))) 7)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

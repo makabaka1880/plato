@@ -1,0 +1,41 @@
+{
+    "description": "Some truths follow others. Let one follow.",
+    "goal": "B",
+    "premise": [
+        "A",
+        "(-> A B)"
+    ],
+    "guides": [
+        {
+            "text": "We're given two things: $A$ is true, and $A \\to B$ is true. Our goal is to reach $B$, with no extra fluff. This is as direct as reasoning gets.",
+            "tactic": null
+        },
+        {
+            "text": "First, bring the [premise|premise] $A$ into the [context|context]. If the world tells you it's true, you may as well write it down.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "Now bring in the second [premise|premise]: $A \\to B$. This says that whenever $A$ holds, $B$ follows.",
+            "tactic": "(assume (-> A B))"
+        },
+        {
+            "text": "You have $A \\to B$ at step 2 and $A$ at step 1. The rule `->-elim` — also known as **[modus-ponens|modus ponens]** — says: if you know an [implication|implication] and you also know its left-hand side, you get the right-hand side. Apply it now.",
+            "tactic": "(->-elim 2 1)"
+        },
+        {
+            "text": "And $B$ is yours. The proof ends here — no [implication|implication] to [discharge|discharge], because the [premise|premises] were given, not assumed for the sake of argument. Just a clean [conclusion|conclusion].",
+            "tactic": null
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        {
+            "name": "→-elim",
+            "rule": "\\frac{\\Gamma \\vdash p \\to q \\quad \\Delta \\vdash p}{\\Gamma \\cup \\Delta \\vdash q}",
+            "description": "If $p$ implies $q$, and you have $p$, then you have $q$. The classic syllogism — *modus ponens*.",
+            "syntax": "(->-elim N M)",
+            "example": "1. (assume P)  →  {P} ⊢ P\n2. P → Q provided as premise\n3. (->-elim 2 1) → Q"
+        }
+    ],
+    "logicMode": "fol"
+}

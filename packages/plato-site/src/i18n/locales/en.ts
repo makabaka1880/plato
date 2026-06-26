@@ -12,7 +12,9 @@ export default {
     home: {
         title: '? ⊢ Plato',
         continue: 'Continue',
+        begin: 'Begin Your Journey →',
         startFresh: '→ Start Fresh',
+        allDone: 'All problems solved. Well done!',
         customProblem: '→ Go custom',
         contribute: 'Contribute',
         about: 'About',
@@ -107,6 +109,9 @@ export default {
 
         notations: {
             typingSymbols: 'Typing Symbols',
+            axiomSetTitle: 'Axiom Set',
+            axiomSetPL: '<b>Propositional Logic (PL)</b> — You may use propositional connectives (¬, ∧, ∨, →, ⊤, ⊥) and, in the modal section, modal operators (□, ◇). Quantifiers (∀, ∃) and predicate application (App) are disabled.',
+            axiomSetFOL: '<b>First-Order Logic (FOL)</b> — All propositional connectives plus quantifiers (∀, ∃), predicate application (App), and term variables (fix). Modal operators (□, ◇) are disabled.',
             formulaSyntax: 'Formula Syntax',
             variablesTerms: 'Variables &amp; Terms',
             syntaxIntro: 'Formulas use <b>s-expression</b> (prefix) notation. Each connective wraps its sub-formulas in parentheses.',
@@ -171,8 +176,8 @@ export default {
     discovery: {
         skip: 'Skip',
         begin: 'Begin',
+        play: 'Discovery',
         replay: 'Replay',
-        plato: 'Plato',
-        aristotle: 'Aristotle',
+        tapToContinue: 'Tap To Continue'
     },
 }

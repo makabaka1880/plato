@@ -1,4 +1,4 @@
-import { ref, onMounted, computed, type Ref, type ComputedRef } from 'vue'
+import { ref, watch, onMounted, computed, type Ref, type ComputedRef } from 'vue'
 
 interface Entry {
   cmd: string
@@ -20,7 +20,7 @@ async function ensureWasm() {
   }
 }
 
-export function useProofSession(goal?: Ref<string | undefined>) {
+export function useProofSession(logicMode?: Ref<'fol' | 'pl'>, goal?: Ref<string | undefined>) {
   const ready = ref(false)
   const input = ref('')
   const entries = ref<Entry[]>([])
@@ -32,7 +32,6 @@ export function useProofSession(goal?: Ref<string | undefined>) {
   }
 
   function run(expr: string): { result: string; step: number | null } {
-    // Parse metadata first (before execution, in case of errors)
     let meta: Entry['meta'] = null
     try {
       const rawMeta = session.parse_meta(expr)
@@ -50,7 +49,6 @@ export function useProofSession(goal?: Ref<string | undefined>) {
       const error = result.startsWith('Error:')
       const addedStep = session.len() > prevLen
       const step = !error && addedStep ? ++stepCount : null
-      // Patch the conclusion formula into meta after successful execution
       if (step !== null && meta) {
         const concl = session.stepFormulaLatex(step)
         if (concl) meta.params.conclusion = concl
@@ -74,6 +72,9 @@ export function useProofSession(goal?: Ref<string | undefined>) {
     stepCount = 0
     session.free()
     session = new SessionClass()
+    if (logicMode) {
+      session.setMode(logicMode.value)
+    }
   }
 
   function insertTactic(tactic: string) {
@@ -91,8 +92,18 @@ export function useProofSession(goal?: Ref<string | undefined>) {
     session = new (SessionClass as any)()
     SessionClassRef.value = SessionClass
     sessionRef.value = session
+    if (logicMode) {
+      session.setMode(logicMode.value)
+    }
     ready.value = true
   })
+
+  // Sync logic mode with WASM session on toggle
+  if (logicMode) {
+    watch(logicMode, (mode) => {
+      session?.setMode(mode)
+    })
+  }
 
   return {
     ready, input, entries,

@@ -1,0 +1,50 @@
+{
+    "description": "If A leads to B and B leads to C, then A leads to C.",
+    "goal": "(-> (and (-> A B) (-> B C)) (-> A C))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "This is the **hypothetical syllogism**: transitivity of [implication|implication]. Given $A \\to B$ and $B \\to C$, you can chain them to get $A \\to C$. Start by assuming the [conjunction|conjunction] of the two [premise|premises].",
+            "tactic": null
+        },
+        {
+            "text": "Assume both [premise|premises] together.",
+            "tactic": "(assume (and (-> A B) (-> B C)))"
+        },
+        {
+            "text": "Split the [conjunction|conjunction] into its two halves with `and-elim-l` and `and-elim-r`.",
+            "tactic": null
+        },
+        {
+            "text": "Extract $A \\to B$ from the left side.",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "Extract $B \\to C$ from the right side.",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "You have a chain ready. Now you need to prove $A \\to C$, which means: assume $A$ and reach $C$. Start by assuming $A$.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "Use [modus-ponens|modus ponens] on $A \\to B$ (step 2) and your fresh $A$ (step 4) to get $B$.",
+            "tactic": "(->-elim 2 4)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens] again with $B \\to C$ (step 3) and your newly-derived $B$ (step 5) to reach $C$.",
+            "tactic": "(->-elim 3 5)"
+        },
+        {
+            "text": "[assumption|Discharge] $A$ to get $A \\to C$.",
+            "tactic": "(->-intro A 6)"
+        },
+        {
+            "text": "[assumption|Discharge] the [conjunction|conjunction] to finish.",
+            "tactic": "(->-intro (and (-> A B) (-> B C)) 7)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

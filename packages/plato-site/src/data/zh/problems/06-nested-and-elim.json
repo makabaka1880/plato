@@ -1,0 +1,30 @@
+{
+    "description": "包子有肉，不在褶上。",
+    "goal": "(-> (and (and A B) C) B)",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "目标：$(A \\land B) \\land C \\to B$。合取可以嵌套——一个箱子里面又装了一个箱子。不过别怕，用消除规则一层一层剥开就行。",
+            "tactic": null
+        },
+        {
+            "text": "先 [assumption|假设] $(A \\land B) \\land C$。你现在拿着一个\"包装过的包裹\"。",
+            "tactic": "(assume (and (and A B) C))"
+        },
+        {
+            "text": "用 `and-elim-l` 拆开外层[conjunction|合取]，取左半——你会得到 $A \\land B$。外包装已经拆掉了。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "$A \\land B$ 本身还是个[conjunction|合取]——再用一次 `and-elim-r`，取出右边的 $B$。两层拆完。",
+            "tactic": "(and-elim-r 2)"
+        },
+        {
+            "text": "两次消除，再一个 [implication|蕴含引入]。证毕。",
+            "tactic": "(->-intro (and (and A B) C) 3)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

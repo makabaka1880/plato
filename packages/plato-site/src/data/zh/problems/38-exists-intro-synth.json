@@ -1,0 +1,26 @@
+{
+    "description": "眼见为实。",
+    "goal": "(-> (App Q b) (exists y (App Q y)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "目标：$P(a) \\to \\exists x.\\; P(x)$。有具体例子就有存在——这是一阶逻辑中最自然的推理。\"苏格拉底是人\"→\"存在至少一个人\"。",
+            "tactic": null
+        },
+        {
+            "text": "[assumption|假设] $P(a)$。然后直接推出 $\\exists x.\\; P(x)$。一招就够了——`exists-intro`。",
+            "tactic": "(assume (App Q b))"
+        },
+        {
+            "text": "`exists-intro` 的参数：步骤号（证明 $P(a)$ 的那一步）、见证项（$a$）、和新变量名（$x$）。\"这个东西满足 $P$，所以存在某个东西满足 $P$\"。",
+            "tactic": "(exists-intro 1 b y)"
+        },
+        {
+            "text": "消去 $a$ 就算完成。两步。存在引入是逻辑界最干脆的规则——你只需要一个具体的例子。",
+            "tactic": "(->-intro (App Q b) 2)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

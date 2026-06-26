@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useTacticsStore } from '@/stores/tactics'
 import { loadGlossary, type GlossaryEntry } from '@/data'
 import Katex from './Katex.vue'
+import InlineLatex from './InlineLatex.vue'
 
 const props = defineProps<{
     glossaryTerm?: string
@@ -288,6 +289,16 @@ onMounted(async () => {
                         <p v-html="t('help.notations.predApp')" style="margin-top: 6px;"></p>
                     </div>
                 </div>
+
+                <div class="group">
+                    <div class="group-label">{{ t('help.notations.axiomSetTitle') }}</div>
+                    <div class="gloss-entry">
+                        <!-- eslint-disable-next-line vue/no-v-html -->
+                        <p v-html="t('help.notations.axiomSetPL')"></p>
+                        <!-- eslint-disable-next-line vue/no-v-html -->
+                        <p v-html="t('help.notations.axiomSetFOL')" style="margin-top: 6px;"></p>
+                    </div>
+                </div>
             </div>
 
             <!-- ═══ Glossary tab ═══ -->
@@ -301,8 +312,8 @@ onMounted(async () => {
                     <div v-for="entry in entries" :key="entry.id" :data-glossary-id="entry.id"
                         :class="['gloss-entry', { 'gloss-flash': targetedTerm === entry.id }]">
                         <div class="gloss-term">{{ entry.term }}</div>
-                        <div class="gloss-intuitive">{{ entry.intuitive }}</div>
-                        <div class="gloss-def">{{ entry.definition }}</div>
+                        <div class="gloss-intuitive"><InlineLatex :text="entry.intuitive" /></div>
+                        <div class="gloss-def"><InlineLatex :text="entry.definition" /></div>
                     </div>
                 </div>
             </div>

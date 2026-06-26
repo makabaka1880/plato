@@ -1,0 +1,50 @@
+{
+    "description": "一箭双雕。",
+    "goal": "(-> (and (-> A B) (-> A C)) (-> A (and B C)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "若 $A$ [implication|蕴含] $B$ 且 $A$ 也蕴含 $C$，则 $A$ 蕴含[conjunction|合取] $B \\land C$。同一张弓射出两支箭——双双命中。先假设那一对[implication|蕴含]。",
+            "tactic": null
+        },
+        {
+            "text": "假设 $(A \\to B) \\land (A \\to C)$。",
+            "tactic": "(assume (and (-> A B) (-> A C)))"
+        },
+        {
+            "text": "取出第一支箭：$A \\to B$。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "取出第二支箭：$A \\to C$。",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "现在证明 $A \\to B \\land C$。假设 $A$——拉开弓。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "[modus-ponens|蕴含消去]：$A \\to B$（第2步）和 $A$（第4步）——第一靶命中：$B$。",
+            "tactic": "(->-elim 2 4)"
+        },
+        {
+            "text": "[modus-ponens|蕴含消去]：$A \\to C$（第3步）和 $A$（第4步）——第二靶命中：$C$。",
+            "tactic": "(->-elim 3 4)"
+        },
+        {
+            "text": "用 `and-intro` 把 $B$ 和 $C$ 收进同一个箭袋。",
+            "tactic": "(and-intro 5 6)"
+        },
+        {
+            "text": "[discharge|消去] $A$，形成 $A \\to B \\land C$。",
+            "tactic": "(->-intro A 7)"
+        },
+        {
+            "text": "[discharge|消去]最初那对[implication|蕴含]。一箭双雕，不在话下。",
+            "tactic": "(->-intro (and (-> A B) (-> A C)) 8)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

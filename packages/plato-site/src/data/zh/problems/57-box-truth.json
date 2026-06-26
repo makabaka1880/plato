@@ -1,0 +1,26 @@
+{
+    "description": "真理是必然为真的。",
+    "goal": "(box T)",
+    "premise": [],
+    "guides": [
+        {
+            "text": "真理（⊤）永远可证。因为它不需要任何假设，我们可以用 NEC 给它加上必然算子：必然的真理仍然是真理。",
+            "tactic": null
+        },
+        {
+            "text": "先证明 ⊤，用 `top-intro`。上下文是空的——正是 NEC 需要的。",
+            "tactic": "(top-intro)"
+        },
+        {
+            "text": "对第 1 步应用 `box-intro`。上下文必须为空（确实是！），于是我们得到 □⊤。",
+            "tactic": "(box-intro 1)"
+        },
+        {
+            "text": "□⊤——真理是必然的。最简单的模态定理。",
+            "tactic": null
+        }
+    ],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "pl"
+}

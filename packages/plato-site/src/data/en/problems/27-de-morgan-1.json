@@ -1,0 +1,74 @@
+{
+    "description": "The denial of a choice is the conjunction of denials — one half of De Morgan.",
+    "goal": "(-> (not (or A B)) (and (not A) (not B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "This is one direction of **De Morgan's law**: if $A$ or $B$ is false, then $A$ is false and $B$ is false. Start by assuming $\\lnot (A \\lor B)$.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $\\lnot (A \\lor B)$.",
+            "tactic": "(assume (not (or A B)))"
+        },
+        {
+            "text": "You'll prove $\\lnot A$ and $\\lnot B$ separately and combine them. The rule `not-intro` needs two subproofs that share the [formula|formula] to be negated and reach contradictory [conclusion|conclusions]. To prove $\\lnot A$, assume $A$ first.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "Bring $\\lnot (A \\lor B)$ (step 1) and your new $A$ (step 2) together with `and-intro` so both subproofs will have $A$ in their [context|context] and share $\\lnot (A \\lor B)$.",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "Now construct the two subproofs. Subproof A (the one that proves the negated version): extract $\\lnot (A \\lor B)$ from the right side of the [conjunction|conjunction] with `and-elim-r`.",
+            "tactic": "(and-elim-r 3)"
+        },
+        {
+            "text": "Subproof B (the positive version): extract $A$, then form $A \\lor B$.",
+            "tactic": "(and-elim-l 3)"
+        },
+        {
+            "text": "Form $A \\lor B$ from the $A$ you just extracted.",
+            "tactic": "(or-intro-l 5 B)"
+        },
+        {
+            "text": "Steps 4 and 6 both have $A$ in their contexts and prove $\\lnot (A \\lor B)$ and $A \\lor B$ respectively — a perfect [contradiction|contradiction]. Use `not-intro A` to get $\\lnot A$.",
+            "tactic": "(not-intro A 6 4)"
+        },
+        {
+            "text": "$\\lnot A$ is done. Now the mirror for $\\lnot B$: assume $B$.",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "Merge $B$ with $\\lnot (A \\lor B)$.",
+            "tactic": "(and-intro 1 8)"
+        },
+        {
+            "text": "Extract $\\lnot (A \\lor B)$ — the negated-subproof half.",
+            "tactic": "(and-elim-r 9)"
+        },
+        {
+            "text": "Extract $B$ — the positive-subproof half.",
+            "tactic": "(and-elim-l 9)"
+        },
+        {
+            "text": "Form $A \\lor B$ from $B$ using `or-intro-r`.",
+            "tactic": "(or-intro-r 11 A)"
+        },
+        {
+            "text": "With $\\lnot (A \\lor B)$ at step 10 and $A \\lor B$ at step 12, both sharing $B$ in [context|context], use `not-intro B`.",
+            "tactic": "(not-intro B 12 10)"
+        },
+        {
+            "text": "Combine both negations: $\\lnot A$ (step 7) and $\\lnot B$ (step 13).",
+            "tactic": "(and-intro 7 13)"
+        },
+        {
+            "text": "Discharge the original [assumption|assumption].",
+            "tactic": "(->-intro (not (or A B)) 14)"
+        }
+    ],
+    "unlocks": [],
+    "logicMode": "fol"
+}

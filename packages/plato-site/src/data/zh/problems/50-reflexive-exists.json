@@ -1,0 +1,30 @@
+{
+    "description": "如果每个事物都与自身相关，那么就存在某个与自身相关的事物。",
+    "goal": "(-> (forall x (App (App R x) x)) (exists y (App (App R y) y)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "**自反**关系是指每个元素都与自身相关：对所有 $x$，$R(x,x)$。例如：'和……一样高'、'至少和……一样年长'。目标平凡但发人深省：如果一切都是自相关的，那么就存在某个自相关的事物。从 $\\forall$ 到 $\\exists$。",
+            "tactic": null
+        },
+        {
+            "text": "假设自反性：每个事物都与自身 $R$-相关。注意二元 [predicate|谓词] 的语法：`(App (App R x) x)`——同一个项 $x$ 出现在两个参数位置。",
+            "tactic": "(assume (forall x (App (App R x) x)))"
+        },
+        {
+            "text": "用 `forall-elim` 实例化到一个具体的项 $a$。如果每个事物都与自身 $R$-相关，那么 $a$ 与 $a$ $R$-相关。选任意你喜欢的 [term|项]。",
+            "tactic": "(forall-elim 1 a)"
+        },
+        {
+            "text": "从具体示例 $R(a,a)$，用 `exists-intro` [existential-generalisation|存在推广]：将 [term|项] $a$ 替换为 [bound-variable|约束变量] $y$，得到 $\\exists y.\\; R(y,y)$。见证是 $a$，变量是 $y$。",
+            "tactic": "(exists-intro 2 a y)"
+        },
+        {
+            "text": "[discharge|消去] 自反性假设，完成 [implication|蕴含]。",
+            "tactic": "(->-intro (forall x (App (App R x) x)) 3)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [],
+    "logicMode": "fol"
+}
