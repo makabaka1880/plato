@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
+import katex from 'katex'
 import NavBar from '@/components/NavBar.vue'
 import PreferenceModal from '@/components/PreferenceModal.vue'
 import HelpModal from '@/components/HelpModal.vue'
@@ -23,8 +24,28 @@ function loadContent(loc: string): string {
     return aboutModules['../data/en/ABOUT.md']!.default
 }
 
+function renderTex(html: string): string {
+    // Render $$...$$ (display math), then $...$ (inline math)
+    return html
+        .replace(/\$\$([^$]+)\$\$/g, (_, expr) => {
+            try {
+                return katex.renderToString(expr.trim(), { displayMode: true, throwOnError: false })
+            } catch {
+                return `<code>${expr}</code>`
+            }
+        })
+        .replace(/\$([^$]+)\$/g, (_, expr) => {
+            try {
+                return katex.renderToString(expr.trim(), { displayMode: false, throwOnError: false })
+            } catch {
+                return `<code>${expr}</code>`
+            }
+        })
+}
+
 function parse(md: string): string {
-    return marked.parse(md, { async: false }) as string
+    const raw = marked.parse(md, { async: false }) as string
+    return renderTex(raw)
 }
 
 const html = ref(parse(loadContent(locale.value)))
