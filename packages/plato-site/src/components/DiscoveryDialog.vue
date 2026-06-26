@@ -164,29 +164,35 @@ function onKeydown(e: KeyboardEvent) {
         </div>
 
         <div class="stage">
-            <div class="stage-spacer"></div>
+            <!-- Flanking buttons: shown above/below card on narrow screens -->
+            <button class="nav-btn nav-flank nav-flank-top" :disabled="currentIdx <= 0" @click.stop="goPrev" title="Previous">▲</button>
 
-            <Transition name="card-fade" mode="out-in">
-                <div
-                    v-if="currentLine"
-                    :key="currentIdx"
-                    class="card"
-                    :style="{ backgroundColor: speakerBgColor(currentLine.speaker) }"
-                >
-                    <div class="card-speaker" :style="{ color: speakerColor(currentLine.speaker) }">
-                        {{ currentLine.speaker }}
+            <div class="stage-inner">
+                <Transition name="card-fade" mode="out-in">
+                    <div
+                        v-if="currentLine"
+                        :key="currentIdx"
+                        class="card"
+                        :style="{ backgroundColor: speakerBgColor(currentLine.speaker) }"
+                    >
+                        <div class="card-speaker" :style="{ color: speakerColor(currentLine.speaker) }">
+                            {{ currentLine.speaker }}
+                        </div>
+                        <div class="card-body">
+                            <InlineLatex :text="displayText" @glossary-click="onGlossaryClick" />
+                            <span v-if="isTyping" class="cursor">|</span>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <InlineLatex :text="displayText" @glossary-click="onGlossaryClick" />
-                        <span v-if="isTyping" class="cursor">|</span>
-                    </div>
+                </Transition>
+
+                <!-- Side buttons: shown to the right of card on desktop -->
+                <div class="card-nav">
+                    <button class="nav-btn nav-side" :disabled="currentIdx <= 0" @click.stop="goPrev" title="Previous">▲</button>
+                    <button class="nav-btn nav-side" :disabled="currentIdx >= total - 1" @click.stop="advance" title="Next">▼</button>
                 </div>
-            </Transition>
-
-            <div class="card-nav">
-                <button class="nav-btn" :disabled="currentIdx <= 0" @click.stop="goPrev" title="Previous">▲</button>
-                <button class="nav-btn" :disabled="currentIdx >= total - 1" @click.stop="advance" title="Next">▼</button>
             </div>
+
+            <button class="nav-btn nav-flank nav-flank-bot" :disabled="currentIdx >= total - 1" @click.stop="advance" title="Next">▼</button>
         </div>
 
         <div class="bottom-bar">
@@ -223,10 +229,13 @@ function onKeydown(e: KeyboardEvent) {
 
 // ── Stage ────────────────────────────────────────────────────
 .stage {
-    flex: 1; display: flex; align-items: center; justify-content: center;
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0;
+}
+.stage-inner {
+    display: flex; flex-direction: row; align-items: center; justify-content: center;
     gap: 12px;
 }
-.stage-spacer { width: 36px; flex-shrink: 0; }
 .card {
     width: 520px; flex-shrink: 0; border: 1px solid var(--color-border);
     border-radius: 8px; padding: 16px 22px;
@@ -237,18 +246,41 @@ function onKeydown(e: KeyboardEvent) {
 }
 .card-body { font-size: 15px; line-height: 1.65; color: var(--color-fg); }
 
-// ── Card nav buttons ──────────────────────────────────────────
+// ── Side buttons (desktop: right of card) ─────────────────────
 .card-nav {
     display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
 }
-.nav-btn {
-    font-family: inherit; font-size: 12px; width: 30px; height: 30px; cursor: pointer;
+.nav-side {
+    width: 30px; height: 30px; border-radius: 100%;
+    font-family: inherit; font-size: 12px; cursor: pointer;
     background: var(--color-subtle-bg); border: 1px solid var(--color-border);
-    border-radius: 100%; color: var(--color-muted);
+    color: var(--color-muted);
     display: flex; align-items: center; justify-content: center;
     transition: border-color 0.15s, color 0.15s;
     &:hover:not(:disabled) { border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
     &:disabled { opacity: 0.25; cursor: not-allowed; }
+}
+
+// ── Flank buttons (narrow: above / below card) ─────────────────
+.nav-flank { display: none; }
+
+@media (max-width: 620px) {
+    .discovery-dialog { padding: 16px 16px; }
+    .stage-inner { gap: 0; }
+    .card-nav { display: none; }
+    .card { width: 100%; flex-shrink: 1; }
+    .nav-flank {
+        display: flex; align-items: center; justify-content: center;
+        width: 30px; height: 30px; border-radius: 100%;
+        font-family: inherit; font-size: 12px; cursor: pointer;
+        background: var(--color-subtle-bg); border: 1px solid var(--color-border);
+        color: var(--color-muted); flex-shrink: 0;
+        transition: border-color 0.15s, color 0.15s;
+        &:hover:not(:disabled) { border-color: var(--color-primary-hover); color: var(--color-primary-hover); }
+        &:disabled { opacity: 0.25; cursor: not-allowed; }
+    }
+    .nav-flank-top { margin-bottom: 8px; }
+    .nav-flank-bot { margin-top: 8px; }
 }
 
 // ── Typewriter cursor ─────────────────────────────────────────

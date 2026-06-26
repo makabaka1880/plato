@@ -42,11 +42,11 @@ function goContinue() {
 
 <style lang="scss" scoped>
 .root { display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; }
-.card { text-align: center; }
-.title { font-size: 36px; font-weight: 400; letter-spacing: -0.02em; color: var(--color-muted); margin-bottom: 8px; }
-.sub { font-size: 15px; color: var(--color-muted); margin: 0 0 8px; }
+.card { text-align: center; max-width: 420px; width: 90vw; }
+.title { font-size: clamp(24px, 8vw, 36px); font-weight: 400; letter-spacing: -0.02em; color: var(--color-muted); margin-bottom: 8px; }
+.sub { font-size: 14px; color: var(--color-muted); margin: 0 0 8px; }
 .hint { font-size: 13px; color: var(--color-border-strong); margin: 0 0 24px; }
-.actions { display: flex; gap: 8px; justify-content: center; margin-top: 24px; }
+.actions { display: flex; gap: 8px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
 
 .home-btn {
   font-family: inherit; font-size: 14px; padding: 8px 24px; cursor: pointer;

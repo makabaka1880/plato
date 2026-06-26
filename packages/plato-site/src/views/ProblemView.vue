@@ -202,6 +202,8 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
             <PreferenceModal v-if="prefsOpen" @close="prefsOpen = false" />
 
             <div class="body">
+                <button @click="goPrev" :disabled="!hasPrev" class="nav-btn nav-btn-top">{{ t('problem.prev') }}</button>
+
                 <Transition name="fade-up">
                     <div v-if="!agreed" class="prompt">
                         <div class="prove-label">{{ t('problem.makeMeBelieve') }}</div>
@@ -260,10 +262,12 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
                         </div>
                     </div>
                 </Transition>
+
+                <button @click="goNext" :disabled="!hasNext" class="nav-btn nav-btn-bot">{{ t('problem.next') }}</button>
             </div>
 
             <div class="footer">
-                <button @click="goPrev" :disabled="!hasPrev" class="nav-btn">{{ t('problem.prev') }}</button>
+                <button @click="goPrev" :disabled="!hasPrev" class="nav-btn nav-btn-ft">{{ t('problem.prev') }}</button>
                 <div class="footer-roadmap" @click="roadmapOpen = true">
                     <div class="mini-track">
                         <div
@@ -276,7 +280,7 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
                         </div>
                     </div>
                 </div>
-                <button @click="goNext" :disabled="!hasNext" class="nav-btn">{{ t('problem.next') }}</button>
+                <button @click="goNext" :disabled="!hasNext" class="nav-btn nav-btn-ft">{{ t('problem.next') }}</button>
             </div>
         </div>
 
@@ -305,6 +309,17 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
   &:hover { opacity: 0.7; }
 }
 .nav-btn { padding: 4px 12px; font-family: inherit; font-size: 13px; cursor: pointer; }
+
+// Flanking buttons — hidden on desktop, shown flanking the card on narrow
+.nav-btn-top, .nav-btn-bot { display: none; flex-shrink: 0; }
+
+@media (max-width: 500px) {
+  .nav-btn-top, .nav-btn-bot { display: block; width: 100%; padding: 6px 12px; }
+  .nav-btn-top { margin-bottom: 6px; }
+  .nav-btn-bot { margin-top: 6px; }
+  .nav-btn-ft { display: none; }
+  .footer { justify-content: center; padding: 6px 8px; }
+}
 .mini-track { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
 
 .mini-dot {
@@ -377,4 +392,16 @@ const allowedTactics = computed(() => section.value?.meta.allowedTactics ?? [])
 .fade-in-enter-active { transition: opacity 0.4s ease 0.3s; }
 .fade-in-leave-active { transition: opacity 0.15s ease; }
 .fade-in-enter-from, .fade-in-leave-to { opacity: 0; }
+
+// ── Responsive ────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .goal-chip { display: none; }
+  .prompt { padding: 24px 12px; }
+  .prove-desc { font-size: clamp(17px, 5vw, 24px); }
+  .goal-line { flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .premise-katex { margin-right: 0; }
+  .victory-text { font-size: clamp(22px, 7vw, 36px); }
+  .proof-scroll { width: 94vw; padding: 12px; font-size: 11px; }
+  .victory { padding: 12px 8px; }
+}
 </style>

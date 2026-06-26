@@ -93,4 +93,8 @@ function onSkip() {
     flex: 1;
     overflow: hidden;
 }
+
+@media (max-width: 600px) {
+    .section-chip { display: none; }
+}
 </style>

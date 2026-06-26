@@ -58,9 +58,9 @@ const {
 
 // ── compiled NLG proof ────────────────────────────────────────────
 const proofLines = computed(() =>
-  entries.value
-    .filter(e => e.step !== null && e.meta)
-    .map((e, i) => `${i + 1}. ${nlgText(e.meta!)}`)
+    entries.value
+        .filter(e => e.step !== null && e.meta)
+        .map((e, i) => `${i + 1}. ${nlgText(e.meta!)}`)
 )
 const guideInputDisabled = computed(() =>
     visibleGuide.value !== null && !visibleGuide.value.tactic
@@ -71,8 +71,8 @@ const showHelp = ref(false)
 const glossaryTerm = ref<string | null>(null)
 
 function onGlossaryClick(term: string) {
-  glossaryTerm.value = term
-  showHelp.value = true
+    glossaryTerm.value = term
+    showHelp.value = true
 }
 
 // ── execute ───────────────────────────────────────────────────────
@@ -142,13 +142,13 @@ function reset() {
 
 const { onKeydown: onBracketKeydown } = useBracketPairing(input, inpEl)
 const stepPreviews = computed(() => {
-  const map: Record<string, string> = {}
-  for (const e of entries.value) {
-    if (e.step !== null) {
-      map[String(e.step)] = stepLatex(e.step)
+    const map: Record<string, string> = {}
+    for (const e of entries.value) {
+        if (e.step !== null) {
+            map[String(e.step)] = stepLatex(e.step)
+        }
     }
-  }
-  return map
+    return map
 })
 const allowedTacticsRef = computed(() => props.allowedTactics ?? null)
 const autocomplete = useAutocomplete(input, inpEl, stepPreviews, allowedTacticsRef)
@@ -161,12 +161,12 @@ let savedDraft = ''
 function onKeydown(e: KeyboardEvent) {
     // Autocomplete takes priority when visible
     if (autocomplete.visible.value) {
-      if (['Tab','ArrowUp','ArrowDown','Escape','Enter'].includes(e.key)) {
-        autocomplete.onKeydown(e)
-        if (e.key !== 'Enter') return
-        // Enter: accept suggestion + close dropdown, don't submit
-        if (e.defaultPrevented) return
-      }
+        if (['Tab', 'ArrowUp', 'ArrowDown', 'Escape', 'Enter'].includes(e.key)) {
+            autocomplete.onKeydown(e)
+            if (e.key !== 'Enter') return
+            // Enter: accept suggestion + close dropdown, don't submit
+            if (e.defaultPrevented) return
+        }
     }
     onBracketKeydown(e)
     if (e.key === 'Enter' && !e.defaultPrevented) {
@@ -240,14 +240,14 @@ function insertTactic(tactic: string) {
 const FORMULA_KEYS = new Set(['F', 'conclusion'])
 
 function nlgText(meta: { cmdName: string; params: Record<string, string> }): string {
-  const nlg = loadNlg(locale.value)
-  const tpl = nlg[meta.cmdName]
-  if (!tpl) return ''
-  return tpl.replace(/\{(\w+)\}/g, (_, key: string) => {
-    const val = meta.params[key] ?? `{${key}}`
-    if (FORMULA_KEYS.has(key)) return '$' + val + '$'
-    return val
-  })
+    const nlg = loadNlg(locale.value)
+    const tpl = nlg[meta.cmdName]
+    if (!tpl) return ''
+    return tpl.replace(/\{(\w+)\}/g, (_, key: string) => {
+        const val = meta.params[key] ?? `{${key}}`
+        if (FORMULA_KEYS.has(key)) return '$' + val + '$'
+        return val
+    })
 }
 
 defineExpose({ insertTactic })
@@ -267,7 +267,9 @@ defineExpose({ insertTactic })
             <div v-for="(e, i) in entries" :key="i" class="entry">
                 <div class="entry-row">
                     <div class="cmd">&gt; {{ e.cmd }}</div>
-                    <div v-if="e.meta" class="nlg"><InlineLatex :text="nlgText(e.meta)" @glossary-click="onGlossaryClick" /></div>
+                    <div v-if="e.meta" class="nlg">
+                        <InlineLatex :text="nlgText(e.meta)" @glossary-click="onGlossaryClick" />
+                    </div>
                 </div>
                 <div v-if="e.error" class="err">{{ e.text }}</div>
                 <div v-else-if="e.step !== null" class="step">
@@ -307,164 +309,385 @@ defineExpose({ insertTactic })
         </div>
 
         <div class="input-wrap">
+            <div v-if="liveParse.liveMeta.value" class="live-preview">
+                <span class="live-tag">{{ liveParse.liveMeta.value.cmdName }}</span>
+                <span v-if="liveParse.liveMeta.value.params.F" class="live-param">
+                    <InlineLatex :text="'$F$: $' + liveParse.liveMeta.value.params.F + '$'" />
+                </span>
+                <template v-for="(latex, key) in liveParse.liveMeta.value.stepPreviews" :key="key">
+                    <span class="live-param">
+                        <InlineLatex :text="'$' + key + '$: $' + latex + '$'" />
+                    </span>
+                </template>
+            </div>
+            <div v-else-if="liveParse.parseError.value" class="live-preview live-err">{{ liveParse.parseError.value }}
+            </div>
             <div class="input-row">
                 <div v-if="autocomplete.visible.value" class="ac-dropdown">
-                    <div
-                        v-for="(s, i) in autocomplete.suggestions.value.slice(0, 6)"
-                        :key="s.label"
-                        class="ac-item"
+                    <div v-for="(s, i) in autocomplete.suggestions.value.slice(0, 6)" :key="s.label" class="ac-item"
                         :class="{ active: i === autocomplete.activeIndex.value, kindFormula: s.kind === 'formula', kindStep: s.kind === 'step' }"
-                        @click="autocomplete.activeIndex.value = i; autocomplete.accept()"
-                        @mousedown.prevent
-                    >
+                        @click="autocomplete.activeIndex.value = i; autocomplete.accept()" @mousedown.prevent>
                         <span class="ac-label">{{ s.label }}</span>
-                        <span v-if="s.latex" class="ac-desc"><Katex :expr="s.latex" /></span>
+                        <span v-if="s.latex" class="ac-desc">
+                            <Katex :expr="s.latex" />
+                        </span>
                         <span v-else class="ac-desc">{{ s.description }}</span>
                     </div>
                 </div>
-                <input ref="inpEl" v-model="input" @keydown="onKeydown" @click="autocomplete.dismiss()" :disabled="guideInputDisabled"
-                    :placeholder="visibleGuide?.tactic ?? t('repl.placeholder')" class="repl-input" />
-                <button class="submit-btn" @click="run" :disabled="guideInputDisabled || !!liveParse.parseError.value" :title="t('common.submit')">
+                <input ref="inpEl" v-model="input" @keydown="onKeydown" @click="autocomplete.dismiss()"
+                    :disabled="guideInputDisabled" :placeholder="visibleGuide?.tactic ?? t('repl.placeholder')"
+                    class="repl-input" />
+                <button class="submit-btn" @click="run" :disabled="guideInputDisabled || !!liveParse.parseError.value"
+                    :title="t('common.submit')">
                     →
                 </button>
             </div>
-            <div v-if="liveParse.liveMeta.value" class="live-preview">
-              <span class="live-tag">{{ liveParse.liveMeta.value.cmdName }}</span>
-              <span v-if="liveParse.liveMeta.value.params.F" class="live-param"><InlineLatex :text="'$F$: $' + liveParse.liveMeta.value.params.F + '$'" /></span>
-              <template v-for="(latex, key) in liveParse.liveMeta.value.stepPreviews" :key="key">
-                <span class="live-param"><InlineLatex :text="'$' + key + '$: $' + latex + '$'" /></span>
-              </template>
-            </div>
-            <div v-else-if="liveParse.parseError.value" class="live-preview live-err">{{ liveParse.parseError.value }}</div>
             <div class="help-hint">
-              <i18n-t keypath="repl.helpHint" tag="span">
-                <template #cmd><code>help</code></template>
-              </i18n-t>
+                <i18n-t keypath="repl.helpHint" tag="span">
+                    <template #cmd><code>help</code></template>
+                </i18n-t>
             </div>
         </div>
 
-        <HelpModal v-if="showHelp" :glossary-term="glossaryTerm ?? undefined" :allowed-tactics="props.allowedTactics" @close="showHelp = false; glossaryTerm = null" />
+        <HelpModal v-if="showHelp" :glossary-term="glossaryTerm ?? undefined" :allowed-tactics="props.allowedTactics"
+            @close="showHelp = false; glossaryTerm = null" />
     </div>
 </template>
 
 <style lang="scss" scoped>
-.loading { padding: 32px; font-size: 13px; }
+.loading {
+    padding: 32px;
+    font-size: 13px;
+}
 
-.repl { display: flex; flex-direction: column; height: 100%; font-size: 14px; }
+.repl {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    font-size: 14px;
+}
 
 .goal {
-  text-align: center; flex-shrink: 0;
-  padding: clamp(36px, 8vh, 72px) 20px clamp(12px, 2vh, 20px);
-  font-size: clamp(22px, 3.5vw, 36px);
+    text-align: center;
+    flex-shrink: 0;
+    padding: clamp(36px, 8vh, 72px) 20px clamp(12px, 2vh, 20px);
+    font-size: clamp(22px, 3.5vw, 36px);
 }
-.premise-line { font-size: clamp(14px, 2vw, 18px); color: var(--color-muted); margin-bottom: 6px; }
+
+.premise-line {
+    font-size: clamp(14px, 2vw, 18px);
+    color: var(--color-muted);
+    margin-bottom: 6px;
+}
 
 // ── output area ──────────────────────────────────────────────
 .judgements {
-  flex: 1; overflow-y: auto; min-height: 0;
-  padding: 0 clamp(32px, 12vw, 160px); font-size: 14px; line-height: 1.8;
-  &.raw { font-family: inherit; white-space: pre-wrap; }
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 0 clamp(32px, 12vw, 160px);
+    font-size: 14px;
+    line-height: 1.8;
+
+    &.raw {
+        font-family: inherit;
+        white-space: pre-wrap;
+    }
 }
 
-.entry { padding: 4px 0; }
-.entry-row { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
-.cmd { font-size: 11px; color: #bbb; flex-shrink: 0; }
-.nlg { font-size: 11px; color: var(--color-muted); line-height: 1.55; }
-.step { font-size: 15px; }
-.err { color: var(--color-error); }
-.mid-spacer { flex-shrink: 0; height: clamp(16px, 3vh, 32px); }
+.entry {
+    padding: 4px 0;
+}
+
+.entry-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    align-items: baseline;
+}
+
+.cmd {
+    font-size: 11px;
+    color: #bbb;
+    flex-shrink: 0;
+}
+
+.nlg {
+    font-size: 11px;
+    color: var(--color-muted);
+    line-height: 1.55;
+}
+
+.step {
+    font-size: 15px;
+}
+
+.err {
+    color: var(--color-error);
+}
+
+.mid-spacer {
+    flex-shrink: 0;
+    height: clamp(16px, 3vh, 32px);
+}
 
 // ── guide slot ───────────────────────────────────────────────
 .guide-slot {
-  flex-shrink: 0; display: flex; justify-content: center;
-  padding: 0 clamp(32px, 12vw, 160px);
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0 clamp(32px, 12vw, 160px);
 }
 
 // ── hints ────────────────────────────────────────────────────
-.hint-bar { flex-shrink: 0; padding: 8px clamp(32px, 12vw, 160px) 0; }
-.bulbs { display: flex; gap: 6px; justify-content: center; }
+.hint-bar {
+    flex-shrink: 0;
+    padding: 8px clamp(32px, 12vw, 160px) 0;
+}
+
+.bulbs {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
 
 .bulb {
-  background: none; border: 1px solid var(--color-border-light);
-  border-radius: 100%; font-size: 16px; width: 34px; height: 34px;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  opacity: 0.45; transition: all 0.2s;
-  &:hover { opacity: 0.8; border-color: #aaa; }
-  &.active { opacity: 1; border-color: var(--color-primary-hover); }
-  &.pulse { animation: bulbPulse 1.2s ease-in-out infinite; }
+    background: none;
+    border: 1px solid var(--color-border-light);
+    border-radius: 100%;
+    font-size: 16px;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.45;
+    transition: all 0.2s;
+
+    &:hover {
+        opacity: 0.8;
+        border-color: #aaa;
+    }
+
+    &.active {
+        opacity: 1;
+        border-color: var(--color-primary-hover);
+    }
+
+    &.pulse {
+        animation: bulbPulse 1.2s ease-in-out infinite;
+    }
 }
 
 @keyframes bulbPulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.12); opacity: 0.9; border-color: #888; }
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.12);
+        opacity: 0.9;
+        border-color: #888;
+    }
 }
 
-.hint-cards { margin-top: 8px; display: flex; flex-direction: column; align-items: center; }
+.hint-cards {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 // ── transitions ──────────────────────────────────────────────
-.fade-down-enter-active { transition: all 0.35s ease; }
-.fade-down-leave-active { transition: all 0.2s ease; }
-.fade-down-enter-from { opacity: 0; transform: translateY(-8px); }
-.fade-down-leave-to { opacity: 0; }
+.fade-down-enter-active {
+    transition: all 0.35s ease;
+}
+
+.fade-down-leave-active {
+    transition: all 0.2s ease;
+}
+
+.fade-down-enter-from {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+.fade-down-leave-to {
+    opacity: 0;
+}
 
 // ── input ────────────────────────────────────────────────────
 .input-wrap {
-  flex-shrink: 0; position: relative;
-  padding: clamp(12px, 2vh, 20px) clamp(32px, 12vw, 160px) clamp(40px, 10vh, 80px);
+    flex-shrink: 0;
+    position: relative;
+    padding: clamp(12px, 2vh, 20px) clamp(32px, 12vw, 160px) clamp(40px, 10vh, 80px);
 }
-.input-row { display: flex; align-items: center; gap: 8px; position: relative; }
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
 
 .repl-input {
-  flex: 1; font-family: inherit; font-size: 15px; padding: 6px 0;
-  border: none; border-bottom: 1px solid var(--color-border-strong);
-  outline: none; background: transparent;
-  &:focus { border-bottom-color: var(--color-primary-hover); }
-  &:disabled { opacity: 0.3; cursor: not-allowed; }
+    flex: 1;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 6px 0;
+    border: none;
+    border-bottom: 1px solid var(--color-border-strong);
+    outline: none;
+    background: transparent;
+
+    &:focus {
+        border-bottom-color: var(--color-primary-hover);
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
 }
 
 .submit-btn {
-  background: none; border: 1px solid var(--color-border-light);
-  border-radius: 100%; width: 32px; height: 32px; font-size: 16px;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: var(--color-muted); flex-shrink: 0; transition: all 0.15s;
-  &:hover { border-color: var(--color-primary); color: var(--color-primary); }
-  &:disabled { opacity: 0.2; cursor: not-allowed; }
+    background: none;
+    border: 1px solid var(--color-border-light);
+    border-radius: 100%;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-muted);
+    flex-shrink: 0;
+    transition: all 0.15s;
+
+    &:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    &:disabled {
+        opacity: 0.2;
+        cursor: not-allowed;
+    }
 }
 
 // ── autocomplete dropdown ─────────────────────────────────────
 .ac-dropdown {
-  position: absolute; bottom: 100%; left: 0; right: 0;
-  max-height: 220px; overflow-y: auto; background: var(--color-bg);
-  border: 1px solid var(--color-border); border-radius: 6px 6px 0 0;
-  box-shadow: 0 -4px 16px rgba(0,0,0,0.1); z-index: 10; margin-bottom: 4px;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px 6px 0 0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    margin-bottom: 4px;
 }
+
 .ac-item {
-  display: flex; align-items: baseline; gap: 10px;
-  padding: 6px 10px; font-size: 12px; cursor: pointer;
-  border-bottom: 1px solid var(--color-border);
-  &:last-child { border-bottom: none; }
-  &.active { background: var(--color-subtle-bg); }
-  &.kindFormula { border-top: 1px solid var(--color-border); }
-  &.kindStep .ac-desc { white-space: normal; overflow: visible; font-size: 10px; }
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--color-border);
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &.active {
+        background: var(--color-subtle-bg);
+    }
+
+    &.kindFormula {
+        border-top: 1px solid var(--color-border);
+    }
+
+    &.kindStep .ac-desc {
+        white-space: normal;
+        overflow: visible;
+        font-size: 10px;
+    }
 }
-.ac-label { font-weight: 600; color: var(--color-primary-hover); flex-shrink: 0; min-width: 60px; }
-.ac-desc { color: var(--color-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.ac-label {
+    font-weight: 600;
+    color: var(--color-primary-hover);
+    flex-shrink: 0;
+    min-width: 60px;
+}
+
+.ac-desc {
+    color: var(--color-muted);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 // ── live parse ───────────────────────────────────────────────
 .live-preview {
-  text-align: center; font-size: 11px; color: var(--color-muted);
-  margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;
-  &.live-err { color: var(--color-error); }
+    text-align: center;
+    font-size: 11px;
+    color: var(--color-muted);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &.live-err {
+        color: var(--color-error);
+    }
 }
-.live-tag { font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.live-tag {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
 .live-param {
-  font-family: inherit;
-  code { font-family: inherit; font-size: 11px; padding: 0 3px; border: 1px solid var(--color-border); border-radius: 2px; background: var(--color-subtle-bg); }
+    font-family: inherit;
+
+    code {
+        font-family: inherit;
+        font-size: 11px;
+        padding: 0 3px;
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+        background: var(--color-subtle-bg);
+    }
 }
 
 .help-hint {
-  text-align: center; font-size: 11px; color: var(--color-border-strong);
-  margin-top: 6px; opacity: 0.5;
-  code { font-family: inherit; font-size: 11px; padding: 0 3px; border: 1px solid var(--color-border); border-radius: 2px; background: var(--color-subtle-bg); }
+    text-align: center;
+    font-size: 11px;
+    color: var(--color-border-strong);
+    margin-top: 6px;
+    opacity: 0.5;
+
+    code {
+        font-family: inherit;
+        font-size: 11px;
+        padding: 0 3px;
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+        background: var(--color-subtle-bg);
+    }
 }
 </style>
