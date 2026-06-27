@@ -39,19 +39,18 @@ Uses `vue-router` with hash history (`createWebHashHistory`). Routes defined in 
 | Route | View | Notes |
 |---|---|---|
 | `/` | `HomeView` | |
-| `/section/:sectionId/discovery` | `DiscoveryView` | Discovery dialogue shown before first problem |
-| `/section/:sectionId/problem/:idx` | `ProblemView` | |
+| `/section/:sectionId/level/:idx` | `LevelView` | Unified route — handles both discovery and problem levels |
 | `/custom` | `CustomProblemView` | |
 | `/about` | `AboutView` | Renders locale-specific `ABOUT.md` |
-| `/locked` | `LockedView` | Shown when section not yet unlocked |
-| `/problem/:idx` | — | Legacy redirect; resolves global index to section route |
+| `/locked` | `LockedView` | Shown when a level is not yet unlocked |
+| `/section/:id/discovery` | — | Legacy redirect to `/section/:id/level/0` |
+| `/section/:id/problem/:idx` | — | Legacy redirect (problem index → level index + 1) |
+| `/problem/:idx` | — | Legacy redirect (global index → level route) |
 | `/:pathMatch(.*)*` | `NotFoundView` | Catch-all |
-
-Legacy redirect: `/problem/:idx` uses `resolveGlobalIndex()` from `@/data` to map old flat problem indices to the section-based routes.
 
 ### Navigation flow
 
-Sections have an optional discovery dialogue (loaded from `discovery.json`). On first visit to a section, the app routes to `/section/:id/discovery`. The `DiscoveryView` plays through a dialogue (Plato/Aristotle characters) and on completion marks the section as viewed in the `discovery` store, then navigates to the first problem. Subsequent visits skip the discovery and go straight to problems.
+A section is a linear sequence of **levels** — a mixed array of discovery dialogues and proof problems. The player navigates through them with prev/next buttons. A single `LevelView` component handles both types: discovery levels render `DiscoveryDialog`, problem levels render the proof prompt and `ProofRepl`. Level 0 is always a discovery. Progress is tracked by level index (0-based within the section), persisted as `highestCompletedLevel` in the progress Pinia store.
 
 ### Sections & data
 
@@ -67,7 +66,7 @@ sections/
       ...
 ```
 
-`src/data/index.ts` uses `import.meta.glob` to auto-discover sections, problems, glossary, tactics, and NLG data across locales. Key exports: `loadSections()`, `getSection()`, `getNextSection()`, `resolveGlobalIndex()`, `loadGlossary()`, `loadTactics()`.
+`src/data/index.ts` uses `import.meta.glob` to auto-discover sections, levels, glossary, tactics, and NLG data across locales. Key exports: `loadSections()`, `getSection()`, `getNextSection()`, `resolveGlobalIndex()`, `loadGlossary()`, `loadTactics()`. Also provides `problemIdxToLevelIdx()` and `levelIdxToProblemIdx()` for converting between 0-based problem indices (skipping discoveries) and the raw level array index.
 
 `src/types.ts` defines the core types: `Problem`, `Hint`, `Tactic`, `SectionMeta`, `DiscoveryLine`, `DiscoveryData`, `Section`.
 
@@ -142,12 +141,12 @@ Requires coordinated changes:
 ```
 App.vue
 ├── HomeView.vue
-├── DiscoveryView.vue
-│   └── DiscoveryDialog.vue
-├── ProblemView.vue
+├── LevelView.vue
+│   ├── NavBar.vue              (with axiom-set popup chip on problem levels)
+│   ├── DiscoveryDialog.vue     (discovery levels)
 │   ├── PreferenceModal.vue
-│   ├── HelpModal.vue          (triggered from NavBar ? button)
-│   ├── ProofRepl.vue
+│   ├── HelpModal.vue           (triggered from NavBar ? button)
+│   ├── ProofRepl.vue           (problem levels)
 │   │   ├── GuideCard.vue
 │   │   └── HintCard.vue
 │   ├── TacticSidebar.vue
@@ -158,13 +157,14 @@ App.vue
 │   ├── ProofRepl.vue
 │   └── TacticSidebar.vue
 ├── AboutView.vue
+│   ├── NavBar.vue
 │   ├── PreferenceModal.vue
-│   └── HelpModal.vue          (triggered from NavBar ? button)
+│   └── HelpModal.vue
 ├── LockedView.vue
 └── NotFoundView.vue
 ```
 
-Shared components: `NavBar.vue` (logo, slot, `?` help button, GitHub link, preferences button) is used in ProblemView, DiscoveryView, and AboutView. `HelpModal.vue` has three tabs (Commands, Notations, Glossary) and accepts optional `allowedTactics` and `glossaryTerm` props.
+`LevelView` is the workhorse — handles both discovery and problem levels via a discriminated union on the level type. Discovery levels show a progress bar and `DiscoveryDialog`; problem levels show the proof prompt, `ProofRepl`, victory overlay, and axiom chip popup. `NavBar.vue` (logo, slot, `?` help button, GitHub link, preferences button) is used in LevelView, AboutView, and CustomProblemView. `HelpModal.vue` has three tabs (Commands, Notations, Glossary).
 
 ### Responsive breakpoint
 

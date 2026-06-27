@@ -21,6 +21,7 @@ export default {
         about: '关于',
         story: '幕后',
         contact: '联系作者',
+        dev_notice: 'Plato 目前仍处于积极开发与创作阶段。部分导言、探索对话与逻辑指南尚不完整，使用体验可能会随系统优化而有所调整。感谢您的理解与陪伴！'
     },
 
     custom: {
@@ -154,6 +155,7 @@ export default {
         empty: '解决第一个问题来开启旅程。',
         node: '问题 {n}',
         proof: '证明',
+        discovery: '探索章节。'
     },
 
     footer: {
@@ -185,7 +187,7 @@ export default {
     discovery: {
         skip: '跳过',
         begin: '开始',
-        play: '发现',
+        play: '探索',
         replay: '重播',
         tapToContinue: '点击继续'
     },

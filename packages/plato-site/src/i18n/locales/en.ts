@@ -21,6 +21,7 @@ export default {
         about: 'About',
         story: 'Behind the Scenes',
         contact: 'Contact',
+        dev_notice: 'Plato is currently under active development and authoring. Editorials, discoveries, and guides are NOT YET COMPLETE, and user experience might shift from time to time.'
     },
 
     custom: {
@@ -154,6 +155,7 @@ export default {
         empty: 'Solve your first problem to begin the journey.',
         node: 'Problem {n}',
         proof: 'Proof',
+        discovery: 'Discovery dialog.'
     },
 
     footer: {

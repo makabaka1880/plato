@@ -1,73 +1,115 @@
-# Creating Problems for Plato
+# Creating Levels for Plato
 
-Plato is an interactive natural-deduction proof assistant. This guide explains how to write new problems in JSON format — no programming required. You'll learn the formula syntax, the available commands, and how to design guides and hints that teach effectively.
+Plato is an interactive natural-deduction proof assistant. This guide explains how to write new levels in JSON format — no programming required. You'll learn the formula syntax, the available commands, the two axiom sets, and how to design guide cards and hints that teach effectively.
 
 ## Table of Contents
 
 1. [Quick start](#quick-start)
-2. [The `Problem` schema](#the-problem-schema)
-3. [Formula syntax](#formula-syntax)
-4. [Axiom sets: PL vs FOL](#axiom-sets-pl-vs-fol)
-5. [Tactic reference](#tactic-reference)
-6. [Text markup](#text-markup)
-7. [Writing guides](#writing-guides)
-8. [Writing hints](#writing-hints)
-9. [Unlocking tactics](#unlocking-tactics)
-10. [Complete example](#complete-example)
-11. [Section config](#section-config)
-12. [Design principles](#design-principles)
+2. [How levels work](#how-levels-work)
+3. [The `Problem` schema](#the-problem-schema)
+4. [Formula syntax](#formula-syntax)
+5. [Axiom sets: PL vs FOL](#axiom-sets-pl-vs-fol)
+6. [Tactic reference](#tactic-reference)
+7. [Text markup](#text-markup)
+8. [Writing guides](#writing-guides)
+9. [Writing hints](#writing-hints)
+10. [Writing discoveries](#writing-discoveries)
+11. [Unlocking tactics](#unlocking-tactics)
+12. [Complete example](#complete-example)
+13. [Section config](#section-config)
+14. [Design principles](#design-principles)
 
 ---
 
 ## Quick start
 
-1. Create a JSON file under the appropriate section: `packages/plato-site/src/data/{locale}/sections/{section}/problems/`.
-2. Name it `NN-slug.json` where `NN` is a two-digit sort key (e.g. `17-my-problem.json`).
-3. It is auto-discovered — no imports to update. File order is alphabetical within each section; the sort key determines the problem index (0-based).
-4. The section's `section.json` defines the default **axiom set** (PL or FOL) and the **allowed tactics** for all problems in that section. Individual problems can override the axiom set if needed.
-5. You must create the JSON in **both** locale folders (`en/` and `zh/`) unless you are only targeting one language.
+1. Create a JSON file in a section's `levels/` directory:
+   ```
+   packages/plato-site/src/data/{locale}/sections/{section}/levels/NNN-slug.json
+   ```
+2. The `NNN` is a zero-padded 3-digit index — the file sort order is the level order:
+   - `000-discovery.json` — the section's discovery dialogue (always level 0)
+   - `001-identity.json` — the first proof level (level 1)
+   - `002-another-discovery.json` — another discovery (level 2)
+   - …and so on.
+3. All files in `levels/` are auto-discovered via `import.meta.glob` — no imports to update.
+4. You must create the file in **both** locale folders (`en/` and `zh/`) unless you are only targeting one language.
+5. The section's `section.json` defines the default axiom set and allowed tactics.
 
-**Quick checklist for a valid problem:**
+**Quick checklist for a proof level:**
 
-- `description`: a short, playful sentence (rendered with inline markup)
-- `goal`: an s-expression formula the student must prove
-- `premise`: array of s-expression formulas given as starting facts (can be `[]`)
-- Either `guides` or `hints` must be non-empty (not both — pick one approach)
-- `unlocks`: array of tactic name strings this problem teaches
+- `"type": "problem"`
+- `"description"`: a short, playful sentence (supports inline markup)
+- `"goal"`: an s-expression formula to prove
+- `"premise"`: array of s-expression formulas (can be `[]`)
+- `"guides"` or `"hints"`: pick one approach, not both
+- `"unlocks"`: array of tactic names (use `[]` for practice levels)
+
+**Quick checklist for a discovery level:**
+
+- `"type": "discovery"`
+- `"title"`: a heading for the dialogue
+- `"lines"`: array of `{ "speaker": "...", "text": "...", "sid": "...", "image": "..." }` objects
+
+---
+
+## How levels work
+
+A section is a linear sequence of **levels**. Level 0 is always a discovery dialogue. Level 1+ are proof problems. The section's `section.json` governs all levels unless a level overrides.
+
+When the player enters a section for the first time, they see level 0 (the discovery). On subsequent visits they jump straight to the first unsolved problem level. Solving a level unlocks the next one.
+
+The route pattern uses a single unified route for all levels:
+
+```
+/section/:sectionId/level/:idx
+```
+
+where `:idx` is a 0-based index into the section's `levels` array. Level 0 is always a discovery. Level 1+ may be either discovery or problem — the `LevelView` component checks the type and renders accordingly. The player navigates linearly through all levels with prev/next buttons.
+
+```ts
+type Level =
+    | { type: 'discovery'; data: DiscoveryData }
+    | { type: 'problem'; data: Problem }
+```
+
+Both discovery and problem levels are part of the same timeline — they are the same "level" from the player's perspective.
 
 ---
 
 ## The `Problem` schema
 
-Every problem is a JSON object:
+A proof level is a JSON object:
 
 ```json
 {
+  "type": "problem",
   "description": "witty one-liner",
-  "goal":        "<s-expression>",
-  "premise":     [],
-  "logicMode":   "fol",
-  "guides":      [ ... ],
-  "hints":       [ ... ],
-  "unlocks":     [ ... ]
+  "goal": "<s-expression>",
+  "premise": [],
+  "logicMode": "fol",
+  "guides": [ ... ],
+  "hints": [ ... ],
+  "unlocks": [ ... ]
 }
 ```
 
 | Field | Type | Required | Description |
 |---|---|---|---|
+| `type` | `"problem"` | Yes | Identifies this as a proof level. |
 | `description` | `string` | Yes | A short sentence shown before the proof. Supports [text markup](#text-markup). |
 | `goal` | `string` | Yes | The formula to prove, as an s-expression. Must match the final proof step structurally. |
 | `premise` | `string[]` | Yes | Formulas given as starting facts. Use `[]` if there are none. |
-| `logicMode` | `"pl"` or `"fol"` | No | Override the section's axiom set. Omit to use the section default. See [Axiom sets](#axiom-sets-pl-vs-fol). |
-| `guides` | `Hint[]` | Yes* | Step-by-step walkthrough (shown one at a time). Use **or** hints, not both. |
-| `hints` | `Hint[]` | Yes* | Progressive nudges available on demand. Use **or** guides, not both. |
-| `unlocks` | `string[]` | Yes | Tactic names this problem unlocks when solved. Use `[]` for practice problems. |
+| `logicMode` | `"pl"` or `"fol"` | No | Override the section's axiom set. Omit to use the section default. |
+| `guides` | `Hint[]` | Yes* | Step-by-step walkthrough. Use **or** hints, not both. |
+| `hints` | `Hint[]` | Yes* | Progressive nudges on demand. Use **or** guides, not both. |
+| `unlocks` | `string[]` | Yes | Tactic names this level unlocks. Use `[]` for practice levels. |
 
-\* Either `guides` or `hints` must be provided. They should not both be non-empty for the same problem — pick one approach.
+\* Provide `guides` **or** `hints`, not both. Guides are for teaching a new tactic (hand-holding). Hints are for synthesis/practice (student thinks independently).
 
 **Notes:**
-- The `id` field is assigned automatically by filename ordering — do **not** include it in the JSON.
-- For built-in section problems, omit `logicMode` unless you need to override the section default.
+- The `id` field for problems is assigned automatically by discovery order — do **not** include it.
+- Omit `logicMode` unless you need to override the section default.
 
 ### `description` (string)
 
@@ -85,14 +127,14 @@ The formula the student must prove, written as an **s-expression** (see [Formula
 - `"(-> A B)"` — prove $A \to B$
 - `"(and (or A B) (-> A C))"` — prove $(A \lor B) \land (A \to C)$
 
-When the student types the final step, the engine checks that the step's conclusion matches this string **structurally** (same s-expression tree, ignoring whitespace). Conjunction and disjunction are commutative — `(and A B)` equals `(and B A)`.
+When the student types the final step, the engine checks that the conclusion matches this string **structurally** (same s-expression tree, ignoring whitespace). Conjunction and disjunction are commutative — `(and A B)` equals `(and B A)`.
 
 ### `premise` (array of strings)
 
-Formulas that are **given** — the student must `assume` them one by one before they can be used. These are displayed as "PREMISE" labels above the goal.
+Formulas that are **given** — the student must `assume` them one by one before they can be used. Displayed as "PREMISE" labels above the goal.
 
 **Examples:**
-- `[]` — nothing given; the student makes all assumptions
+- `[]` — nothing given; the student makes their own assumptions
 - `["A", "B"]` — $A$ and $B$ are both given
 - `["A", "(-> A B)"]` — $A$ and $A \to B$ are given
 
@@ -108,16 +150,16 @@ Formulas that are **given** — the student must `assume` them one by one before
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `text` | `string` | Yes | Prose explanation. Supports [text markup](#text-markup). |
-| `tactic` | `string` or `null` | No | The exact command to type. If omitted or `null`, shows an "OK" button instead of locking input. |
+| `tactic` | `string` or `null` | No | The exact command to type. Omit or `null` for prose-only. |
 
-- **In guides**: a `tactic` locks the input until the student types the exact match. No `tactic` shows "OK" to advance.
-- **In hints**: a `tactic` shows a "fill in" button that inserts the command into the REPL. No `tactic` shows only prose.
+- **In guides**: a `tactic` locks the input until the student types the exact match. No `tactic` shows an "OK" button.
+- **In hints**: a `tactic` shows a "fill in" button that inserts the command. No `tactic` shows only prose.
 
 ---
 
 ## Formula syntax
 
-Formulas are written as **s-expressions** (Lisp-style parenthesized prefix notation). The outermost parentheses are required for compound formulas.
+Formulas are written as **s-expressions** (Lisp-style parenthesized prefix notation). Outermost parentheses are required for compound formulas.
 
 ### Atomic formulas
 
@@ -154,14 +196,14 @@ First-order logic introduces **terms** (things that refer to objects) and **pred
 A term can be:
 
 - A **variable** — a fresh symbol introduced by `(fix x)`, e.g. `x`, `y`, `z`
-- A **constant** — any bare word not introduced by `fix`, e.g. `socrates`, `a`, `b`, `zero`
-- A **function application** — `(App f t)` for unary functions, `(App (App f x) y)` for nested. Function symbols follow the same syntax as predicate symbols; the engine distinguishes them by context.
+- A **constant** — any bare word not introduced by `fix`, e.g. `socrates`, `a`, `b`
+- A **function application** — `(App f t)` for unary, `(App (App f x) y)` for nested. Function symbols follow the same syntax as predicate symbols; the engine distinguishes them by context.
 
-Variables and constants are just bare atoms — there is no syntactic marker distinguishing them. A symbol is a variable if it was introduced by `fix` in the current proof; otherwise it is treated as a constant.
+Variables and constants are both bare atoms — a symbol is a variable if it was introduced by `fix` in the current proof; otherwise it's treated as a constant.
 
 #### Predicate application
 
-Predicates are applied to terms using nested `App` (currying). A unary predicate takes one term; a binary predicate takes two terms via nested `App`; ternary takes three, and so on.
+Predicates are applied to terms using nested `App` (currying).
 
 | Arity | Syntax | Meaning |
 |---|---|---|
@@ -201,7 +243,7 @@ This means: $(A \lor B) \land (A \to C) \;\to\; C \lor B$
 
 ### LaTeX rendering
 
-The engine converts formulas to LaTeX automatically. Compound sub-expressions are wrapped in parentheses for unambiguous display:
+The engine converts formulas to LaTeX automatically. Compound sub-expressions are wrapped in parentheses:
 
 - `(-> (and A B) A)` → $(A \land B) \to A$
 - `(-> (or A B) (or B A))` → $(A \lor B) \to (B \lor A)$
@@ -220,31 +262,31 @@ When verifying proofs, the engine checks formula equality:
 
 ## Axiom sets: PL vs FOL
 
-Plato's engine supports two axiom sets that determine which logical operations are available. A colored chip in the navbar (blue for FOL on, orange for FOL off) tells the student which set is active.
+Plato's engine supports two axiom sets. A colored chip in the navbar (blue for FOL on, orange for FOL off) tells the player which set is active.
 
 ### Why two separate sets?
 
-The separation exists for a reason. Plato lives at the intersection of three logical systems:
+Plato lives at the intersection of three logical systems:
 
-- **Propositional logic (PL)** — reasoning about $\lnot$, $\land$, $\lor$, $\to$, $\top$, $\bot$. Decidable (a truth table can settle any statement).
+- **Propositional logic (PL)** — connectives $\lnot$, $\land$, $\lor$, $\to$, $\top$, $\bot$. Decidable (a truth table can settle any statement).
 - **First-order logic (FOL)** — adds $\forall$, $\exists$, and predicate application. Semi-decidable, well-behaved for natural deduction.
-- **Modal logic (System K)** — adds $\Box$ and $\Diamond$. Decidable on its own (can be translated into a fragment of FOL via possible-world semantics).
+- **Modal logic (System K)** — adds $\Box$ and $\Diamond$. Decidable on its own (translatable into a fragment of FOL).
 
-The problem is **first-order modal logic (FOML)** — combining FOL with $\Box$ and $\Diamond$. Quantifiers and modal operators interact in ways that make the combined system undecidable (even the monadic fragment, unlike monadic FOL which is decidable). There is no single canonical semantics — different philosophical commitments about domains across possible worlds produce irreconcilably different logics.
+The problem is **first-order modal logic (FOML)** — combining FOL with $\Box$ and $\Diamond$ makes the system undecidable. Even the monadic fragment is undecidable (unlike monadic FOL). There is no single canonical semantics — different commitments about domains across possible worlds produce irreconcilably different logics.
 
 Plato's solution: **don't combine them.** Each section picks one mode and stays within it.
 
 ### PL mode (`"logicMode": "pl"`)
 
-Available: all propositional connectives ($\lnot$, $\land$, $\lor$, $\to$, $\top$, $\bot$) plus modal operators ($\Box$, $\Diamond$).
+Available: all propositional connectives plus modal operators ($\Box$, $\Diamond$).
 
-Disabled: quantifiers ($\forall$, $\exists$), predicate application (`App`), term variables (`fix`).
+Disabled: quantifiers ($\forall$, $\exists$), predicate application (`App`), `fix`.
 
 Used by: **Propositional Logic** section and **Modal Logic** section.
 
 ### FOL mode (`"logicMode": "fol"`)
 
-Available: all propositional connectives plus quantifiers ($\forall$, $\exists$), predicate application (`App`), and term variables (`fix`).
+Available: all propositional connectives plus quantifiers, predicate application, and `fix`.
 
 Disabled: modal operators ($\Box$, $\Diamond$).
 
@@ -252,15 +294,15 @@ Used by: **First-Order Logic** section.
 
 ### Setting the axiom set
 
-- **Section default**: set in `section.json` via `"logicMode": "pl"` or `"logicMode": "fol"`. All problems in the section inherit this unless they override.
-- **Per-problem override**: add `"logicMode": "pl"` or `"logicMode": "fol"` to a problem JSON. This is rarely needed for built-in problems but is useful for custom/standalone problems.
-- **Custom problems** (loaded via URL or file): should always include `logicMode` since there's no section to provide a default. If omitted, the engine defaults to `"fol"`.
+- **Section default**: set in `section.json` via `"logicMode"`. All levels inherit it.
+- **Per-level override**: add `"logicMode"` to a level JSON. Rare for built-in levels; useful for standalone levels.
+- **Standalone levels** (loaded via URL/file): should always include `"logicMode"`. If omitted, defaults to `"fol"`.
 
 ---
 
 ## Tactic reference
 
-This is the complete list of commands the proof engine accepts. Every tactic uses **1-based step numbers** — the first proof step is step 1, the second is step 2, etc.
+Every command the proof engine accepts. All tactics use **1-based step numbers** — the first proof step is step 1.
 
 ### assume
 
@@ -268,7 +310,7 @@ This is the complete list of commands the proof engine accepts. Every tactic use
 (assume F)
 ```
 
-Creates a new assumption: $\{F\} \vdash F$. The fundamental way to bring a formula into the context. Every proof starts by assuming premises or the antecedent of an implication.
+Creates a new assumption: $\{F\} \vdash F$. The fundamental way to bring a formula into the context.
 
 **Example:** `(assume A)` → step 1: $\{A\} \vdash A$
 
@@ -278,11 +320,11 @@ Creates a new assumption: $\{F\} \vdash F$. The fundamental way to bring a formu
 (extend F N)
 ```
 
-**Weakening.** Adds formula $F$ to step N's context without changing the conclusion. If step N proves $\Gamma \vdash p$, this produces $\Gamma, F \vdash p$.
+**Weakening.** Adds formula $F$ to step N's context: if step N proves $\Gamma \vdash p$, produces $\Gamma, F \vdash p$.
 
 Aliases: `weaken`
 
-**Example:** `(extend B 1)` — step 1 proves $\{A\} \vdash A$ → produce $\{A, B\} \vdash A$
+**Example:** `(extend B 1)` — step 1 proves $\{A\} \vdash A$ → $\{A, B\} \vdash A$
 
 ### and-intro
 
@@ -290,9 +332,9 @@ Aliases: `weaken`
 (and-intro N M)
 ```
 
-Combines steps N and M into a conjunction. Both steps' contexts are merged.
+Combines steps N and M into a conjunction. Contexts are merged.
 
-**Example:** `(and-intro 1 2)` — step 1 proves $A$, step 2 proves $B$ → produce $A \land B$
+**Example:** `(and-intro 1 2)` — step 1 proves $A$, step 2 proves $B$ → $A \land B$
 
 ### and-elim-l / and-elim-r
 
@@ -301,9 +343,9 @@ Combines steps N and M into a conjunction. Both steps' contexts are merged.
 (and-elim-r N)
 ```
 
-Extract the left or right half of a conjunction from step N.
+Extract the left or right half of a conjunction.
 
-**Example:** `(and-elim-l 1)` — step 1 proves $A \land B$ → produce $A$
+**Example:** `(and-elim-l 1)` — step 1 proves $A \land B$ → $A$
 
 ### or-intro-l / or-intro-r
 
@@ -312,10 +354,10 @@ Extract the left or right half of a conjunction from step N.
 (or-intro-r N F)
 ```
 
-Introduce a disjunction. `or-intro-l` puts step N's conclusion on the **left** with formula F on the right. `or-intro-r` puts formula F on the **left** with step N's conclusion on the right.
+Introduce a disjunction. `or-intro-l` puts N's conclusion on the **left** with F on the right. `or-intro-r` puts F on the **left** with N's conclusion on the right.
 
-**Example:** `(or-intro-l 1 B)` — step 1 proves $A$ → produce $A \lor B$
-**Example:** `(or-intro-r 1 A)` — step 1 proves $B$ → produce $A \lor B$
+**Example:** `(or-intro-l 1 B)` — step 1 proves $A$ → $A \lor B$
+**Example:** `(or-intro-r 1 A)` — step 1 proves $B$ → $A \lor B$
 
 ### or-elim
 
@@ -323,9 +365,9 @@ Introduce a disjunction. `or-intro-l` puts step N's conclusion on the **left** w
 (or-elim N M K)
 ```
 
-**Proof by cases.** Step N must be a disjunction $p \lor q$. Steps M and K must both prove the **same** conclusion $r$ — one from a context containing $p$, the other from a context containing $q$. Produces $r$ (contexts merged).
+**Proof by cases.** Step N is $p \lor q$. Steps M and K both prove the **same** conclusion $r$ — one from $p$, the other from $q$. Produces $r$.
 
-**Example:** `(or-elim 1 3 5)` — step 1 is $A \lor B$, step 3 proves $C$ from $A$, step 5 proves $C$ from $B$ → produce $C$
+**Example:** `(or-elim 1 3 5)` — step 1: $A \lor B$, step 3 proves $C$ from $A$, step 5 proves $C$ from $B$ → $C$
 
 ### ->-intro
 
@@ -333,11 +375,11 @@ Introduce a disjunction. `or-intro-l` puts step N's conclusion on the **left** w
 (->-intro F N)
 ```
 
-**Implication introduction.** Discharges formula $F$ from step N's context, wrapping the conclusion as $F \to \text{conclusion}$.
+**Implication introduction.** Discharges $F$ from step N's context: $\Gamma, F \vdash p$ → $\Gamma \vdash F \to p$.
 
 Aliases: `imp-intro`, `→-intro`
 
-**Example:** `(->-intro A 2)` — step 2 has $\{A, B\} \vdash C$ → produce $\{B\} \vdash A \to C$
+**Example:** `(->-intro A 2)` — step 2 has $\{A, B\} \vdash C$ → $\{B\} \vdash A \to C$
 
 ### ->-elim
 
@@ -345,11 +387,11 @@ Aliases: `imp-intro`, `→-intro`
 (->-elim N M)
 ```
 
-**Modus ponens.** Step N must be $p \to q$. Step M must be $p$. Produces $q$.
+**Modus ponens.** Step N is $p \to q$. Step M is $p$. Produces $q$.
 
 Aliases: `imp-elim`, `→-elim`, `modus-ponens`, `mp`
 
-**Example:** `(->-elim 2 1)` — step 2 is $A \to B$, step 1 is $A$ → produce $B$
+**Example:** `(->-elim 2 1)` — step 2: $A \to B$, step 1: $A$ → $B$
 
 ### not-intro
 
@@ -357,7 +399,7 @@ Aliases: `imp-elim`, `→-elim`, `modus-ponens`, `mp`
 (not-intro F N M)
 ```
 
-**Reductio ad absurdum.** Formula $F$ must be present in both steps' contexts. Steps N and M must reach contradictory conclusions (e.g. one proves $p$, the other proves $\lnot p$). Produces $\lnot F$ with $F$ discharged.
+**Reductio ad absurdum.** $F$ is in both steps' contexts. N and M reach contradictory conclusions. Produces $\lnot F$ with $F$ discharged.
 
 Aliases: `¬-intro`, `neg-intro`, `raa`
 
@@ -367,7 +409,7 @@ Aliases: `¬-intro`, `neg-intro`, `raa`
 (not-elim N)
 ```
 
-Step N must be $\lnot p$. Produces $\bot$ (falsity).
+Step N is $\lnot p$. Produces $\bot$.
 
 Aliases: `¬-elim`, `neg-elim`
 
@@ -377,7 +419,7 @@ Aliases: `¬-elim`, `neg-elim`
 (dne N)
 ```
 
-**Double negation elimination.** Step N must be $\lnot \lnot p$. Produces $p$.
+**Double negation elimination.** Step N is $\lnot \lnot p$. Produces $p$.
 
 Aliases: `dneg-elim`, `¬¬-elim`, `double-neg-elim`
 
@@ -387,7 +429,7 @@ Aliases: `dneg-elim`, `¬¬-elim`, `double-neg-elim`
 (ex-falso N F)
 ```
 
-**Principle of explosion.** From a contradiction (step N proves $\bot$), derive **any** formula $F$.
+**Principle of explosion.** From $\bot$ (step N), derive **any** $F$.
 
 Aliases: `efq`, `explosion`
 
@@ -398,7 +440,7 @@ Aliases: `efq`, `explosion`
 (top-intro N)
 ```
 
-**Truth introduction.** $\top$ is always provable. Without argument: $\emptyset \vdash \top$ (empty context). With argument N: produces $\top$ in step N's context.
+**Truth introduction.** $\top$ is always provable. No argument: $\emptyset \vdash \top$. With N: $\top$ in N's context.
 
 ### show
 
@@ -416,11 +458,11 @@ Aliases: `print`, `p`
 (subst N (A F)...)
 ```
 
-**Uniform substitution.** Replace every occurrence of atom A with formula F in step N's conclusion. Multiple `(atom formula)` pairs may be given.
+**Uniform substitution.** Replace atom A with formula F in step N's conclusion. Multiple `(atom formula)` pairs allowed.
 
 Aliases: `substitute`
 
-**Example:** `(subst 1 (P (and A B)))` — step 1 proves $P \to P$ → produce $(A \land B) \to (A \land B)$
+**Example:** `(subst 1 (P (and A B)))` — step 1 proves $P \to P$ → $(A \land B) \to (A \land B)$
 
 ### fix
 
@@ -428,7 +470,7 @@ Aliases: `substitute`
 (fix x)
 ```
 
-Introduce a fresh term variable. Produces $\{x\} \vdash x$. The variable must be fresh (not free in any existing assumption). Available only in **FOL mode**.
+Introduce a fresh term variable: $\{x\} \vdash x$. Must be fresh (not free in existing assumptions). **FOL mode only.**
 
 **Example:** `(fix x)` → step 1: $\{x\} \vdash x$
 
@@ -438,11 +480,11 @@ Introduce a fresh term variable. Produces $\{x\} \vdash x$. The variable must be
 (forall-intro x N)
 ```
 
-**Universal generalisation.** From step N, which proves $\varphi$ for an arbitrary variable $x$ (not free in other assumptions), produce $\forall x.\,\varphi$. Available only in **FOL mode**.
+**Universal generalisation.** From $\varphi$ proved for arbitrary $x$ (not free in other assumptions), produce $\forall x.\,\varphi$. **FOL mode only.**
 
 Aliases: `∀-intro`, `forall`
 
-**Example:** `(forall-intro x 3)` — step 3 proves $P(x)$ from $\{x\}$ → produce $\forall x.\,P(x)$
+**Example:** `(forall-intro x 3)` — step 3 proves $P(x)$ from $\{x\}$ → $\forall x.\,P(x)$
 
 ### forall-elim
 
@@ -450,11 +492,11 @@ Aliases: `∀-intro`, `forall`
 (forall-elim N t)
 ```
 
-**Universal instantiation.** Step N must be $\forall x.\,\varphi$. Substitute term $t$ for $x$ to produce $\varphi[t/x]$. Available only in **FOL mode**.
+**Universal instantiation.** Step N is $\forall x.\,\varphi$. Substitute term $t$ for $x$. **FOL mode only.**
 
 Aliases: `∀-elim`
 
-**Example:** `(forall-elim 1 socrates)` — step 1 is $\forall x.\,\text{Mortal}(x)$ → produce $\text{Mortal}(\text{socrates})$
+**Example:** `(forall-elim 1 socrates)` — step 1: $\forall x.\,\text{Mortal}(x)$ → $\text{Mortal}(\text{socrates})$
 
 ### exists-intro
 
@@ -462,11 +504,11 @@ Aliases: `∀-elim`
 (exists-intro N t x)
 ```
 
-**Existential generalisation.** From step N (proving $\varphi[t/x]$ for term $t$), produce $\exists x.\,\varphi$. Available only in **FOL mode**.
+**Existential generalisation.** From $\varphi[t/x]$ (step N), produce $\exists x.\,\varphi$. **FOL mode only.**
 
 Aliases: `∃-intro`
 
-**Example:** `(exists-intro 2 socrates x)` — step 2 proves $\text{Mortal}(\text{socrates})$ → produce $\exists x.\,\text{Mortal}(x)$
+**Example:** `(exists-intro 2 socrates x)` — step 2 proves $\text{Mortal}(\text{socrates})$ → $\exists x.\,\text{Mortal}(x)$
 
 ### exists-elim
 
@@ -474,11 +516,11 @@ Aliases: `∃-intro`
 (exists-elim N M x)
 ```
 
-**Existential witness elimination.** Step N proves $\exists x.\,\varphi$. Step M proves $\psi$ under the assumption that a fresh witness $x$ satisfies $\varphi$. $x$ must not appear free in $\psi$ or any open assumption. Available only in **FOL mode**.
+**Existential witness elimination.** Step N proves $\exists x.\,\varphi$. Step M proves $\psi$ from a fresh witness $x$ satisfying $\varphi$. $x$ must not be free in $\psi$ or open assumptions. **FOL mode only.**
 
 Aliases: `∃-elim`
 
-**Example:** `(exists-elim 1 3 y)` — step 1 gives $\exists x.\,P(x)$, step 3 proves $Q$ from $\{y, P(y)\}$ → produce $Q$
+**Example:** `(exists-elim 1 3 y)` — step 1: $\exists x.\,P(x)$, step 3 proves $Q$ from $\{y, P(y)\}$ → $Q$
 
 ### box-intro
 
@@ -486,7 +528,7 @@ Aliases: `∃-elim`
 (box-intro N)
 ```
 
-**Necessitation.** Step N must prove $P$ with an **empty context** (no open assumptions). Produces $\Box P$. Available only in **PL mode** (modal section).
+**Necessitation.** Step N must prove $P$ with an **empty context**. Produces $\Box P$. **PL mode only** (modal section).
 
 Aliases: `□-intro`, `nec`
 
@@ -496,7 +538,7 @@ Aliases: `□-intro`, `nec`
 (box-elim N M)
 ```
 
-**K axiom.** Step N proves $\Box(P \to Q)$. Step M proves $\Box P$. Produces $\Box Q$. Necessity distributes over implication. Available only in **PL mode** (modal section).
+**K axiom.** Step N: $\Box(P \to Q)$. Step M: $\Box P$. Produces $\Box Q$. **PL mode only** (modal section).
 
 Aliases: `□-elim`, `k`
 
@@ -506,7 +548,7 @@ Aliases: `□-elim`, `k`
 (diamond-def N)
 ```
 
-**Diamond definition (unfold).** Step N proves $\Diamond P$. Produces $\lnot\Box\lnot P$. Available only in **PL mode** (modal section).
+**Diamond definition (unfold).** Step N is $\Diamond P$. Produces $\lnot\Box\lnot P$. **PL mode only** (modal section).
 
 Aliases: `◇-def`, `dia-def`
 
@@ -516,7 +558,7 @@ Aliases: `◇-def`, `dia-def`
 (diamond-def-rev N)
 ```
 
-**Diamond definition (fold).** Step N proves $\lnot\Box\lnot P$. Produces $\Diamond P$. Available only in **PL mode** (modal section).
+**Diamond definition (fold).** Step N is $\lnot\Box\lnot P$. Produces $\Diamond P$. **PL mode only** (modal section).
 
 Aliases: `◇-def-rev`, `dia-def-rev`
 
@@ -524,20 +566,20 @@ Aliases: `◇-def-rev`, `dia-def-rev`
 
 ## Text markup
 
-The `text` field in guides, hints, and the `description` field support inline markup parsed by the frontend:
+The `text` field in guides, hints, and the `description` field support inline markup:
 
 | Syntax | Rendered as |
 |---|---|
 | `$latex$` | Inline KaTeX math, e.g. `$A \land B$` |
-| `$$latex$$` | Display-style KaTeX (centered, larger), e.g. `$$\forall x \Box P(x) \to \Box \forall x P(x)$$` |
-| `**bold**` | **Bold text**, supports nested markup inside |
-| `` `code` `` | Monospace code, usually for tactic names or step numbers |
-| `[id\|display]` | Glossary link — opens HelpModal glossary tab scrolled to entry `id`. e.g. `[modus-ponens\|modus ponens]` |
-| `[id]` | Glossary link — same as above but uses the id as display text, e.g. `[contradiction]` |
+| `$$latex$$` | Display-style KaTeX (centered, larger) |
+| `**bold**` | **Bold text**, supports nested markup |
+| `` `code` `` | Monospace code, usually for tactic names |
+| `[id\|display]` | Glossary link — opens HelpModal glossary scrolled to entry `id` |
+| `[id]` | Glossary link using `id` as display text |
 
-**Important:** In inline LaTeX (`$...$`), use double backslashes for LaTeX commands: `$A \\land B$`, `$\\vdash$`, `$\\Gamma$`, `$\\Box$`.
+**Important:** In inline LaTeX, use double backslashes: `$A \\land B$`, `$\\vdash$`, `$\\Gamma$`, `$\\Box$`.
 
-**Examples:**
+**Example:**
 ```
 "The goal is $A \\to B$. Use `->-intro` to **discharge** the [assumption|assumption]."
 ```
@@ -546,36 +588,36 @@ The `text` field in guides, hints, and the `description` field support inline ma
 
 ## Writing guides
 
-Guides are for problems that **introduce a new tactic**. The student is walked through step by step. Each guide card appears one at a time before the student types.
+Guides are for levels that **introduce a new tactic**. The student is walked through step by step. Each guide card appears one at a time before the student types.
 
 ### Rules
 
-1. The first guide should explain the goal in plain language. No tactic (use `"tactic": null`).
-2. Each subsequent guide introduces one concept or one proof step.
-3. A guide **with** a `tactic` locks the input — the student must type the exact match to proceed.
-4. A guide **without** a `tactic` (or `"tactic": null`) shows an "OK" button; the student reads and clicks to advance.
-5. The final guide should conclude the proof and celebrate the achievement.
-6. **Never mix** — a problem with guides should have `"hints": []`.
+1. First guide: explain the goal in plain language. No tactic (`"tactic": null`).
+2. Each subsequent guide: one concept or one proof step.
+3. A guide **with** a `tactic` locks the input until the student types the exact match.
+4. A guide **without** a `tactic` shows an "OK" button; the student clicks to advance.
+5. Final guide: conclude the proof and celebrate.
+6. A level with guides should have `"hints": []`.
 
-### Example (from an implication-elimination problem)
+### Example
 
 ```json
 {
   "guides": [
     {
-      "text": "We're proving $A \\land B \\to A$. In words: if both $A$ and $B$ are true, then certainly $A$ is true. The logic is hard to argue with.",
+      "text": "We're proving $A \\land B \\to A$. If both $A$ and $B$ are true, then certainly $A$ is true.",
       "tactic": null
     },
     {
-      "text": "As always with an implication, we start by assuming the left-hand side. This time the left-hand side is a conjunction: $A \\land B$.",
+      "text": "As always with an implication, we start by assuming the left-hand side: $A \\land B$.",
       "tactic": "(assume (and A B))"
     },
     {
-      "text": "Now we have $A \\land B$ at step 1. The rule `and-elim-l` extracts the **left** half of a conjunction — the $A$ from $A \\land B$.",
+      "text": "Now we have $A \\land B$ at step 1. Use `and-elim-l` to extract the **left** half.",
       "tactic": "(and-elim-l 1)"
     },
     {
-      "text": "We set out to get $A$ under the assumption $A \\land B$, and we have it. Use `->-intro` to discharge the assumption and close the proof. Notice the first argument is $(A \\land B)$ — the formula you discharge doesn't have to be a bare atom.",
+      "text": "We have $A$ under the assumption $A \\land B$. Use `->-intro` to discharge and close.",
       "tactic": "(->-intro (and A B) 2)"
     }
   ]
@@ -585,29 +627,29 @@ Guides are for problems that **introduce a new tactic**. The student is walked t
 ### Tone
 
 - Conversational, second person ("we", "our job").
-- Slightly witty, but never at the expense of clarity.
+- Slightly witty, never at the expense of clarity.
 - Introduce notation gently: "The symbol $\\vdash$ is pronounced 'entails'."
-- Acknowledge when something is new: "This time the left-hand side is a conjunction…"
+- Acknowledge what's new: "This time the left-hand side is a conjunction…"
 
 ---
 
 ## Writing hints
 
-Hints are for **synthesis/practice problems** where the student should solve independently but can request help.
+Hints are for **synthesis/practice levels** where the student should solve independently but can request help.
 
 ### Rules
 
 1. Hints appear one at a time — each new lightbulb appears when the previous hint is opened.
-2. Early hints should point in the right direction without giving the tactic.
-3. Middle hints should narrow the approach.
-4. Later hints should give the exact tactic.
-5. The final hint should give the final tactic.
-6. Each hint builds on the assumption that the student has followed the previous hints.
-7. **Never mix** — a problem with hints should have `"guides": []`.
+2. Early hints: point in the right direction without giving the tactic.
+3. Middle hints: narrow the approach.
+4. Later hints: give the exact tactic.
+5. Final hint: give the final tactic.
+6. Each hint assumes the previous hints were followed.
+7. A level with hints should have `"guides": []`.
 
-### Step numbers in hint text
+### Step numbers
 
-When writing hint text, refer to step numbers **as they will be at that point in the proof**. Steps are 1-based and increment with each successful tactic. Calculate them carefully — a wrong step number in hint text will confuse students.
+Refer to step numbers **as they will be at that point in the proof**. Steps are 1-based. Calculate carefully — wrong step numbers confuse.
 
 ### Example
 
@@ -615,7 +657,7 @@ When writing hint text, refer to step numbers **as they will be at that point in
 {
   "hints": [
     {
-      "text": "The goal is $(A \\land (A \\to B)) \\to B$. We're given $A$ and the promise $A \\to B$ bundled together. If you can extract both, modus ponens takes care of the rest. Start by assuming the conjunction.",
+      "text": "The goal is $(A \\land (A \\to B)) \\to B$. Extract both parts of the conjunction, then modus ponens.",
       "tactic": null
     },
     {
@@ -627,15 +669,15 @@ When writing hint text, refer to step numbers **as they will be at that point in
       "tactic": "(and-elim-l 1)"
     },
     {
-      "text": "Now the right half — that's $A \\to B$, the promise itself.",
+      "text": "Now the right half — that's $A \\to B$.",
       "tactic": "(and-elim-r 1)"
     },
     {
-      "text": "You have the promise at step 3 and the key at step 2. Use modus ponens to unlock $B$.",
+      "text": "You have $A \\to B$ at step 3 and $A$ at step 2. Use modus ponens.",
       "tactic": "(->-elim 3 2)"
     },
     {
-      "text": "Discharge the assumption to wrap up.",
+      "text": "Discharge the assumption.",
       "tactic": "(->-intro (and A (-> A B)) 4)"
     }
   ]
@@ -644,9 +686,50 @@ When writing hint text, refer to step numbers **as they will be at that point in
 
 ---
 
+## Writing discoveries
+
+A discovery is a short illustrated dialogue between two historical logicians that introduces a section's concepts. It lives as a JSON file in `levels/` with `"type": "discovery"`.
+
+The first level of every section (`000-discovery.json`) should be a discovery. Additional discoveries can be interspersed between proof levels (e.g. to introduce a new concept partway through a section).
+
+### Schema
+
+```json
+{
+  "type": "discovery",
+  "title": "The Nature of Truth",
+  "lines": [
+    {
+      "speaker": "Plato",
+      "text": "Aristotle, my dear friend. Let us speak of truth itself.",
+      "sid": "plato",
+      "image": null
+    },
+    {
+      "speaker": "Aristotle",
+      "text": "That a horse is a horse. A thing is itself.",
+      "sid": "aristotle",
+      "image": null
+    }
+  ]
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `type` | `"discovery"` | Identifies this as a discovery level. |
+| `title` | `string` | Heading shown above the dialogue. |
+| `lines` | `array` | Dialogue lines, rendered one at a time with a typewriter effect. |
+| `lines[].speaker` | `string` | Character name displayed in the UI. |
+| `lines[].text` | `string` | What the character says. Supports text markup. |
+| `lines[].sid` | `string` | Short speaker ID used for CSS scoping (e.g. `plato`, `aristotle`, `frege`). |
+| `lines[].image` | `string` or `null` | Optional portrait image path. `null` for no image. |
+
+---
+
 ## Unlocking tactics
 
-Each problem can unlock zero or more tactics via the `unlocks` array. When the student solves the problem, these tactic names are added to their collection (persisted in `localStorage`). The full metadata — description, syntax, example, and inference rule LaTeX — lives in `tactics.json`, not in the problem file.
+Each proof level can unlock tactics via the `unlocks` array. When solved, these tactic names are added to the player's collection (persisted in `localStorage`). Full metadata lives in `tactics.json`.
 
 ```json
 "unlocks": ["->-elim"]
@@ -654,9 +737,9 @@ Each problem can unlock zero or more tactics via the `unlocks` array. When the s
 
 ### Progression guidelines
 
-- **One tactic per 1–2 problems.** Don't dump five new rules at once.
-- **Follow every introduction with a synthesis problem** that uses the new tactic alongside previously learned ones, without introducing anything new (`"unlocks": []`).
-- **Unlock symmetric rules together** — `and-elim-l` and `and-elim-r` in one problem, `or-intro-l` and `or-intro-r` in one problem. The student may only use one in a guided problem, but knowing the other exists is important.
+- **One tactic per 1–2 levels.** Don't dump five new rules at once.
+- **Follow every introduction with a synthesis level** (`"unlocks": []`) using the new tactic alongside previously learned ones.
+- **Unlock symmetric rules together** — `and-elim-l` and `and-elim-r` in one level, `or-intro-l` and `or-intro-r` in one level. The student may only use one but knowing the other exists is important.
 
 ### Recommended introduction order
 
@@ -664,16 +747,15 @@ Each problem can unlock zero or more tactics via the `unlocks` array. When the s
 
 1. `assume`, `->-intro` — the foundational moves
 2. `and-intro` — building conjunctions
-3. (synthesis) — combine assume, ->-intro, and-intro
+3. (synthesis)
 4. `and-elim-l`, `and-elim-r` — breaking conjunctions
-5–7. (practice problems)
+5–7. (practice)
 8. `->-elim` — modus ponens
-9–10. (practice problems)
+9–10. (practice)
 11. `or-intro-l`, `or-intro-r` — building disjunctions
-12–13. (practice problems)
+12–13. (practice)
 14. `or-elim` — proof by cases
-15. (practice)
-16. (grand combo) — all propositional tactics
+15–16. (practice)
 17+. `not-intro`, `not-elim`, `dne`, `ex-falso`, `extend`, `subst`, `top-intro`
 
 **First-Order Logic section** (FOL mode):
@@ -682,43 +764,44 @@ Each problem can unlock zero or more tactics via the `unlocks` array. When the s
 - `forall-intro`, `forall-elim` — universal quantifier rules
 - `exists-intro`, `exists-elim` — existential quantifier rules
 
-**Modal Logic section** (PL mode, with modal operators):
+**Modal Logic section** (PL mode):
 
-- `box-intro` — necessitation (requires empty context: $\emptyset \vdash P$)
-- `box-elim` — K axiom: $\Box(P \to Q) \to (\Box P \to \Box Q)$
-- `diamond-def` — unfold $\Diamond$ via $\lnot\Box\lnot$
-- `diamond-def-rev` — fold $\lnot\Box\lnot$ back to $\Diamond$
+- `box-intro` — necessitation ($\emptyset \vdash P$)
+- `box-elim` — K axiom
+- `diamond-def` — unfold $\Diamond$
+- `diamond-def-rev` — fold back to $\Diamond$
 
 ---
 
 ## Complete example
 
-Here is a full problem file that introduces `->-elim` (modus ponens):
+A full level that introduces `->-elim` (modus ponens):
 
 ```json
 {
+    "type": "problem",
     "description": "Some truths follow others. Let one follow.",
     "goal": "B",
     "premise": ["A", "(-> A B)"],
     "guides": [
         {
-            "text": "We're given two things: $A$ is true, and $A \\to B$ is true. Our goal is to reach $B$, with no extra fluff. This is as direct as reasoning gets.",
+            "text": "We're given $A$ and $A \\to B$. Our goal is to reach $B$. This is as direct as reasoning gets.",
             "tactic": null
         },
         {
-            "text": "First, bring the premise $A$ into the context. If the world tells you it's true, you may as well write it down.",
+            "text": "Bring the premise $A$ into the context.",
             "tactic": "(assume A)"
         },
         {
-            "text": "Now bring in the second premise: $A \\to B$. This says that whenever $A$ holds, $B$ follows.",
+            "text": "Now bring in $A \\to B$. Whenever $A$ holds, $B$ follows.",
             "tactic": "(assume (-> A B))"
         },
         {
-            "text": "You have $A \\to B$ at step 2 and $A$ at step 1. The rule `->-elim` — also known as **modus ponens** — says: if you know an implication and you also know its left-hand side, you get the right-hand side. Apply it now.",
+            "text": "You have $A \\to B$ at step 2 and $A$ at step 1. Use `->-elim` — **modus ponens**.",
             "tactic": "(->-elim 2 1)"
         },
         {
-            "text": "And $B$ is yours. The proof ends here — no implication to discharge, because the premises were given, not assumed for the sake of argument. Just a clean conclusion.",
+            "text": "And $B$ is yours. No implication to discharge — the premises were given, not assumed for argument.",
             "tactic": null
         }
     ],
@@ -731,7 +814,7 @@ Here is a full problem file that introduces `->-elim` (modus ponens):
 
 ## Section config
 
-Each section folder contains a `section.json` that defines the section's metadata:
+Each section folder contains a `section.json`:
 
 ```json
 {
@@ -753,25 +836,27 @@ Each section folder contains a `section.json` that defines the section's metadat
 
 | Field | Type | Description |
 |---|---|---|
-| `nameI18nKey` | `string` | i18n key for the section name, e.g. `"sections.propositional"` |
-| `logicMode` | `"pl"` or `"fol"` | **Default axiom set.** PL: propositional connectives + modal operators. FOL: propositional connectives + quantifiers + predicate application + term variables. Can be overridden per-problem. |
-| `order` | `number` | Linear progression order (0, 1, 2…). Sections unlock sequentially — all problems in all prior sections must be completed before the next section becomes accessible. |
-| `allowedTactics` | `string[]` | The exact set of commands enabled in this section. Filters autocomplete, the tactic sidebar, and the help modal. Tactics not listed here are hidden even if the student has collected them from earlier sections. |
+| `nameI18nKey` | `string` | i18n key for the section name |
+| `logicMode` | `"pl"` or `"fol"` | Default axiom set. Can be overridden per-level. |
+| `order` | `number` | Progression order (0, 1, 2…). Sections unlock sequentially. |
+| `allowedTactics` | `string[]` | Commands enabled in this section. Filters autocomplete, sidebar, and help modal. |
 
 ### Adding a new section
 
-1. Create a folder at `src/data/{locale}/sections/{id}/` for each locale.
-2. Add `section.json` with the appropriate `logicMode`, `order`, and `allowedTactics`.
-3. Add `discovery.json` — a dialogue between characters introducing the section's concepts (see existing sections for the format: an array of `{ "speaker": "...", "text": "..." }` lines under a `"title"`).
-4. Add a `problems/` subfolder with numbered JSON files.
-5. No code changes required — sections are auto-discovered via `import.meta.glob`.
+1. Create `src/data/{locale}/sections/{id}/` for each locale.
+2. Add `section.json` with `logicMode`, `order`, and `allowedTactics`.
+3. Add a `levels/` subfolder:
+   - `000-discovery.json` — the section's discovery dialogue
+   - `001-first-problem.json`, `002-second-problem.json`, …
+4. No code changes required — auto-discovered via `import.meta.glob`.
 
-### Per-problem axiom set override
+### Standalone levels
 
-For **custom / standalone problems** (loaded via URL or file), always include `logicMode` in the problem JSON since there's no section to provide a default:
+For levels loaded via URL or file (not part of a section), always include `"logicMode"`:
 
 ```json
 {
+  "type": "problem",
   "description": "A modal logic proof",
   "goal": "(box A)",
   "premise": ["A"],
@@ -782,24 +867,22 @@ For **custom / standalone problems** (loaded via URL or file), always include `l
 }
 ```
 
-For **built-in section problems**, omit `logicMode` unless you need a specific problem to operate under a different axiom set than its section (rare, but supported).
-
 ---
 
 ## Design principles
 
-1. **Scaffold, then remove.** Guided problems hold the student's hand. Synthesis problems make them think. The final combo challenge tests everything.
+1. **Scaffold, then remove.** Guided levels hold the student's hand. Synthesis levels make them think. The combo challenge tests everything.
 
-2. **One new idea at a time.** Each guide problem introduces one inference rule, not three.
+2. **One new idea at a time.** Each guide level introduces one rule.
 
-3. **Explain the "why", not just the "what".** Don't just state the rule — explain what it *means* in plain language.
+3. **Explain the "why".** Don't just state the rule — explain what it *means*.
 
-4. **Proofs should be clean.** Each problem's intended solution should feel elegant. If a problem requires 15 steps of contortion, redesign it.
+4. **Proofs should be clean.** If a solution requires 15 steps of contortion, redesign.
 
-5. **Prefer implication-shaped goals.** Problems of the form $P \to Q$ are pedagogically clean — assume $P$, prove $Q$, discharge. They also work naturally with empty premises.
+5. **Prefer implication-shaped goals.** $P \to Q$ is pedagogically clean — assume $P$, prove $Q$, discharge. Works naturally with empty premises.
 
-6. **Context is invisible but important.** The engine tracks contexts (sets of assumptions) behind the scenes. `->-intro` discharges one formula; `or-elim` unions three contexts; `extend` adds a formula without changing the conclusion. Be aware of what's in scope at each step.
+6. **Context is invisible but important.** `->-intro` discharges one formula; `or-elim` unions three contexts; `extend` adds a formula. Be aware of what's in scope at each step.
 
-7. **Check commutativity.** `and` and `or` are commutative — `(and A B)` matches `(and B A)`. Implication is not. This affects how the engine compares the student's final step against your `goal`.
+7. **Check commutativity.** `and`/`or` are commutative; `->` is not. Affects goal matching.
 
-8. **Test your problem.** Run the app and solve the problem yourself. Verify every guide/hint tactic works, step numbers are correct, and the goal resolves properly.
+8. **Test your level.** Run the app and solve it yourself. Verify every guide/hint tactic works, step numbers are correct, and the goal resolves.

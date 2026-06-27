@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+const showBanner = ref<boolean>(true)
 </script>
 
 <template>
     <div class="app">
         <div class="main">
+            <div v-if="showBanner" class="dev-banner">
+                <span class="banner-text">{{ t('home.dev_notice') }}</span>
+                <button class="close-btn" @click="showBanner = false">&times;</button>
+            </div>
             <router-view v-slot="{ Component, route }">
                 <Transition name="page">
                     <component :is="Component" :key="route.fullPath" />
@@ -60,6 +66,35 @@ const { t } = useI18n()
     a {
         color: inherit;
         font-weight: 500;
+    }
+}
+
+.dev-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    background-color: yellow;
+    color: #000;
+
+    .banner-text {
+        flex: 1;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
     }
 }
 </style>

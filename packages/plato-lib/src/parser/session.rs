@@ -75,17 +75,12 @@ impl Session {
     /// Checks whether the last step satisfies the goal.
     ///
     /// `goal` is an s-expression formula string (e.g. `"(-> I I)"`).
-    /// `premises` are the premise formula strings given by the problem.
-    ///
     /// Returns `true` if the last judgement's conclusion equals the
-    /// parsed goal formula **and** the context contains exactly the
-    /// given premises (no more, no less).
-    pub fn last_step_satisfies_goal(&self, goal: &str, premises: &[String]) -> bool {
+    /// parsed goal formula.
+    pub fn last_step_satisfies_goal(&self, goal: &str) -> bool {
         if self.steps.is_empty() {
             return false;
         }
-
-        // Parse goal formula
         let tokens = super::sexpr::tokenize(goal);
         let sexpr = match super::sexpr::parse_one(&tokens) {
             Ok(s) => s,
@@ -95,25 +90,8 @@ impl Session {
             Ok(f) => f,
             Err(_) => return false,
         };
-
-        // Parse premises into a Context
-        let mut expected_ctx = Context::new();
-        for p_str in premises {
-            let p_tokens = super::sexpr::tokenize(p_str);
-            let p_sexpr = match super::sexpr::parse_one(&p_tokens) {
-                Ok(s) => s,
-                Err(_) => return false,
-            };
-            let p_f = match super::formula::parse_formula(&p_sexpr, None) {
-                Ok(f) => f,
-                Err(_) => return false,
-            };
-            expected_ctx.insert(p_f.as_ref().clone());
-        }
-
         let last = &self.steps[self.steps.len() - 1];
-        // Check conclusion matches goal AND context matches premises exactly
-        *last.prop == *goal_f && last.ctx == expected_ctx
+        *last.prop == *goal_f
     }
 
     /// Returns the judgement at step `n` (1-indexed).

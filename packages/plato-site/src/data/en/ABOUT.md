@@ -12,7 +12,9 @@ The idea isn't to teach you *about* logic — it's to teach you to *do* logic. A
 
 You are shown a statement to prove. You type commands in an s-expression REPL — `(assume A)`, `(->-elim 2 1)`, `(and-intro 1 3)` — and the engine checks each step against the rules of natural deduction. Guide cards walk you through your first proofs. Hints appear when you're lost. Every solved problem unlocks new tactics, building your toolkit one rule at a time.
 
-There are **61 problems** across three sections — Propositional Logic (38 problems), First-Order Logic (15 problems), and Modal Logic / System K (8 problems). Each section opens with a **discovery dialogue** — a short illustrated conversation between historical logicians (Plato & Aristotle, De Morgan & Frege, Aristotle & the Master) that sets up the section's theme before you dive into proofs. As you solve problems, you unlock **24 tactics**, each with a LaTeX inference rule and natural-language description.
+There are **61 problems** and **24 tactics** distributed across three sections — Propositional Logic (38 problems), First-Order Logic (15 problems), and Modal Logic / System K (8 problems). 
+
+To keep the momentum going, the game features a dense, interleaved learning pattern. Instead of dropping massive walls of theory on you all at once, short **discovery dialogues** — illustrated conversations between historical logicians (Plato & Aristotle, De Morgan & Frege, Aristotle & the Master) — are woven directly into the progression. A concept is introduced via dialogue, and you immediately reinforce it with relevant exercises before moving to the next insight. Each step forward unlocks new tactics, complete with a LaTeX inference rule and natural-language description.
 
 Plato's engine supports two **axiom sets** — PL and FOL — displayed as a colored chip in the navbar (green for FOL on, orange for FOL off). See below for why this separation matters.
 

@@ -102,18 +102,15 @@ fn tactic_equals_normalises_whitespace() {
 
 #[test]
 fn goal_resolution() {
-    let empty: Vec<String> = vec![];
     let mut s = Session::new();
-    assert!(!s.last_step_satisfies_goal("(-> I I)", &empty));
+    assert!(!s.last_step_satisfies_goal("(-> I I)"));
 
     s.execute("(assume I)").unwrap();
-    // context is {I}, not empty — still not resolved
-    assert!(!s.last_step_satisfies_goal("(-> I I)", &empty));
+    assert!(!s.last_step_satisfies_goal("(-> I I)"));
 
     s.execute("(->-intro I 1)").unwrap();
-    // context is now empty, conclusion is I→I
-    assert!(s.last_step_satisfies_goal("(-> I I)", &empty));
-    assert!(!s.last_step_satisfies_goal("(-> I A)", &empty));
+    assert!(s.last_step_satisfies_goal("(-> I I)"));
+    assert!(!s.last_step_satisfies_goal("(-> I A)"));
 }
 
 #[test]

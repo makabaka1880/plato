@@ -1,14 +1,20 @@
+import { PROGRESS_KEY } from '@/stores/progress'
+import { ROADMAP_KEY } from '@/stores/roadmap'
+import { DISCOVERY_KEY } from '@/stores/discovery'
+import { TACTICS_KEY } from '@/stores/tactics'
+import { LOCALE_KEY } from '@/stores/preferences'
+
 /** localStorage keys that constitute a user's Plato progress. */
 const PROGRESS_KEYS = [
-    'plato-progress-v3',
-    'plato-roadmap-v5',
-    'plato-discoveries',
-    'plato-tactics',
-    'plato-locale',
+    PROGRESS_KEY,
+    ROADMAP_KEY,
+    DISCOVERY_KEY,
+    TACTICS_KEY,
+    LOCALE_KEY,
 ] as const
 
 export interface PlatoExport {
-    version: 1
+    version: 2
     exportedAt: string
     keys: Record<string, unknown>
 }
@@ -23,7 +29,7 @@ export function exportProgress(): PlatoExport {
         }
     }
     return {
-        version: 1,
+        version: 2,
         exportedAt: new Date().toISOString(),
         keys,
     }

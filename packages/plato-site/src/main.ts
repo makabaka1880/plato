@@ -34,7 +34,7 @@ app.mount('#app')
     let offset = 0
     for (const sec of sections) {
       if (levelIdx < offset + sec.levels.length) {
-        router.push(`/section/${sec.id}/level/${levelIdx - offset}`)
+        router.push({ name: 'level', params: { sectionId: sec.id, idx: String(levelIdx - offset) } })
         return
       }
       offset += sec.levels.length
@@ -42,7 +42,7 @@ app.mount('#app')
     console.log(`[plato] level ${levelIdx} not found`)
     return
   }
-  router.push(`/section/${section}/level/${levelIdx}`)
+  router.push({ name: 'level', params: { sectionId: section, idx: String(levelIdx) } })
 }
 
 ;(window as any).__plato_help__ = () => {

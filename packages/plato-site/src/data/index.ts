@@ -122,46 +122,41 @@ export function getNextSection(currentId: string, locale = 'en'): Section | unde
     return sections[idx + 1]
 }
 
+// ── Level index <-> problem index mapping ─────────────────────────────
+
+/** Count the number of problem-type levels in a section. */
+export function sectionProblemCount(section: Section): number {
+    return section.levels.filter(l => l.type === 'problem').length
+}
+
 /**
- * Map a legacy global problem index (0-based) to section + within-section index.
- * This handles the original 57-problem ordering before sections were introduced.
+ * Convert a 0-based problem index to the corresponding level index.
+ * Returns null if the problem index is out of range.
  */
-export function resolveGlobalIndex(
-    globalIdx: number,
-    locale = 'en',
-): { sectionId: string; sectionIdx: number } | null {
-    const sections = loadSections(locale)
-    let offset = 0
-    for (const section of sections) {
-        const problemCount = section.levels.filter(l => l.type === 'problem').length
-        if (globalIdx < offset + problemCount) {
-            // Return 0-based problem index within the section (NOT the level index).
-            // Callers that need level indices must add +1 to skip the discovery at level 0.
-            return { sectionId: section.id, sectionIdx: globalIdx - offset }
+export function problemIdxToLevelIdx(section: Section, problemIdx: number): number | null {
+    let count = 0
+    for (let i = 0; i < section.levels.length; i++) {
+        if (section.levels[i]!.type === 'problem') {
+            if (count === problemIdx) return i
+            count++
         }
-        offset += problemCount
     }
     return null
 }
 
-// ── Legacy flat access (for backward compat) ──────────────────────────
-
-/** Get all problems across all sections, with section metadata attached. */
-export function loadAllProblems(locale = 'en'): (Problem & { sectionId: string; sectionIdx: number })[] {
-    return loadSections(locale).flatMap(section =>
-        section.levels
-            .filter((l): l is { type: 'problem'; data: Problem } => l.type === 'problem')
-            .map((l, i) => ({
-                ...l.data,
-                sectionId: section.id,
-                sectionIdx: i, // 0-based problem index within section
-            }))
-    )
-}
-
-/** @deprecated Use loadSections() instead. */
-export function loadProblems(locale = 'en'): Problem[] {
-    return loadAllProblems(locale)
+/**
+ * Convert a level index to the corresponding 0-based problem index.
+ * Returns null if the level is not a problem (e.g. it's a discovery).
+ */
+export function levelIdxToProblemIdx(section: Section, levelIdx: number): number | null {
+    if (levelIdx < 0 || levelIdx >= section.levels.length) return null
+    const level = section.levels[levelIdx]
+    if (level?.type !== 'problem') return null
+    let count = 0
+    for (let i = 0; i < levelIdx; i++) {
+        if (section.levels[i]!.type === 'problem') count++
+    }
+    return count
 }
 
 // ── Glossary ──────────────────────────────────────────────────────────

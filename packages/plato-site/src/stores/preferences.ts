@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
-const LOCALE_KEY = 'plato-locale'
+export const LOCALE_KEY = 'plato-locale'
+const VIEW_MODE_KEY = 'plato-view-mode'
 
 function loadLocale(): string {
   try {
@@ -10,14 +11,23 @@ function loadLocale(): string {
   return 'en'
 }
 
+function loadViewMode(): 'tex' | 'text' {
+  try {
+    const raw = localStorage.getItem(VIEW_MODE_KEY)
+    if (raw === 'tex' || raw === 'text') return raw
+  } catch { /* ignore */ }
+  return 'tex'
+}
+
 export const usePreferencesStore = defineStore('preferences', {
   state: () => ({
-    viewMode: 'tex' as 'tex' | 'text',
+    viewMode: loadViewMode() as 'tex' | 'text',
     locale: loadLocale(),
   }),
   actions: {
     toggleViewMode() {
       this.viewMode = this.viewMode === 'tex' ? 'text' : 'tex'
+      localStorage.setItem(VIEW_MODE_KEY, this.viewMode)
     },
     setLocale(loc: string) {
       this.locale = loc

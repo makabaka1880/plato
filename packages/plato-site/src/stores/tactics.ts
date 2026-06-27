@@ -1,17 +1,17 @@
 import { defineStore } from 'pinia'
 
-const KEY = 'plato-tactics'
+export const TACTICS_KEY = 'plato-tactics'
 
 function load(): string[] {
     try {
-        const raw = localStorage.getItem(KEY)
+        const raw = localStorage.getItem(TACTICS_KEY)
         if (raw !== null) return JSON.parse(raw)
     } catch { /* ignore */ }
     return []
 }
 
 function save(names: string[]) {
-    localStorage.setItem(KEY, JSON.stringify(names))
+    localStorage.setItem(TACTICS_KEY, JSON.stringify(names))
 }
 
 export const useTacticsStore = defineStore('tactics', {

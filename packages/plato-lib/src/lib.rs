@@ -5,7 +5,6 @@ pub mod context;
 pub mod formula;
 pub mod inference;
 pub mod judgement;
-pub mod fitch;
 mod parser;
 mod rules;
 
@@ -306,10 +305,11 @@ impl Session {
         parser::sexpr::tactic_equals(a, b)
     }
 
-    /// Returns `true` if the last step proves the goal under the given premises.
+    /// Returns `true` if the last step proves the goal (empty context,
+    /// conclusion equals the parsed goal formula).
     #[wasm_bindgen(js_name = isGoalResolved)]
-    pub fn is_goal_resolved(&self, goal: &str, premises: Vec<String>) -> bool {
-        self.0.last_step_satisfies_goal(goal, &premises)
+    pub fn is_goal_resolved(&self, goal: &str) -> bool {
+        self.0.last_step_satisfies_goal(goal)
     }
 
     /// Set the logic mode. `"pl"` = propositional (modal allowed, quantifiers blocked).

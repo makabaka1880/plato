@@ -1,8 +1,7 @@
 import { createI18n } from 'vue-i18n'
 import en from './locales/en'
 import zh from './locales/zh'
-
-const LOCALE_KEY = 'plato-locale'
+import { LOCALE_KEY } from '@/stores/preferences'
 
 function loadLocale(): string {
     try {
@@ -20,4 +19,3 @@ const i18n = createI18n({
 })
 
 export default i18n
-export { LOCALE_KEY }

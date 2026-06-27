@@ -49,7 +49,7 @@ const continueTarget = computed(() =>
 function goContinue() {
     const tgt = continueTarget.value
     if (!tgt) return
-    router.push(`/section/${tgt.sectionId}/level/${tgt.levelIdx}`)
+    router.push({ name: 'level', params: { sectionId: tgt.sectionId, idx: String(tgt.levelIdx) } })
 }
 
 function onStartFresh() {
@@ -59,13 +59,13 @@ function onStartFresh() {
     useRoadmapStore().reset()
     const sorted = [...allSections.value].sort((a, b) => a.meta.order - b.meta.order)
     if (sorted.length > 0) {
-        router.push(`/section/${sorted[0]!.id}/level/0`)
+        router.push({ name: 'level', params: { sectionId: sorted[0]!.id, idx: '0' } })
     }
 }
 
 function onSectionClick(sectionId: string) {
     const highest = progress.highestCompletedLevel[sectionId] ?? -1
-    router.push(`/section/${sectionId}/level/${highest + 1}`)
+    router.push({ name: 'level', params: { sectionId, idx: String(highest + 1) } })
 }
 
 function sectionProgressPercent(sectionId: string): number {

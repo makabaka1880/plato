@@ -13,14 +13,14 @@ const sectionId = computed(() => {
 })
 
 const n = computed(() => (Number(route.query.n) || 0) + 1)
-const closest = computed(() => (Number(route.query.closest) || 0) + 1)
+const closest = computed(() => Number(route.query.closest) || 0)
 
 function goContinue() {
-    if (sectionId.value) {
-        router.push(`/section/${sectionId.value}/level/${closest.value - 1}`)
-    } else {
+    if (!sectionId.value) {
         router.push('/')
+        return
     }
+    router.push({ name: 'level', params: { sectionId: sectionId.value, idx: String(closest.value) } })
 }
 </script>
 

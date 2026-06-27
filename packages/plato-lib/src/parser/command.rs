@@ -1,7 +1,6 @@
 use std::rc::Rc;
 
 use crate::formula::PropWWF;
-use crate::inference::RuleKind;
 use super::formula::parse_formula;
 use super::sexpr::SExpr;
 
@@ -440,42 +439,6 @@ fn parse_command(sexpr: &SExpr, mode: Option<&str>) -> Result<Command, String> {
 }
 
 impl Command {
-    /// Returns the [`RuleKind`] for inference-rule commands, or `None` for
-    /// meta-commands (`Formula`, `Show`).
-    pub fn kind(&self) -> Option<RuleKind> {
-        match self {
-            Command::Formula(_) | Command::Show(_) => None,
-            Command::Assume(_) => Some(RuleKind::Assume),
-            Command::Var(..) => Some(RuleKind::Var),
-            Command::AndIntro(..) => Some(RuleKind::ConjIntro),
-            Command::AndElimL(_) => Some(RuleKind::ConjElimL),
-            Command::AndElimR(_) => Some(RuleKind::ConjElimR),
-            Command::OrIntroL(..) => Some(RuleKind::DisjIntroL),
-            Command::OrIntroR(..) => Some(RuleKind::DisjIntroR),
-            Command::OrElim(..) => Some(RuleKind::DisjElim),
-            Command::ImpIntro(..) => Some(RuleKind::ImpIntro),
-            Command::ImpElim(..) => Some(RuleKind::ImpElim),
-            Command::ImpInto(_) => Some(RuleKind::ImpInto),
-            Command::NotIntro(..) => Some(RuleKind::NegIntro),
-            Command::NotElim(_) => Some(RuleKind::NegElim),
-            Command::DNegElim(_) => Some(RuleKind::DNegElim),
-            Command::ExFalso(..) => Some(RuleKind::ExFalso),
-            Command::TopIntro => Some(RuleKind::TopIntro),
-            Command::TopIntroCtx(_) => Some(RuleKind::TopIntroCtx),
-            Command::Extend(..) => Some(RuleKind::Extend),
-            Command::Fix(_) => Some(RuleKind::Fix),
-            Command::ForallIntro(..) => Some(RuleKind::ForallIntro),
-            Command::ForallElim(..) => Some(RuleKind::ForallElim),
-            Command::ExistsIntro(..) => Some(RuleKind::ExistsIntro),
-            Command::ExistsElim(..) => Some(RuleKind::ExistsElim),
-            Command::BoxIntro(_) => Some(RuleKind::BoxIntro),
-            Command::BoxElim(..) => Some(RuleKind::BoxElim),
-            Command::DiamondDef(_) => Some(RuleKind::DiamondDef),
-            Command::DiamondDefRev(_) => Some(RuleKind::DiamondDefRev),
-            Command::Subst(..) => Some(RuleKind::Subst),
-        }
-    }
-
     /// Returns (canonical_name, [(param_key, param_value)]).
     /// All values are strings: step numbers, LaTeX for formulas, raw atoms for variables.
     pub fn meta(&self) -> (String, Vec<(String, String)>) {

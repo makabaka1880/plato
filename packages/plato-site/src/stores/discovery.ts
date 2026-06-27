@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-const KEY = 'plato-discoveries'
+export const DISCOVERY_KEY = 'plato-discoveries'
 
 interface DiscoveryState {
     viewed: Record<string, boolean>
@@ -9,22 +9,12 @@ interface DiscoveryState {
 
 function load(): DiscoveryState {
     try {
-        const raw = localStorage.getItem(KEY)
+        const raw = localStorage.getItem(DISCOVERY_KEY)
         if (raw !== null) {
             const parsed = JSON.parse(raw)
             if (parsed && typeof parsed.viewed === 'object') {
-                const viewed: Record<string, boolean> = {}
-                // Migrate old keys (sectionId → sectionId/0) and keep new keys as-is
-                for (const [k, v] of Object.entries(parsed.viewed as Record<string, boolean>)) {
-                    if (k.includes('/')) {
-                        viewed[k] = v
-                    } else {
-                        // Old format: plain sectionId → migrate to sectionId/0
-                        viewed[`${k}/0`] = v
-                    }
-                }
                 return {
-                    viewed,
+                    viewed: parsed.viewed as Record<string, boolean>,
                     position: (parsed.position as Record<string, number>) ?? {},
                 }
             }
@@ -34,7 +24,7 @@ function load(): DiscoveryState {
 }
 
 function save(state: DiscoveryState) {
-    localStorage.setItem(KEY, JSON.stringify(state))
+    localStorage.setItem(DISCOVERY_KEY, JSON.stringify(state))
 }
 
 export const useDiscoveryStore = defineStore('discovery', {
