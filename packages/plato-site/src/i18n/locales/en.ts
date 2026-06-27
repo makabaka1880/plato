@@ -51,6 +51,7 @@ export default {
         backHome: 'Back Home',
         prev: '← Prev',
         next: 'Next →',
+        clear: 'Clear',
     },
 
     repl: {
@@ -142,6 +143,10 @@ export default {
         language: 'Language',
         tex: 'TeX',
         text: 'Text',
+        exportProgress: 'Export Progress',
+        export: 'Export',
+        importProgress: 'Import Progress',
+        import: 'Import',
     },
 
     roadmap: {

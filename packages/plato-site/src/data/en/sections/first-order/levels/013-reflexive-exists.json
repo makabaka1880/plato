@@ -1,0 +1,30 @@
+{
+    "description": "If everything relates to itself, then something relates to itself.",
+    "goal": "(-> (forall x (App (App R x) x)) (exists y (App (App R y) y)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "A **reflexive** relation is one where every element relates to itself: $R(x,x)$ for all $x$. Examples: 'is the same height as', 'is at least as old as'. The goal is trivial but illuminating: if everything is self-related, then there exists something self-related. From $\\forall$ to $\\exists$.",
+            "tactic": null
+        },
+        {
+            "text": "Assume reflexivity: everything is $R$-related to itself. Notice the binary [predicate|predicate] syntax: `(App (App R x) x)` — the same term $x$ appears in both argument positions.",
+            "tactic": "(assume (forall x (App (App R x) x)))"
+        },
+        {
+            "text": "Instantiate with a concrete term $a$ using `forall-elim`. If everything is $R$-related to itself, then $a$ is $R$-related to $a$. Pick any [term|term] you like.",
+            "tactic": "(forall-elim 1 a)"
+        },
+        {
+            "text": "From the concrete example $R(a,a)$, use `exists-intro` to [existential-generalisation|generalise]: replace the [term|term] $a$ with the [bound-variable|bound variable] $y$ to get $\\exists y.\\; R(y,y)$. The witness is $a$, the variable is $y$.",
+            "tactic": "(exists-intro 2 a y)"
+        },
+        {
+            "text": "[discharge|Discharge] the reflexivity assumption to finish the [implication|implication].",
+            "tactic": "(->-intro (forall x (App (App R x) x)) 3)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [],
+    "type": "problem"
+}

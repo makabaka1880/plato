@@ -87,8 +87,8 @@ export function useProofSession(logicMode?: Ref<'fol' | 'pl'>, goal?: Ref<string
     input.value = tactic
   }
 
-  function isGoalResolved(g: string): boolean {
-    return session.isGoalResolved(g)
+  function isGoalResolved(g: string, premises: string[]): boolean {
+    return session.isGoalResolved(g, premises)
   }
 
   const SessionClassRef = ref<any>(null)

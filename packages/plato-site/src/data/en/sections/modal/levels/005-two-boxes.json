@@ -1,0 +1,31 @@
+{
+    "type": "discovery",
+    "title": "Two Boxes",
+    "lines": [
+        {
+            "speaker": "C. I. Lewis",
+            "text": "We have seen that □ distributes over implication — the K axiom. And we have seen necessitation: from an empty-context proof we derive necessity.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "These two rules — box-intro and box-elim — are all we have. No reflexivity, no transitivity. Just the bare structure of worlds and accessibility.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "It is remarkable how much follows from so little. The K axiom is not imposed — it emerges.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "That is the nature of frame conditions. They live in the semantics, not the syntax. The proof rules simply respect the structure of possible worlds.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Onward, then. Let us see what else the bare frame can yield.",
+            "sid": "C"
+        }
+    ]
+}

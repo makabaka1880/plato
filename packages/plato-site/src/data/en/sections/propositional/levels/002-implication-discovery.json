@@ -1,0 +1,61 @@
+{
+    "type": "discovery",
+    "title": "Assuming and Concluding",
+    "lines": [
+        {
+            "speaker": "Plato",
+            "text": "You just proved $A$ from the assumption $A$. A trifle, perhaps — but look closer.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "What is there to see? We borrowed what we needed and gave it back.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. But now imagine: you assume something — call it $P$ — and, reasoning from that assumption, you reach a conclusion $Q$.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "I have $P$ in the context, and I derive $Q$. So what?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "So you have shown something deeper: **if** $P$ **then** $Q$. The assumption was only borrowed. It does not need to be true in the world — only in the argument.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So the proof itself becomes the implication. I discharge the assumption $P$ and package the whole derivation into $P \\to Q$.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "That is `(->-intro F N)`: from step $N$ — which proved the consequent under the assumption $F$ — form $F \\to$ (the consequent). The assumption vanishes from the context.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And the reverse? If I have $P \\to Q$ and also $P$?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Then `(->-elim N M)` — [modus-ponens|modus ponens] — lets you detach $Q$. Step $N$ gives the arrow, step $M$ gives the antecedent. Out comes the consequent.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Introduction builds the arrow. Elimination uses it. Two sides of the same coin.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Now prove it. Start with the simplest implication of all: if you are yourself, then you are yourself.",
+            "sid": "P"
+        }
+    ]
+}

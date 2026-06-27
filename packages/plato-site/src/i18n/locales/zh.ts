@@ -51,6 +51,7 @@ export default {
         backHome: '返回首页',
         prev: '← 上一题',
         next: '下一题 →',
+        clear: '清除',
     },
 
     repl: {
@@ -142,6 +143,10 @@ export default {
         language: '语言',
         tex: 'TeX',
         text: '文本',
+        exportProgress: '导出进度',
+        export: '导出',
+        importProgress: '导入进度',
+        import: '导入',
     },
 
     roadmap: {

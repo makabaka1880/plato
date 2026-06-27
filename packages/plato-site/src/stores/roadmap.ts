@@ -2,16 +2,32 @@ import { defineStore } from 'pinia'
 import { resolveGlobalIndex } from '@/data'
 import type { StepMeta } from '@/composables/useNlg'
 
-export interface RoadmapEntry {
+export type RoadmapEntry =
+    | {
+        sectionId: string
+        sectionIdx: number
+        tag: 'problem'
+        goal: string
+        proof: StepMeta[]
+    }
+    | {
+        sectionId: string
+        sectionIdx: number
+        tag: 'discovery'
+        /** Last dialogue line index the user reached (0-based). */
+        idx: number
+    }
+
+const KEY = 'plato-roadmap-v5'
+const V4_KEY = 'plato-roadmap-v4'
+
+/** Old v4 entries — untagged, always problem-type. */
+interface V4Entry {
     sectionId: string
     sectionIdx: number
-    /** Raw proof steps — NLG lines are generated dynamically from these at display time. */
     steps: StepMeta[]
-    /** The goal formula (s-expression). */
     goal: string
 }
-
-const KEY = 'plato-roadmap-v3'
 
 /** Old v2 entries had `proofLines: string[]` and `description: string`. */
 interface V2Entry {
@@ -24,6 +40,7 @@ interface V2Entry {
 }
 
 function load(): RoadmapEntry[] {
+    // Try v5 first
     try {
         const raw = localStorage.getItem(KEY)
         if (raw !== null) {
@@ -32,8 +49,34 @@ function load(): RoadmapEntry[] {
         }
     } catch { /* ignore */ }
 
-    // Migrate from v2 / legacy
+    // Migrate from v4 (untagged problem entries)
+    const v4 = migrateV4()
+    if (v4.length > 0) return v4
+
+    // Migrate from older formats
     return migrateOld()
+}
+
+/** Migrate from v4: wrap problem entries with `tag: 'problem'` and rename `steps` → `proof`. */
+function migrateV4(): RoadmapEntry[] {
+    try {
+        const raw = localStorage.getItem(V4_KEY)
+        if (raw) {
+            const entries: any[] = JSON.parse(raw)
+            if (Array.isArray(entries)) {
+                const result: RoadmapEntry[] = entries.map(e => ({
+                    sectionId: e.sectionId as string,
+                    sectionIdx: e.sectionIdx as number,
+                    tag: 'problem' as const,
+                    goal: e.goal as string ?? '',
+                    proof: (e.steps ?? []) as StepMeta[],
+                }))
+                localStorage.removeItem(V4_KEY)
+                return result
+            }
+        }
+    } catch { /* ignore */ }
+    return []
 }
 
 /** Migrate from v2 (`plato-roadmap-v2`) and legacy (`plato-roadmap`). */
@@ -50,9 +93,10 @@ function migrateOld(): RoadmapEntry[] {
                     if (e.sectionId !== undefined && e.sectionIdx !== undefined) {
                         entries.push({
                             sectionId: e.sectionId,
-                            sectionIdx: e.sectionIdx,
-                            steps: [],
+                            sectionIdx: e.sectionIdx + 1, // problem index → level index
+                            tag: 'problem',
                             goal: e.goal ?? '',
+                            proof: [],
                         })
                     }
                 }
@@ -74,9 +118,10 @@ function migrateOld(): RoadmapEntry[] {
                         if (resolved) {
                             entries.push({
                                 sectionId: resolved.sectionId,
-                                sectionIdx: resolved.sectionIdx,
-                                steps: [],
+                                sectionIdx: resolved.sectionIdx + 1, // problem index → level index
+                                tag: 'problem',
                                 goal: e.goal ?? '',
+                                proof: [],
                             })
                         }
                     }

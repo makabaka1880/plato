@@ -1,0 +1,38 @@
+{
+    "description": "Some truths follow from following truths.",
+    "goal": "C",
+    "premise": [
+        "A",
+        "(-> A B)",
+        "(-> B C)"
+    ],
+    "guides": [],
+    "hints": [
+        {
+            "text": "Three [premise|premises] this time: $A$, $A \\to B$, and $B \\to C$. The goal is $C$. You'll need to apply [modus-ponens|modus ponens] twice — once to reach the middle stop, then again to reach the destination. Start by assuming all three premises.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $A$, the simplest [premise|premise].",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "Now assume $A \\to B$ and $B \\to C$ as well. You'll need them both.",
+            "tactic": "(assume (-> A B))"
+        },
+        {
+            "text": "Assume the final [premise|premise]: $B \\to C$.",
+            "tactic": "(assume (-> B C))"
+        },
+        {
+            "text": "Apply [modus-ponens|modus ponens] with $A \\to B$ (step 2) and $A$ (step 1) to reach $B$.",
+            "tactic": "(->-elim 2 1)"
+        },
+        {
+            "text": "Now apply [modus-ponens|modus ponens] again with $B \\to C$ (step 3) and your freshly-derived $B$ to reach $C$.",
+            "tactic": "(->-elim 3 4)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

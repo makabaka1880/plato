@@ -1,0 +1,52 @@
+{
+    "description": "If something is necessarily necessary, it must at least be true in our actual world. Let's step down the modal ladder.",
+    "goal": "(-> (box (box A)) A)",
+    "premise": [
+        "(-> (box P) P)"
+    ],
+    "guides": [
+        {
+            "text": "Welcome to **System T**. In basic modal logic, just because something is necessary ($\\Box$) doesn't mean it's actually true right here.\n\nSystem T bridges this gap by adding the **Reflexivity Axiom**: $\\Box P \\to P$. Whatever is necessary is also actual.",
+            "tactic": null
+        },
+        {
+            "text": "In this level, we are dealing with a double layer: $\\Box\\Box A$, which means $A$ is *necessarily necessary*.\n\nWhat does that actually mean? Think of modal logic like a map of interconnected worlds (a Kripke frame $(W, R)$). If a statement is 'necessary' ($\\Box A$), it means $A$ is true in every world you can reach in **one step** from where you are standing.",
+            "tactic": null
+        },
+        {
+            "text": "Therefore, *necessarily necessary* ($\\Box\\Box A$) means $A$ must be true in every world you can reach in exactly **two steps** (using the composition relation $R^2$).\n\n**Example:** Imagine 'World 1' is your real life. From your real life, you can choose to travel to any 'Possible Future' world (Step 1). In all of those futures, it is a rule that *'Human beings must breathe oxygen to survive.'* Because that rule is an absolute necessity in *every* future world, it must also hold true in any world *those* futures can reach (Step 2). Thus, human survival requiring oxygen is *necessarily necessary* from where you stand right now.",
+            "tactic": null
+        },
+        {
+            "text": "Our goal is to climb down this two-step modal ladder: prove that if $A$ is true two steps away ($\\Box\\Box A$), it must at least be true right here in our actual world ($A$).\n\nLet's pull our Reflexivity Axiom into our context.",
+            "tactic": "(assume (-> (box P) P))"
+        },
+        {
+            "text": "Since our goal is an implication ($\\Box\\Box A \\to A$), let's assume the antecedent and work our way down to $A$.",
+            "tactic": "(assume (box (box A)))"
+        },
+        {
+            "text": "Look at Step 1: $\\Box P \\to P$. This axiom lets us peel off exactly *one* outer layer of necessity from whatever we plug into $P$.\n\nTo strip the first layer from our assumption ($\\Box\\Box A$), we need to treat the inner $\\Box A$ as our placeholder. Let's substitute $P$ with $\\Box A$.",
+            "tactic": "(subst 1 (P (box A)))"
+        },
+        {
+            "text": "Excellent. Now Step 4 gives us the conditional bridge ($\\Box\\Box A \\to \\Box A$). Use Modus Ponens (`->-elim`) to discharge the outer box.",
+            "tactic": "(->-elim 4 3)"
+        },
+        {
+            "text": "We are halfway down! Step 5 gives us $\\Box A$. To drop this final box and reach bare $A$, we need to reuse our Reflexivity Axiom from Step 1.\n\nThis time, substitute $P$ with our target atom $A$.",
+            "tactic": "(subst 1 (P A))"
+        },
+        {
+            "text": "Perfect. You have the implication ($\\Box A \\to A$) at Step 6, and the key $\\Box A$ at Step 5. Trigger Modus Ponens (`->-elim`) one last time.",
+            "tactic": "(->-elim 6 5)"
+        },
+        {
+            "text": "With the ladder fully descended, use `->-intro` to discharge your initial assumption and seal the final implication.",
+            "tactic": "(->-intro (box (box A)) 7)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [],
+    "type": "problem"
+}

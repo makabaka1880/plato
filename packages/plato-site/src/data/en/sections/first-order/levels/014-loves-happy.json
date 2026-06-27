@@ -1,0 +1,42 @@
+{
+    "description": "If loving someone makes you happy, and a loves b, then a is happy.",
+    "goal": "(-> (forall x (forall y (-> (App (App Loves x) y) (App Happy x)))) (-> (App (App Loves a) b) (App Happy a)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "This problem bridges binary and unary [predicate|predicates]. $Loves(x,y)$ is a binary relation ('$x$ loves $y$'), written `(App (App Loves x) y)`. $Happy(x)$ is a unary property, written `(App Happy x)`. The premise says: for anyone $x$, if there's someone $y$ they love, then $x$ is happy. Given that $a$ loves $b$, prove $a$ is happy.",
+            "tactic": null
+        },
+        {
+            "text": "Assume the general principle: loving someone makes you happy. This is a formula with both a binary [predicate|predicate] ($Loves$) and a unary one ($Happy$).",
+            "tactic": "(assume (forall x (forall y (-> (App (App Loves x) y) (App Happy x)))))"
+        },
+        {
+            "text": "Now assume the specific fact: $a$ loves $b$. Written as nested `App`: `(App (App Loves a) b)`.",
+            "tactic": "(assume (App (App Loves a) b))"
+        },
+        {
+            "text": "Instantiate the general principle with $a$ (replacing the outer $x$). This gives: for all $y$, if $a$ loves $y$, then $a$ is happy.",
+            "tactic": "(forall-elim 1 a)"
+        },
+        {
+            "text": "Instantiate with $b$ (replacing $y$). We get: if $a$ loves $b$, then $a$ is happy.",
+            "tactic": "(forall-elim 3 b)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens]: $a$ loves $b$ (step 2) plus the conditional (step 4) gives $Happy(a)$.",
+            "tactic": "(->-elim 4 2)"
+        },
+        {
+            "text": "[discharge|Discharge] the inner assumption '$a$ loves $b$' to get $Loves(a,b) \\to Happy(a)$.",
+            "tactic": "(->-intro (App (App Loves a) b) 5)"
+        },
+        {
+            "text": "[discharge|Discharge] the general principle to complete the proof. Notice how the binary predicate $Loves(x,y)$ and unary predicate $Happy(x)$ coexist naturally in the same proof.",
+            "tactic": "(->-intro (forall x (forall y (-> (App (App Loves x) y) (App Happy x)))) 6)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [],
+    "type": "problem"
+}

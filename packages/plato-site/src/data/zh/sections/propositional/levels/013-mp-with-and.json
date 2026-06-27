@@ -1,0 +1,34 @@
+{
+    "description": "钥匙在手，不怕开不了锁。",
+    "goal": "(-> (and A (-> A B)) B)",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "目标是 $(A \\land (A \\to B)) \\to B$。$A$ 和承诺 $A \\to B$ 被打包在一起给了你。只要把它们拆开，[modus-ponens|肯定前件] 就能搞定剩下的。先从假设这个 [conjunction|合取] 开始。",
+            "tactic": null
+        },
+        {
+            "text": "假设这个捆绑的承诺：$A \\land (A \\to B)$。",
+            "tactic": "(assume (and A (-> A B)))"
+        },
+        {
+            "text": "拆出左半边——这就是 $A$，那把钥匙。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "再拆出右半边——这就是 $A \\to B$，那条承诺本身。",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "承诺在第 3 步，钥匙在第 2 步。用 [modus-ponens|肯定前件] 来解锁 $B$。",
+            "tactic": "(->-elim 3 2)"
+        },
+        {
+            "text": "[discharge|消去] 这个 [assumption|假设]，收工。",
+            "tactic": "(->-intro (and A (-> A B)) 4)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

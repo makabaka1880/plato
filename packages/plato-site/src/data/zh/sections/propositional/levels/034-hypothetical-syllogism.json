@@ -1,0 +1,50 @@
+{
+    "description": "三人行，必有我师。",
+    "goal": "(-> (and (-> A B) (-> B C)) (-> A C))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "假言三段论（Hypothetical syllogism）：$(A \\to B) \\to ((B \\to C) \\to (A \\to C))$。如果 $A$ 通向 $B$，$B$ 通向 $C$，那 $A$ 通向 $C$——传递性。",
+            "tactic": null
+        },
+        {
+            "text": "假设 $A \\to B$，$B \\to C$，和 $A$。一步一步来。",
+            "tactic": "(assume (and (-> A B) (-> B C)))"
+        },
+        {
+            "text": "从 $A \\to B$ 和 $A$ 推出 $B$。从 $B \\to C$ 和 $B$ 推出 $C$。两个肯定前件连环用。",
+            "tactic": null
+        },
+        {
+            "text": "三次[discharge|消去] 假设：$A$，$B \\to C$，$A \\to B$。顺序是从里往外。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "你现在有了一条完整的传递链。接下来要证明 $A \\to C$——也就是说：假设 $A$，走到 $C$。先假设 $A$。",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "用 [modus-ponens|肯定前件] 对付 $A \\to B$（步骤 2）和你刚拿到的 $A$（步骤 4），得到 $B$。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "再用一次 [modus-ponens|肯定前件]，这次是 $B \\to C$（步骤 3）和你刚推出的 $B$（步骤 5），到达 $C$。",
+            "tactic": "(->-elim 2 4)"
+        },
+        {
+            "text": "[discharge|消去] $A$，得到 $A \\to C$。",
+            "tactic": "(->-elim 3 5)"
+        },
+        {
+            "text": "[discharge|消去] 那个 [conjunction|合取]，收工。假言三段论——亚里士多德在《前分析篇》里就写下了，今天你用自然演绎亲手推导了一遍。",
+            "tactic": "(->-intro A 6)"
+        },
+        {
+            "text": "[assumption|Discharge] the [conjunction|conjunction] to finish.",
+            "tactic": "(->-intro (and (-> A B) (-> B C)) 7)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

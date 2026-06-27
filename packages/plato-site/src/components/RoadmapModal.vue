@@ -39,11 +39,15 @@ function sectionName(sectionId: string): string {
 
 function problemDescription(sectionId: string, sectionIdx: number): string {
     const sec = sections.value.find(s => s.id === sectionId)
-    return sec?.problems[sectionIdx]?.description ?? ''
+    const level = sec?.levels[sectionIdx]
+    if (!level) return ''
+    if (level.type === 'discovery') return level.data.title
+    return level.data.description
 }
 
 function proofLines(entry: RoadmapEntry): string[] {
-    return renderProofLines(entry.steps, locale.value)
+    if (entry.tag !== 'problem') return []
+    return renderProofLines(entry.proof, locale.value)
 }
 
 onMounted(() => document.addEventListener('keydown', onKeydown))

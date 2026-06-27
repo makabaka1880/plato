@@ -1,0 +1,30 @@
+{
+    "description": "合久必分。",
+    "goal": "(-> A (-> B (and A B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "目标是 $A \\to (B \\to A \\land B)$。最外层的 [connective|连接词] 是一个 [implication|蕴含]，所以第一步应该是假设它的前件 $A$。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "目前在 [assumption|假设] $A$ 之下。要证明剩下的 [implication|蕴含] $B \\to A \\land B$，来假设它的前件 $B$。",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "漂亮。现在第 1 步有 $A$，第 2 步有 $B$。用 `and-intro` 把它们捆成一个 [conjunction|合取]。",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "第 3 步拿到了 $A \\land B$，现在可以消去最近的 [assumption|假设] $B$，用 `->-intro`。",
+            "tactic": "(->-intro B 3)"
+        },
+        {
+            "text": "快到了！第 4 步给了我们 $B \\to A \\land B$。消去最初的 [assumption|假设] $A$，最后一脚 `->-intro` 冲过终点线。",
+            "tactic": "(->-intro A 4)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

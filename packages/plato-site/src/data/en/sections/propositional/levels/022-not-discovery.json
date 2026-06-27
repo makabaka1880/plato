@@ -1,0 +1,36 @@
+{
+    "type": "discovery",
+    "title": "Not and Never",
+    "lines": [
+        {
+            "speaker": "Plato",
+            "text": "So far we have built truths. But what about falsehoods? What about statements that **cannot** be true?",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Negation. $\\\\lnot P$ — read \"not $P$.\" But what does it mean to prove a negative?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "You assume $P$ and derive a contradiction — the impossible constant $\\\\bot$ (bottom). `(not-intro F N M)` says: from assuming $F$, step $N$ proves something and step $M$ proves its negation. That is absurd. Hence $\\\\lnot F$.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And once you have a contradiction — $\\\\bot$ — you have everything. `(ex-falso N F)` — [ex-falso-quodlibet|from falsehood, anything follows]. Give it a contradiction at step $N$ and any formula $F$, and it hands you $F$.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "There is also double-negation elimination. `(dne N)` — if $\\\\lnot \\\\lnot P$, then $P$. Two wrongs do not make a right, but two nots make a yes.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Negation is the guard at the gate. It marks the boundary between the possible and the impossible.",
+            "sid": "A"
+        }
+    ]
+}

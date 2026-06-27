@@ -17,7 +17,7 @@ const closest = computed(() => (Number(route.query.closest) || 0) + 1)
 
 function goContinue() {
     if (sectionId.value) {
-        router.push(`/section/${sectionId.value}/problem/${closest.value - 1}`)
+        router.push(`/section/${sectionId.value}/level/${closest.value - 1}`)
     } else {
         router.push('/')
     }

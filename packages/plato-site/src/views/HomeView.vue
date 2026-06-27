@@ -29,7 +29,7 @@ const isSectionAccessible = (sectionId: string) => progress.isSectionAccessible(
 
 const hasProgress = computed(() => {
     for (const sec of allSections.value) {
-        if ((progress.highestSolved[sec.id] ?? -1) >= 0) return true
+        if ((progress.highestCompletedLevel[sec.id] ?? -1) >= 0) return true
     }
     return false
 })
@@ -37,8 +37,8 @@ const hasProgress = computed(() => {
 const allComplete = computed(() => visibleSections.value.length > 0 &&
     visibleSections.value.every(s => {
         if (!isSectionAccessible(s.id)) return false
-        const highest = progress.highestSolved[s.id] ?? -1
-        return highest + 1 >= s.problems.length
+        const highest = progress.highestCompletedLevel[s.id] ?? -1
+        return highest + 1 >= s.levels.length
     })
 )
 
@@ -49,11 +49,7 @@ const continueTarget = computed(() =>
 function goContinue() {
     const tgt = continueTarget.value
     if (!tgt) return
-    if (!discovery.isViewed(tgt.sectionId) && tgt.sectionIdx === 0) {
-        router.push(`/section/${tgt.sectionId}/discovery`)
-    } else {
-        router.push(`/section/${tgt.sectionId}/problem/${tgt.sectionIdx}`)
-    }
+    router.push(`/section/${tgt.sectionId}/level/${tgt.levelIdx}`)
 }
 
 function onStartFresh() {
@@ -63,23 +59,20 @@ function onStartFresh() {
     useRoadmapStore().reset()
     const sorted = [...allSections.value].sort((a, b) => a.meta.order - b.meta.order)
     if (sorted.length > 0) {
-        router.push(`/section/${sorted[0]!.id}/discovery`)
+        router.push(`/section/${sorted[0]!.id}/level/0`)
     }
 }
 
 function onSectionClick(sectionId: string) {
-    router.push(`/section/${sectionId}/problem/0`)
-}
-
-function replayDiscovery(sectionId: string) {
-    router.push(`/section/${sectionId}/discovery`)
+    const highest = progress.highestCompletedLevel[sectionId] ?? -1
+    router.push(`/section/${sectionId}/level/${highest + 1}`)
 }
 
 function sectionProgressPercent(sectionId: string): number {
     const sec = allSections.value.find(s => s.id === sectionId)
-    if (!sec || sec.problems.length === 0) return 0
-    const solved = (progress.highestSolved[sectionId] ?? -1) + 1
-    return Math.min(100, (solved / sec.problems.length) * 100)
+    if (!sec || sec.levels.length === 0) return 0
+    const completed = (progress.highestCompletedLevel[sectionId] ?? -1) + 1
+    return Math.min(100, (completed / sec.levels.length) * 100)
 }
 
 const continueBtn = ref<HTMLButtonElement | null>(null)
@@ -138,23 +131,20 @@ const showComments = ref(false)
                 <template v-if="isSectionAccessible(section.id)">
                     <div class="section-head">
                         <div class="section-name">{{ t(section.meta.nameI18nKey) }}</div>
-                        <button class="replay-btn" @click.stop="replayDiscovery(section.id)">
-                            {{ discovery.isViewed(section.id) ? t('discovery.replay') : t('discovery.play') }}
-                        </button>
+                        <div class="section-count">
+                            {{ (progress.highestCompletedLevel[section.id] ?? -1) + 1 }} / {{ section.levels.length }}
+                        </div>
                     </div>
                     <div class="progress-track">
                         <div class="progress-fill" :style="{ width: sectionProgressPercent(section.id) + '%' }"></div>
-                    </div>
-                    <div class="section-count">
-                        {{ (progress.highestSolved[section.id] ?? -1) + 1 }} / {{ section.problems.length }}
                     </div>
                 </template>
                 <template v-else>
                     <div class="section-head">
                         <div class="section-name locked-name">???</div>
+                        <div class="section-count locked-count">{{ t('locked.title') }}</div>
                     </div>
                     <div class="progress-track locked-track"></div>
-                    <div class="section-count locked-count">{{ t('locked.title') }}</div>
                 </template>
             </div>
         </div>
@@ -170,7 +160,7 @@ const showComments = ref(false)
                 <span class="contact-trigger" @click="copyEmail">{{ t('home.contact') }}</span>
                 <span class="contact-pop" :class="{ copied }">{{ copied ? t('common.copied') :
                     'makabaka1880@outlook.com'
-                }}</span>
+                    }}</span>
             </span>
         </div>
     </div>
@@ -288,7 +278,7 @@ const showComments = ref(false)
 }
 
 .section-card {
-    padding: 10px 16px;
+    padding: 8px 16px;
     border: 1px solid var(--color-border);
     border-radius: 6px;
     cursor: pointer;
@@ -309,7 +299,6 @@ const showComments = ref(false)
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
 }
 
 .section-name {
@@ -318,29 +307,11 @@ const showComments = ref(false)
     color: var(--color-fg);
 }
 
-.replay-btn {
-    font-family: inherit;
-    font-size: 10px;
-    padding: 2px 8px;
-    cursor: pointer;
-    background: none;
-    border: 1px solid var(--color-border);
-    border-radius: 3px;
-    color: var(--color-muted);
-    transition: color 0.15s, border-color 0.15s;
-
-    &:hover {
-        color: var(--color-primary-hover);
-        border-color: var(--color-primary-hover);
-    }
-}
-
 .progress-track {
     height: 3px;
     background: var(--color-border);
     border-radius: 2px;
     overflow: hidden;
-    margin-bottom: 6px;
 }
 
 .progress-fill {
@@ -352,9 +323,9 @@ const showComments = ref(false)
 }
 
 .section-count {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--color-muted);
-    text-align: right;
+    white-space: nowrap;
 }
 
 .locked-name {

@@ -1,0 +1,211 @@
+{
+    "title": "The Nature of Truth",
+    "lines": [
+        {
+            "speaker": "Plato",
+            "text": "Aristotle, my dear friend. Let us speak of truth itself. Tell me, what is the simplest truth you can imagine?",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "That a horse is a horse. A thing is itself.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Excellent. Statements like that, which can be either true or false, are called [proposition|propositions].",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "But surely philosophers don't write every proposition out in full?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Indeed not. We usually give them simple names like $A$, $B$, and $C$. Today, $A$ might mean 'the clouds have gathered.' Tomorrow it could mean something entirely different.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So the letters are merely placeholders for ordinary statements.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. But logic is more than naming propositions. Logic is about **reasoning** — starting from things we accept, and arriving at things we did not yet know.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So we need a way to keep track of what we have assumed and what we have proved.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Exactly. Suppose we are trying to prove something. We may temporarily borrow certain statements — treat them as true for the sake of argument — and see what follows.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Even if we do not know whether they are actually true?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Yes. Such a temporary belief is called an **[assume|assumption]**. Inside our reasoning, we may use it freely. But we must remember that it was borrowed — it does not belong to us.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "A sandbox for reasoning! Inside the sandbox, the assumption is real. Outside, it vanishes.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Just so. And a proof is a disciplined record of what follows from what. At every step, we know exactly which assumptions are active and what conclusion they support.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Our proofs have become rather cluttered. We keep saying 'under these assumptions, we have proved this conclusion.'",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Perhaps we should invent a concise notation.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "A kind of shorthand? Mathematicians are rather fond of those.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Indeed. Let us separate the assumptions from the conclusion with a symbol. This little mark, $\\vdash$, is called the **[turnstile|judgement turnstile]**.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So everything to the left of the turnstile is what we are temporarily assuming, and everything to the right is what we have successfully proved.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. We call the collection of active assumptions the [context|context], traditionally written as $\\Gamma$. Thus, $\\Gamma \\vdash P$ simply means: 'from the assumptions in $\\Gamma$, we have proved $P$.'",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "It is less a statement about the world than a record of the current state of our proof.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "A beautiful observation. Logic is not merely a catalogue of truths; it is a disciplined record of **how** we arrive at them.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So every proof is like a carefully kept journal, never forgetting which assumptions it has borrowed.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Precisely. Once an assumption has served its purpose, we may **[discharge|discharge]** it — return it, so to speak — and the conclusion we reached becomes a statement that holds without that assumption.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "So assumptions enter, do their work, and then leave. The context grows and shrinks as the proof progresses.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Exactly. Now, how shall we speak to the machine?",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Machines are rather poor at reading mathematics written for humans. They prefer every expression to have exactly the same shape.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Like building everything out of identical wooden blocks?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Precisely. We represent every expression as a tree made of nested lists. Such a notation is called an **[s-expression|sexpr]**.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Plato",
+            "text": "A tree? Then each pair of parentheses is like a branch containing smaller branches.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Exactly. We also place the operation before its arguments. This style is called **[prefix notation|prefix]**.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Plato",
+            "text": "So instead of writing $A$ and $B$ with a symbol between them, we write the symbol first, then the arguments, all wrapped in parentheses.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Just so. Every formula and every command follows this same uniform pattern. The machine never has to guess what you mean — the structure is unambiguous.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Plato",
+            "text": "And our proof commands follow the same pattern?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Indeed. Every instruction you give is itself an s-expression. The machine parses it, checks it against the rules of logic, and — if it is valid — adds a new line to your proof.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Plato",
+            "text": "So I type commands, and the machine replies with judgements?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Exactly. This is called a [repl|REPL] — Read, Evaluate, Print, Loop. You type a command, the machine evaluates it, prints the result, and waits for your next command. Step by step, you build a proof.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Plato",
+            "text": "And the machine guarantees that every step is logically valid?",
+            "sid": "A"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "With perfect mathematical certainty. If the machine accepts your proof, there is no room for error. Each step is checked against the [inference-rules|inference rules] of the system.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Then let us begin. I am ready to write my first command.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Start with the simplest thing imaginable: borrow a truth and observe that you have it. The command is `(assume A)` — it places $A$ in your context, and the machine responds with $\\{A\\} \\vdash A$. You assumed $A$, and therefore you have proved $A$.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Plato",
+            "text": "I borrow a lantern, and the machine confirms: in this room, there is light. Then let us step forward and reason.",
+            "sid": "A"
+        }
+    ],
+    "type": "discovery"
+}

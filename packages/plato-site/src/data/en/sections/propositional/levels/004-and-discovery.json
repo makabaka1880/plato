@@ -1,0 +1,31 @@
+{
+    "type": "discovery",
+    "title": "Both and Each",
+    "lines": [
+        {
+            "speaker": "Plato",
+            "text": "We can now build implications. But often we want to say that two things are true **together**.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "The conjunction. $P \\\\land Q$ — read \"$P$ and $Q$.\"",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "To prove it, you must prove each half separately. That is `(and-intro N M)`: from a proof of $P$ at step $N$ and a proof of $Q$ at step $M$, form $P \\\\land Q$.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "And to use a conjunction, you take it apart. `(and-elim-l N)` extracts the left half; `(and-elim-r N)` extracts the right.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "A pair is exactly as strong as its two halves. No more, no less.",
+            "sid": "P"
+        }
+    ]
+}

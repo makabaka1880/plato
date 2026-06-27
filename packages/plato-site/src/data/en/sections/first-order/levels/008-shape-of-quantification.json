@@ -1,0 +1,31 @@
+{
+    "type": "discovery",
+    "title": "The Shape of Quantification",
+    "lines": [
+        {
+            "speaker": "Frege",
+            "text": "We now have all four quantifier rules: introduction and elimination for both ∀ and ∃.",
+            "sid": "F"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "They form a closed system. You can introduce a universal from an arbitrary instance, eliminate it to any term. You can introduce an existential from a witness, and eliminate it by opening a temporary name.",
+            "sid": "D"
+        },
+        {
+            "speaker": "Frege",
+            "text": "The symmetry is beautiful. But notice the asymmetry: ∀-elim is unrestricted — you may substitute any term. ∃-elim, however, demands that the witness variable not escape into the conclusion.",
+            "sid": "F"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "That restriction is the price we pay for reasoning about \"some\" without knowing which one.",
+            "sid": "D"
+        },
+        {
+            "speaker": "Frege",
+            "text": "Exactly. It is a controlled leak of information. The variable is a placeholder — not a promise.",
+            "sid": "F"
+        }
+    ]
+}

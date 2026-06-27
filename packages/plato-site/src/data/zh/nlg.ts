@@ -7,7 +7,7 @@ export default {
   parse: '解析一下这个公式：{F}。',
 
   '->-intro': '从 {F} 出发，走到了第 {n} 行的结论，于是可以宣布 {conclusion}。',
-  '->-elim': '第 {n} 行说\"如果前提成立，结论就跟着成立\"，而第 {m} 行恰好满足了那个前提——于是有了 {conclusion}。',
+  '->-elim': '第 {n} 行说"如果前提成立，结论就跟着成立"，而第 {m} 行恰好满足了那个前提——于是有了 {conclusion}。',
 
   'and-intro': '第 {n} 行和第 {m} 行各给了一半；拼在一起，就是 {conclusion}。',
   'and-elim-l': '第 {n} 行断言了两件事；取左边那件，就够得到 {conclusion}。',

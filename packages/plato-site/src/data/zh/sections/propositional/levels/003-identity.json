@@ -1,0 +1,25 @@
+{
+    "description": "我在故我在。",
+    "goal": "(-> I I)",
+    "premise": [],
+    "guides": [
+        {
+            "text": "目标是 $I \\to I$ ——'如果 $I$，那么 $I$。'要证明一个 [implication|蕴含关系]，我们先假设左边，然后试图推出右边。"
+        },
+        {
+            "text": "来假设(assume) $I$。",
+            "tactic": "(assume I)"
+        },
+        {
+            "text": "现在第 1 步有了 $\\{I\\} \\vdash I$——结论正好就是假设本身。用 `->-intro` 来 [discharge|消去] 假设 $I$，证明就结束了。第一个参数是要消去的[formula|公式]，第二个是步骤号：",
+            "tactic": "(->-intro I 1)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "assume",
+        "->-intro",
+        "extend"
+    ],
+    "type": "problem"
+}

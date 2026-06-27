@@ -1,0 +1,58 @@
+{
+    "description": "真者自真，何患无途。",
+    "goal": "(-> (and A (or B C)) (or (and A B) (and A C)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "这是**分配律**：$A \\land (B \\lor C)$ 等价于 $(A \\land B) \\lor (A \\land C)$。你有 $A$，还有一个 $B$ 和 $C$ 之间的选择——无论哪条路，$A$ 都跟着你。先假设 $A \\land (B \\lor C)$。",
+            "tactic": null
+        },
+        {
+            "text": "假设 $A \\land (B \\lor C)$。",
+            "tactic": "(assume (and A (or B C)))"
+        },
+        {
+            "text": "从左取出 $A$。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "从右取出 $B \\lor C$。",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "现在对[disjunction|析取]做[proof-by-cases|分情形证明]。先假设 $B$。",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "把 $A$（第2步）和 $B$（第4步）配对，得到 $A \\land B$。",
+            "tactic": "(and-intro 2 4)"
+        },
+        {
+            "text": "用 `or-intro-l` 把 $A \\land B$ 放在目标[disjunction|析取]的左边，$A \\land C$ 放右边。",
+            "tactic": "(or-intro-l 5 (and A C))"
+        },
+        {
+            "text": "第二种情形：假设 $C$。",
+            "tactic": "(assume C)"
+        },
+        {
+            "text": "把 $A$（第2步）和 $C$（第7步）配对，得到 $A \\land C$。",
+            "tactic": "(and-intro 2 7)"
+        },
+        {
+            "text": "用 `or-intro-r` 把 $A \\land C$ 放在右边，$A \\land B$ 放左边。",
+            "tactic": "(or-intro-r 8 (and A B))"
+        },
+        {
+            "text": "两条路都走到了 $(A \\land B) \\lor (A \\land C)$。用 `or-elim` 对第3步的 $B \\lor C$ 做消去。",
+            "tactic": "(or-elim 3 6 9)"
+        },
+        {
+            "text": "[discharge|消去]合取。真者自真，何患无途。",
+            "tactic": "(->-intro (and A (or B C)) 10)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

@@ -1,0 +1,42 @@
+{
+    "description": "If something can't be, it was never possible.",
+    "goal": "(-> (box (not A)) (not (diamond A)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "A clean interaction between □ and ◇: if $\\lnot A$ holds in every accessible world, then there cannot be an accessible world where $A$ holds. The proof uses `diamond-def` to unfold ◇ into its □-form, then derives a contradiction. Start by assuming $\\Box \\lnot A$ and then assume $\\Diamond A$ for a [reductio-ad-absurdum|reductio].",
+            "tactic": null
+        },
+        {
+            "text": "Assume $\\Box \\lnot A$.",
+            "tactic": "(assume (box (not A)))"
+        },
+        {
+            "text": "Assume $\\Diamond A$ — we'll derive a contradiction.",
+            "tactic": "(assume (diamond A))"
+        },
+        {
+            "text": "Apply `diamond-def` to unfold $\\Diamond A$ into $\\lnot \\Box \\lnot A$.",
+            "tactic": "(diamond-def 2)"
+        },
+        {
+            "text": "Use `not-elim` on step 3 to unpack the [negation|negation]: $\\Box \\lnot A \\to \\bot$.",
+            "tactic": "(not-elim 3)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens]: the conditional at step 4 applied to step 1 gives $\\bot$.",
+            "tactic": "(->-elim 4 1)"
+        },
+        {
+            "text": "Discharge $\\Diamond A$ to get $\\Diamond A \\to \\bot$, i.e. $\\lnot \\Diamond A$.",
+            "tactic": "(->-intro (diamond A) 5)"
+        },
+        {
+            "text": "Discharge $\\Box \\lnot A$ to finish.",
+            "tactic": "(->-intro (box (not A)) 6)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

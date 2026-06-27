@@ -1,0 +1,28 @@
+{
+    "description": "皮之不存，毛将焉附。",
+    "goal": "(-> (not A) (-> A _|_))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "当前目标是 $\\lnot A \\to (A \\to \\bot)$。通俗来说：如果 $\\lnot A$ 成立，那么再假设 $A$ 就会让你陷入 [contradiction|矛盾]（$\\bot$，读作‘底’或‘谬’——我们会在后面的关卡中遇到它的对偶 $\\top$ ‘顶/真’）。这正是我们系统中 [negation|否定] 的**核心含义**——$\\lnot A$ 本质上就是 $A$ [implication|蕴含] 了谬误。",
+            "tactic": null
+        },
+        {
+            "text": "一如既往，面对一个 [implication|蕴含式]，我们先假设它的左手边。这次是 $\\lnot A$ —— 一个我们之前没处理过的复合 [formula|公式]。底层引擎会将 `(not A)` 解析为 $\\lnot A$。",
+            "tactic": "(assume (not A))"
+        },
+        {
+            "text": "`not-elim` 规则可以将一个 [negation|否定] 转换成它背后所代表的那个 [implication|蕴含式]。从步骤 1 的 $\\lnot A$ 出发，它会产生 $A \\to \\bot$ —— 即‘$A$ 蕴含荒谬’。此时 [context|上下文] 保持不变。",
+            "tactic": "(not-elim 1)"
+        },
+        {
+            "text": "现在我们在 [assumption|假设] $\\lnot A$ 的前提下得到了 $A \\to \\bot$。使用 `->-intro` 来释放假设并收尾吧！",
+            "tactic": "(->-intro (not A) 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "not-elim"
+    ],
+    "type": "problem"
+}

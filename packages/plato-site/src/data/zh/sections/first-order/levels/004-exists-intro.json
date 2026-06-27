@@ -1,0 +1,32 @@
+{
+    "description": "一叶知秋。",
+    "goal": "(-> (App P a) (exists x (App P x)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "$\\exists$ 是**[existential-quantifier|存在量词]**——意思是“存在”或“至少有一个”。它是 $\\forall$ 的对偶：一个说“都有”，一个说“至少有一个”。目标 $P(a) \\to \\exists x.\\; P(x)$ 捕捉了一个基本原理：从一个具体的例子可以断定存在。",
+            "tactic": null
+        },
+        {
+            "text": "如果 $a$ 满足 $P$，那就存在*某个东西*满足 $P$。这叫做[existential-generalisation|存在推广]——从一个具体的[witness|见证]，推出具有该性质的东西存在。",
+            "tactic": null
+        },
+        {
+            "text": "先假设具体的实例：$P(a)$。",
+            "tactic": "(assume (App P a))"
+        },
+        {
+            "text": "`exists-intro` 接收三个参数：步骤号、具体项和新鲜变量名。把项 `a` 替换为约束变量 `x`，得到 $\\exists x.\\; P(x)$。",
+            "tactic": "(exists-intro 1 a x)"
+        },
+        {
+            "text": "[discharge|消去] $P(a)$ 收尾。只要任何一个具体的 $a$ 是 $P$，存在就成立。",
+            "tactic": "(->-intro (App P a) 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "exists-intro"
+    ],
+    "type": "problem"
+}

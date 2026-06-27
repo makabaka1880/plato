@@ -1,0 +1,36 @@
+{
+    "type": "discovery",
+    "title": "Either and Or",
+    "lines": [
+        {
+            "speaker": "Plato",
+            "text": "Not everything is a package deal. Sometimes truth is a choice — **this** or **that**.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Disjunction. $P \\\\lor Q$. It is enough that one of them is true — you need not say which.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "Introduction is easy: if you have $P$, then `(or-intro-l N F)` gives you $P \\\\lor F$ for any $F$. Likewise `(or-intro-r N F)` from the right.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Elimination is the interesting one. You have $P \\\\lor Q$. You do not know which. So you must handle **both** possibilities and show that either way, the same conclusion follows.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "`(or-elim N M K)` — [proof-by-cases|proof by cases]. Step $N$ is the disjunction. Step $M$ proves the conclusion assuming $P$. Step $K$ proves the same conclusion assuming $Q$.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "A fork in the road that rejoins at the same destination.",
+            "sid": "A"
+        }
+    ]
+}

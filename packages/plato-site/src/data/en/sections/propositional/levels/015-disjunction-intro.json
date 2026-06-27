@@ -1,0 +1,29 @@
+{
+    "description": "Having one thing means having it — or something else entirely.",
+    "goal": "(-> A (or A B))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "A new connective: $\\lor$, pronounced 'or.' A **[disjunction|disjunction]** $p \\lor q$ claims that at least one of $p$ or $q$ is true. The goal $A \\to (A \\lor B)$ says: if $A$ is true, then $A$ or $B$ is true. Adding an alternative can only make a statement **weaker**, never stronger.",
+            "tactic": null
+        },
+        {
+            "text": "To prove a disjunction, you don't need both sides — proving either one is enough. The rules are `or-intro-l` (put your truth on the left) and `or-intro-r` (on the right). An [implication|implication] goal still calls for our standard opening: assume the left-hand side.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "We have $A$ at step 1. Use `or-intro-l` — the first argument is the step proving $A$, the second is the formula to put on the right ($B$). '$A$ is true, so $A$ or anything is also true.'",
+            "tactic": "(or-intro-l 1 B)"
+        },
+        {
+            "text": "Now [discharge|discharge] the assumption. We proved $A \\lor B$ by relying on $A$ — so $A \\to (A \\lor B)$ stands on its own.",
+            "tactic": "(->-intro A 2)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "or-intro-l",
+        "or-intro-r"
+    ],
+    "type": "problem"
+}

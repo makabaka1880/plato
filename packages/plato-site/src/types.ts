@@ -40,8 +40,10 @@ export interface SectionMeta {
 
 /** A single line in a discovery dialogue */
 export interface DiscoveryLine {
-    speaker: 'plato' | 'aristotle'
-    text: string
+    speaker: string,
+    text: string,
+    sid: string,
+    image: string | undefined,
 }
 
 /** Structure of a discovery.json file */
@@ -50,10 +52,14 @@ export interface DiscoveryData {
     lines: DiscoveryLine[]
 }
 
+/** A single level within a section — either a discovery dialogue or a proof problem. */
+export type Level =
+    | { type: 'discovery'; data: DiscoveryData }
+    | { type: 'problem'; data: Problem }
+
 /** Fully assembled section at runtime */
 export interface Section {
     id: string
     meta: SectionMeta
-    problems: Problem[]
-    discovery: DiscoveryData
+    levels: Level[]
 }

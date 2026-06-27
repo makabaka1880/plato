@@ -31,7 +31,7 @@ const props = defineProps<{
     allowedTactics?: string[]
 }>()
 
-const emit = defineEmits<{ stepTaken: []; solved: [proofSteps: StepMeta[]]; openPrefs: [] }>()
+const emit = defineEmits<{ stepTaken: [proofSteps: StepMeta[]]; solved: [proofSteps: StepMeta[]]; openPrefs: [] }>()
 
 const prefs = usePreferencesStore()
 const inpEl = ref<HTMLInputElement | null>(null)
@@ -117,9 +117,9 @@ function run() {
         if (changed) openHints.value = next
 
         advanceGuide()
-        emit('stepTaken')
+        emit('stepTaken', proofSteps.value)
 
-        if (props.goal && isGoalResolved(props.goal)) {
+        if (props.goal && isGoalResolved(props.goal, props.premise ?? [])) {
             emit('solved', proofSteps.value)
         }
     }

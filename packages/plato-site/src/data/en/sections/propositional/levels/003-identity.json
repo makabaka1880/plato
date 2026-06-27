@@ -1,0 +1,25 @@
+{
+    "description": "I am, therefore I am.",
+    "goal": "(-> I I)",
+    "premise": [],
+    "guides": [
+        {
+            "text": "The goal is $I \\to I$ — 'if $I$, then $I$.' To prove an [implication|implication], we assume the left-hand side and try to reach the right-hand side."
+        },
+        {
+            "text": "Let's assume $I$.",
+            "tactic": "(assume I)"
+        },
+        {
+            "text": "Now we have $\\{I\\} \\vdash I$ at step 1 — the conclusion is exactly the assumption. To finish, use `->-intro` to [discharge|discharge] the assumption $I$ and close the proof. Its first argument is the [formula|formula] to [discharge|discharge] and the second is the step number:",
+            "tactic": "(->-intro I 1)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "assume",
+        "->-intro",
+        "extend"
+    ],
+    "type": "problem"
+}

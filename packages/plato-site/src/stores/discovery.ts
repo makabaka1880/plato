@@ -13,8 +13,18 @@ function load(): DiscoveryState {
         if (raw !== null) {
             const parsed = JSON.parse(raw)
             if (parsed && typeof parsed.viewed === 'object') {
+                const viewed: Record<string, boolean> = {}
+                // Migrate old keys (sectionId → sectionId/0) and keep new keys as-is
+                for (const [k, v] of Object.entries(parsed.viewed as Record<string, boolean>)) {
+                    if (k.includes('/')) {
+                        viewed[k] = v
+                    } else {
+                        // Old format: plain sectionId → migrate to sectionId/0
+                        viewed[`${k}/0`] = v
+                    }
+                }
                 return {
-                    viewed: parsed.viewed as Record<string, boolean>,
+                    viewed,
                     position: (parsed.position as Record<string, number>) ?? {},
                 }
             }
@@ -31,21 +41,25 @@ export const useDiscoveryStore = defineStore('discovery', {
     state: (): DiscoveryState => load(),
 
     actions: {
-        markViewed(sectionId: string) {
-            this.viewed[sectionId] = true
+        markViewed(sectionId: string, levelIdx: number) {
+            this.viewed[this.posKey(sectionId, levelIdx)] = true
             save(this.$state)
         },
 
-        isViewed(sectionId: string): boolean {
-            return this.viewed[sectionId] ?? false
+        isViewed(sectionId: string, levelIdx: number): boolean {
+            return this.viewed[this.posKey(sectionId, levelIdx)] ?? false
         },
 
-        getPosition(sectionId: string): number {
-            return this.position[sectionId] ?? 0
+        posKey(sectionId: string, levelIdx: number): string {
+            return `${sectionId}/${levelIdx}`
         },
 
-        setPosition(sectionId: string, idx: number) {
-            this.position[sectionId] = idx
+        getPosition(sectionId: string, levelIdx: number): number {
+            return this.position[this.posKey(sectionId, levelIdx)] ?? 0
+        },
+
+        setPosition(sectionId: string, levelIdx: number, idx: number) {
+            this.position[this.posKey(sectionId, levelIdx)] = idx
             save(this.$state)
         },
 

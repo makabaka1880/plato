@@ -5,6 +5,9 @@ import { useI18n } from 'vue-i18n'
 import type { Problem, Hint } from '@/types'
 import { useProblemLatex } from '@/composables/useProblemLatex'
 import { useVictory } from '@/composables/useVictory'
+import { renderNlg } from '@/composables/useNlg'
+import type { StepMeta } from '@/composables/useNlg'
+import { loadNlg } from '@/data'
 import Katex from '@/components/Katex.vue'
 import InlineLatex from '@/components/InlineLatex.vue'
 import ProofRepl from '@/components/ProofRepl.vue'
@@ -45,6 +48,13 @@ const axiomSetLabel = computed(() => {
 const agreed = ref(false)
 const showRepl = ref(false)
 const proofLines = ref<string[]>([])
+const proofSteps = ref<StepMeta[]>([])
+
+function updateProofLines() {
+  proofLines.value = proofSteps.value.map((s, i) =>
+    `${i + 1}. ${renderNlg(s.cmdName, s.params, loadNlg('en'))}`
+  )
+}
 const prefsOpen = ref(false)
 const showHelpGlobal = ref(false)
 const loadedMsg = ref('')
@@ -187,8 +197,9 @@ async function onAgree() {
   setTimeout(() => { showRepl.value = true }, 500)
 }
 
-function onSolved(lines: string[]) {
-  proofLines.value = lines
+function onSolved(steps: StepMeta[]) {
+  proofSteps.value = steps
+  updateProofLines()
   if (problem.value) {
     victory.fire(problem.value.unlocks)
   }

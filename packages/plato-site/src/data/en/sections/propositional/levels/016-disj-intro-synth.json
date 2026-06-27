@@ -1,0 +1,30 @@
+{
+    "description": "The right side of 'or' welcomes you just the same.",
+    "goal": "(-> B (or A B))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "This is the mirror of the previous problem. The goal is $B \\to (A \\lor B)$ — if $B$ is true, then $A$ or $B$ is true. The logic is symmetric. Start by assuming $B$.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $B$ to begin the [implication|implication].",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "Last time you used `or-intro-l` to put your truth on the left of $\\lor$. This time $B$ belongs on the **right**. Which variant lets you supply the right-hand truth and place an arbitrary [formula|formula] on the left?",
+            "tactic": null
+        },
+        {
+            "text": "Use `or-intro-r` — from $B$ at step 1, form $A \\lor B$ with $A$ on the left.",
+            "tactic": "(or-intro-r 1 A)"
+        },
+        {
+            "text": "Discharge the [assumption|assumption] to get the [implication|implication].",
+            "tactic": "(->-intro B 2)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

@@ -1,0 +1,386 @@
+{
+    "title": "Doors Between Worlds",
+    "lines": [
+        {
+            "speaker": "C. I. Lewis",
+            "text": "We have learned to reason about what is true. But I cannot shake the feeling that truth alone is incomplete.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Incomplete how?",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Consider: 'It is raining.' That may be true now. But it did not have to be. It could have been sunny.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "And 'two plus two is four' — could that have been otherwise?",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "No. That must be true. There is no world where it fails.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Then you have already discovered the distinction. Some truths are fragile, contingent. Others are forced — they hold no matter how things could have gone.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So truth has a kind of strength. A mere truth merely happens to be. A necessary truth could not fail.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Exactly. To capture this strength, we introduce two new operators.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "I am listening.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "We write $\\Box P$ — read 'necessarily $P$' — to mean that $P$ must be true. We write $\\Diamond P$ — read 'possibly $P$' — to mean that $P$ could be true.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So $\\Box(2+2=4)$ is true, but $\\Box(\\text{it rains})$ is false.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Precisely. But now we face a problem: what does 'necessary' actually mean, formally?",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "It cannot simply mean 'provable' — there are truths we have not yet proved.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Correct. My approach is this: imagine not just one reality, but many. Each is a complete snapshot of how things could be. I call each one a [world|World].",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So our actual reality is just one world among many?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Yes. And worlds are connected. From a given world $w$, some other worlds are considered possible. We write $R(w, v)$ — '$v$ is accessible from $w$'.",
+            "sid": "S"
+        },
+        {
+            "speaker": "Curry",
+            "text": "As an aside: logicians call the pair $\\langle W, R \\rangle$, consisting of the set of all possible worlds $W$ and the accessibility relation $R \\subseteq W \\times W$, a [kripke-frame|Kripke frame]. You can think of it as a graph: nodes are worlds, and directed edges $w \\to v$ mean that $v$ is accessible from $w$.",
+            "sid": "C"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So the worlds I can reach depend on which world I am standing in.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Exactly. Now, $\\Box P$ means: suppose you are standing at any world $w$ — then $P$ holds in all worlds $v$ such that $R(w, v)$; in other words, $P$ holds in every world you can reach from here.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "And $\\Diamond P$?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "$\\Diamond P$ means: when you are standing in any world $w$, $P$ holds in **at least one** world $v$ such that $R(w, v)$. Equivalently, $\\Diamond P$ is $\\lnot \\Box \\lnot P$ — possibility is the failure of necessary falsehood.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So necessity is a universal quantifier over worlds. Possibility is an existential one.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "The analogy is exact. Now, what can we say about $R$ itself?",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Surely it must have some structure? Perhaps every world can reach itself?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "That would be a natural assumption — [reflexivity|reflexivity]. But in the weakest system, we impose **no constraints on $R$ at all**. $R$ is simply some relation.",
+            "sid": "S"
+        },
+        {
+            "speaker": "Curry",
+            "text": "In fact, logicians have constructed stronger systems — for instance, system T requires $R$ to be reflexive. This yields many useful conclusions, such as $\\Gamma \\vdash \\phi \\Rightarrow \\Gamma \\vdash \\Diamond \\phi$. But today we are only discussing the most general, minimal Kripke frame.",
+            "sid": "C"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So we know nothing about which worlds are accessible from which?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Nothing. No reflexivity, no symmetry, no transitivity. This is the defining feature of [system-k|System K] — it is the minimal [normal-modal-logic|normal modal logic], the one that makes no assumptions about accessibility.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "If $R$ has no guarantees, what can we actually prove?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "One profound thing. Let me show you. Suppose at world $w$, we know two facts: $\\Box(P \\to Q)$ and $\\Box P$.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So in every accessible world, $P \\to Q$ holds. And in every accessible world, $P$ holds.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Pick any accessible world $v$. At $v$, we have $P \\to Q$ and $P$. By modus ponens, $Q$. Since $v$ was arbitrary, $Q$ holds in every accessible world. Therefore $\\Box Q$.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So from $\\Box(P \\to Q)$ and $\\Box P$, we derive $\\Box Q$. Necessity distributes over implication.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "This is the K axiom: $\\Box(P \\to Q) \\to (\\Box P \\to \\Box Q)$. It is the single structural rule of System K, and it falls out of nothing but the definition of necessity across worlds.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "A single axiom, generated by the structure alone.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Yes. And there is one more rule: [necessitation|necessitation]. If you can prove $P$ from **nothing** — from an empty context, with no borrowed assumptions — then $\\Box P$.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Why must the context be empty?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Because if you proved $P$ under an assumption $Q$, you would only have shown that $Q$ implies $P$ — not that $P$ is necessarily true. Necessity requires that $P$ stands on its own, without borrowed scaffolding.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So a proof in an empty context is a proof in every world.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Precisely. And that is why the [necessitation|necessitation] rule demands $\\emptyset \\vdash P$. Now, in our notation:",
+            "sid": "S"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "The K axiom encoded in our elimination rule: `(box-elim N M)` — from $\\Box(P \\to Q)$ at step N and $\\Box P$ at step M, derive $\\Box Q$. The necessitation rule is our introduction rule: `(box-intro N)` — from $\\emptyset \\vdash P$ at step N, derive $\\Box P$.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "And the diamond?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "$\\Diamond$ is defined, not primitive. `(diamond-def N)` unfolds $\\Diamond P$ to $\\lnot \\Box \\lnot P$. `(diamond-def-rev N)` folds it back. Two directions, one definition.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So the diamond is [syntactic-sugar|syntactic sugar] — a convenient way to speak of possibility, but at its core, nothing more than the failure of necessary falsehood.",
+            "sid": "C"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Now that we have $\\Box$ and $\\Diamond$, surely we want to combine them with everything we learned before. What about $\\forall x.\\; \\Box P(x)$ — 'everything is necessarily $P$'?",
+            "sid": "C"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "That looks perfectly grammatical. The quantifier binds $x$, the box scopes over $P(x)$. What could go wrong?",
+            "sid": "D"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Try to say what it actually means — aloud. You are standing at world $w$. For every object $x$ in the domain, in every world accessible from $w$, $P(x)$ holds. But… which domain?",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "The domain of all objects, of course. Everything that exists.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "In which world? Consider: in our world, Sherlock Holmes does not exist. But in some possible world — the world of Arthur Conan Doyle's stories — he does. So when I say $\\forall x$, am I ranging over Holmes or not?",
+            "sid": "S"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Wait. If Holmes exists in some world but not in ours, then the set of 'all objects' depends on which world you are standing in. The quantifier means different things in different places.",
+            "sid": "D"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So $\\forall x$ under a $\\Box$ is ambiguous. The $\\Box$ shifts the world, but does the $\\forall$ track the domain of the world you left, or the world you arrived at?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Curry",
+            "text": "This is the [varying-domains|varying domains] problem. If different worlds contain different objects, you must choose a convention. The Barcan formula — $\\Diamond \\exists x.\\; P(x) \\to \\exists x.\\; \\Diamond P(x)$ — is valid only if domains grow when you move to accessible worlds. The converse Barcan formula requires domains to shrink. You cannot have both without fixing the domains to be identical everywhere.",
+            "sid": "C"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Can we just declare the domains are fixed? The same objects in every world?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "You can. That makes the [varying-domains|varying domains] problem go away philosophically. But then you hit a harder wall.",
+            "sid": "S"
+        },
+        {
+            "speaker": "Curry",
+            "text": "The computational wall. Quantified modal logic, even with fixed domains, is **undecidable**. There is no algorithm that can take an arbitrary formula mixing $\\Box$, $\\Diamond$, $\\forall$, and $\\exists$ and determine whether it is a theorem. The combination of quantifier instantiation and world-switching creates an infinite search space that no finite procedure can exhaust.",
+            "sid": "C"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "But propositional modal logic alone — just $\\Box$, $\\Diamond$, and the connectives — is decidable?",
+            "sid": "D"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Yes. The truth of any propositional modal formula can be mechanically settled by examining the finite Kripke structure it generates. Quantifiers destroy this by introducing unbounded term substitution across worlds.",
+            "sid": "S"
+        },
+        {
+            "speaker": "Curry",
+            "text": "So here is what we did for this engine. We introduced a flag — a mode switch. Call it **PL** and **FOL**.",
+            "sid": "C"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Two separate axiom sets?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Curry",
+            "text": "Exactly. In **PL** mode, you get propositional logic plus modal operators — $\\Box$ and $\\Diamond$. Quantifiers, predicate application, and term variables are disabled. Every problem in this mode is decidable.",
+            "sid": "C"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "And in FOL mode?",
+            "sid": "D"
+        },
+        {
+            "speaker": "Curry",
+            "text": "In **FOL** mode, you get quantifiers, predicate application, and term variables — but modal operators are disabled. Again, decidable. Each mode is safe on its own. The boundary between them is the boundary between two decidable fragments of logic.",
+            "sid": "C"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "So the engine refuses to let us write $\\forall x.\\; \\Box P(x)$. Not because the formula is meaningless — philosophers debate it to this day — but because no machine can reliably decide all such formulas.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "A honest engineering choice. The machine declines to enter a room where it cannot promise to find the exit.",
+            "sid": "S"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "Precisely. But what we gain is the ability to reason about what must be, what could be, and what cannot be — across every possible configuration of reality.",
+            "sid": "S"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "We are no longer speaking only about what is true.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "We are speaking about what truth survives, across every door between worlds.",
+            "sid": "S"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "Then what happened to propositional logic?",
+            "sid": "D"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "It never left. It was simply… beneath the surface.",
+            "sid": "S"
+        },
+        {
+            "speaker": "Curry",
+            "text": "The engine still runs on PL. Every rule you have used — implication, contradiction, even substitution — is still compiled into propositional inference steps.",
+            "sid": "C"
+        },
+        {
+            "speaker": "C. I. Lewis",
+            "text": "Then modal logic did not replace it?",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "No. It extends it. But extensions are only notation. The machine still executes propositional transitions.",
+            "sid": "S"
+        },
+        {
+            "speaker": "Curry",
+            "text": "Even $(\\Box(P \\to Q)) \\to (\\Box P \\to \\Box Q)$ is not primitive. It is encoded as a transformation over PL derivations indexed by worlds.",
+            "sid": "C"
+        },
+        {
+            "speaker": "De Morgan",
+            "text": "So the rules we thought were new… were already there, hidden inside the system?",
+            "sid": "D"
+        },
+        {
+            "speaker": "Curry",
+            "text": "Exactly. System K was never added. It was uncovered.",
+            "sid": "C"
+        },
+        {
+            "speaker": "Saul Kripke",
+            "text": "The worlds are aligned. The rules are silent. What remains is not explanation, but action. Step forward — and let reasoning begin.",
+            "sid": "S"
+        }
+    ],
+    "type": "discovery"
+}

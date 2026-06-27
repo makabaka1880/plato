@@ -1,0 +1,46 @@
+{
+    "description": "反过来想，再反过来想。",
+    "goal": "(-> (-> A B) (-> (not B) (not A)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "[implication|逆否命题]：$(A \\to B) \\to (\\lnot B \\to \\lnot A)$。\"如果 $A$ 蕴含 $B$，那么 $B$ 的假蕴含 $A$ 的假\"。翻译成人话：\"如果下雨地就湿\"正确的的话，那么\"地没湿\"就说明\"没下雨\"。",
+            "tactic": null
+        },
+        {
+            "text": "假设 $A \\to B$ 和 $\\lnot B$。目标：$\\lnot A$。",
+            "tactic": "(assume (-> A B))"
+        },
+        {
+            "text": "要证明 $\\lnot A$——用 [reductio-ad-absurdum|归谬法]。假设 $A$，然后推出矛盾。",
+            "tactic": "(assume (not B))"
+        },
+        {
+            "text": "从 $A \\to B$ 和 $A$ 推出 $B$。但现在 [context|上下文]里同时有 $B$ 和 $\\lnot B$——用 `not-elim` 把 $\\lnot B$ 转为 $B \\to \\bot$，配合 $B$ 推出 $\\bot$。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "矛盾已得。用 `not-intro` 消去 $A$ 并得出 $\\lnot A$。$A$ 的假设自己把自己炸了。",
+            "tactic": "(->-elim 1 3)"
+        },
+        {
+            "text": "用 `extend` 把 $A$ 加进第2步的上下文里——这是**弱化规则**：结论 $\\lnot B$ 即使在多了一个额外假设的情况下也照样成立。",
+            "tactic": "(extend A 2)"
+        },
+        {
+            "text": "[discharge|消去] $\\lnot B$，得到 $\\lnot B \\to \\lnot A$。",
+            "tactic": "(not-intro A 4 5)"
+        },
+        {
+            "text": "[discharge|消去] $A \\to B$，逆否命题完成。注意：这个方向（$(A \\to B) \\to (\\lnot B \\to \\lnot A)$）在经典逻辑和直觉主义逻辑中都成立——不需要双重否定消除。反方向则需要经典逻辑撑腰。",
+            "tactic": "(->-intro (not B) 6)"
+        },
+        {
+            "text": "[assumption|Discharge] $A \\to B$ to finish the contrapositive.",
+            "tactic": "(->-intro (-> A B) 7)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}

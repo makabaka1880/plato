@@ -1,0 +1,45 @@
+{
+    "description": "推己及人。",
+    "goal": "(forall x (-> (App P x) (App P x)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "我们进入一阶逻辑。$\\forall$ 是**[universal-quantifier|全称量词]**——意思是“对所有”。目标 $\\forall x.\\; P(x) \\to P(x)$ 读作：对所有 $x$，$P(x)$ [implication|蕴含]自身。这就是第 1 题的恒等定理，推广到一切事物。",
+            "tactic": null
+        },
+        {
+            "text": "证明全称语句的策略：抓一个任意的[witness|见证]——一个新鲜的项变量——在不对它附加任何特殊条件的情况下证出结论，然后推广。如果对一个无名之辈成立，那对所有人都成立。",
+            "tactic": null
+        },
+        {
+            "text": "规则 `fix` 引入一个新鲜项变量，就像 `assume` 对[proposition|命题]做的那样。它给我们 $\\{x\\} \\vdash x$——一个任意的 $x$ 可以用了。",
+            "tactic": "(fix x)"
+        },
+        {
+            "text": "现在就像还在命题逻辑里：假设 $P(x)$，证明 $P(x)$。结构和第 1 题一模一样。",
+            "tactic": "(assume (App P x))"
+        },
+        {
+            "text": "这两个假设在不同的上下文里：$\\{x\\}$ 和 $\\{P(x)\\}$。用 `and-intro` 合并，这样才能同时使用。",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "从合并的上下文中提取 $P(x)$——这就是 $P(x) \\to P(x)$ 的结论，仍在 [witness|见证] $x$ 下。",
+            "tactic": "(and-elim-r 3)"
+        },
+        {
+            "text": "[discharge|消去] $P(x)$，得到 $P(x) \\to P(x)$。上下文只剩 $\\{x\\}$。",
+            "tactic": "(->-intro (App P x) 4)"
+        },
+        {
+            "text": "最后一步：`forall-intro` 检查 $x$ 是新鲜的（不在上下文其他地方出现），然后包装结论：$\\forall x.\\; P(x) \\to P(x)$。证明对所有 $x$ 成立。",
+            "tactic": "(forall-intro x 5)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "fix",
+        "forall-intro"
+    ],
+    "type": "problem"
+}

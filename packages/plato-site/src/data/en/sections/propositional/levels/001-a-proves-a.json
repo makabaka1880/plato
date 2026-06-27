@@ -1,0 +1,30 @@
+{
+    "type": "problem",
+    "description": "I think. Therefore, I am. ",
+    "premise": ["A"],
+    "goal": "A",
+    "guides": [
+        {
+            "text": "To prove $A$ from nothing seems impossible. But we can **assume** $A$ is true — temporarily borrow it.",
+            "tactic": null
+        },
+        {
+            "text": "Write `(assume A)` to borrow $A$ and place it in the context.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "Now glance at the goal. Is it already in the context? Yes — we just borrowed it. Done.",
+            "tactic": null
+        }
+    ],
+    "hints": [
+        {
+            "text": "Use `(assume A)` to borrow the very thing you want to prove.",
+            "tactic": "(assume A)"
+        }
+    ],
+    "unlocks": [
+        "assume",
+        "extend"
+    ]
+}

@@ -1,0 +1,48 @@
+{
+    "description": "When either path leads to the same city, the fork doesn't matter.",
+    "goal": "(-> (or A B) (or B A))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "The goal: $(A \\lor B) \\to (B \\lor A)$. A [disjunction|disjunction] doesn't care about order — '$A$ or $B$' is the same as '$B$ or $A$'. But proving it requires a new tool.",
+            "tactic": null
+        },
+        {
+            "text": "The new rule is `or-elim`, also called **proof by cases**. If you have a disjunction $p \\lor q$, and you can prove the same conclusion from either $p$ or $q$ alone, then the conclusion holds — no matter which way the fork went.",
+            "tactic": null
+        },
+        {
+            "text": "Start as usual for an [implication|implication]: assume $A \\lor B$. This is the disjunction we'll eliminate by cases.",
+            "tactic": "(assume (or A B))"
+        },
+        {
+            "text": "Now prove $B \\lor A$ twice — once from assuming $A$, once from assuming $B$. First case: assume the left disjunct $A$.",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "From $A$, we need to build $B \\lor A$. Since $A$ is our truth and we want it on the **right** of $\\lor$, use `or-intro-r`. The left side can be anything — let it be $B$.",
+            "tactic": "(or-intro-r 2 B)"
+        },
+        {
+            "text": "One case done. Now the second case: assume $B$.",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "From $B$, we need $B \\lor A$ again. This time $B$ is on the left — use `or-intro-l` with $A$ on the right.",
+            "tactic": "(or-intro-l 4 A)"
+        },
+        {
+            "text": "Now the payoff. $A \\lor B$ at step 1. From $A$ we proved $B \\lor A$ (step 3). From $B$ we also proved $B \\lor A$ (step 5). Use `or-elim` with three arguments: the disjunction, the $A$-case proof, and the $B$-case proof.",
+            "tactic": "(or-elim 1 3 5)"
+        },
+        {
+            "text": "Discharge the assumption to finish.",
+            "tactic": "(->-intro (or A B) 6)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "or-elim"
+    ],
+    "type": "problem"
+}

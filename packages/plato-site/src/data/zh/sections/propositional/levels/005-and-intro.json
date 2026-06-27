@@ -1,0 +1,33 @@
+{
+    "description": "鱼，我所欲也；熊掌，亦我所欲也。二者可以得兼。",
+    "goal": "(and A B)",
+    "premise": [
+        "A",
+        "B"
+    ],
+    "guides": [
+        {
+            "text": "已知两件事为真——$A$ 和 $B$。要证明它们**同时**成立。$A \\land B$ 是一个 **[conjunction|合取式]**——它断言两个命题同时为真。符号 $\\land$ 读作\"且\"。"
+        },
+        {
+            "text": "和上一题一样，先把每个 [premise|前提] 假设进来。从 $A$ 开始。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "然后是 $B$——两个都需要才能组合。",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "规则 `and-intro` 把两个真命题配对。手上有第 1 步的 $A$ 和第 2 步的 $B$，把它们合并起来。",
+            "tactic": "(and-intro 1 2)"
+        },
+        {
+            "text": "看——[context|上下文]里现在同时有 $A$ 和 $B$，[conclusion|结论]是 $A \\land B$。证明完毕——两件事确实同时为真。"
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "and-intro"
+    ],
+    "type": "problem"
+}

@@ -1,7 +1,12 @@
-import type { Problem, Tactic, Section, SectionMeta, DiscoveryData } from '@/types'
+import type { Problem, Tactic, Section, SectionMeta, DiscoveryData, Level } from '@/types'
 
 /** Omit `id` from the JSON schema — it's assigned here. */
 type ProblemData = Omit<Problem, 'id'>
+
+/** Raw level file on disk — discriminated by `type`. */
+type LevelFileData =
+    | ({ type: 'discovery' } & DiscoveryData)
+    | ({ type: 'problem' } & ProblemData)
 
 export interface GlossaryEntry {
     id: string
@@ -19,15 +24,9 @@ const sectionMetaModules = import.meta.glob<{ default: SectionMeta }>(
     { eager: true },
 )
 
-/** Section-scoped problems, keyed like `./en/sections/propositional/problems/01-identity.json` */
-const sectionProblemModules = import.meta.glob<{ default: ProblemData }>(
-    './*/sections/*/problems/*.json',
-    { eager: true },
-)
-
-/** Discovery dialogues */
-const discoveryModules = import.meta.glob<{ default: DiscoveryData }>(
-    './*/sections/*/discovery.json',
+/** All level files (discoveries & problems), keyed like `./en/sections/propositional/levels/000-discovery.json` */
+const levelModules = import.meta.glob<{ default: LevelFileData }>(
+    './*/sections/*/levels/*.json',
     { eager: true },
 )
 
@@ -51,11 +50,14 @@ const nlgModules = import.meta.glob<{ default: Record<string, string> }>(
 
 // ── Section-aware loading ─────────────────────────────────────────────
 
-/** Extract section ID from a path like `./en/sections/propositional/section.json` */
+/** Extract section ID from a path like `./en/sections/propositional/levels/000-discovery.json` */
 function extractSectionId(path: string): string {
-    // path: "./en/sections/{id}/section.json"
+    // path: "./en/sections/{id}/section.json" or "./en/sections/{id}/levels/..."
     const parts = path.split('/')
-    return parts[parts.length - 2]!
+    // section.json: parts[parts.length-2] = section id
+    // levels/foo.json: parts[parts.length-3] = section id
+    if (parts[parts.length - 1] === 'section.json') return parts[parts.length - 2]!
+    return parts[parts.length - 3]!
 }
 
 /** Load all sections for a locale. Falls back to `en`. */
@@ -75,28 +77,31 @@ export function loadSections(locale = 'en'): Section[] {
         const id = extractSectionId(metaPath)
         const meta = sectionMetaModules[metaPath]!.default
 
-        // Load problems for this section
-        const problemPrefix = useFallback
-            ? `${fallbackPrefix}${id}/problems/`
-            : `${prefix}${id}/problems/`
-        const problemPaths = Object.keys(sectionProblemModules)
-            .filter(p => p.startsWith(problemPrefix))
+        // Load all level files for this section (sorted by filename = level order)
+        const levelPrefix = useFallback
+            ? `${fallbackPrefix}${id}/levels/`
+            : `${prefix}${id}/levels/`
+        const levelPaths = Object.keys(levelModules)
+            .filter(p => p.startsWith(levelPrefix))
             .sort()
 
-        const problems: Problem[] = problemPaths.map((path, index) => ({
-            id: index + 1, // 1-based within section
-            ...sectionProblemModules[path]!.default,
-        }))
+        let problemId = 0
+        const levels: Level[] = levelPaths.map(path => {
+            const raw = levelModules[path]!.default
+            if (raw.type === 'discovery') {
+                const { type, ...data } = raw
+                return { type: 'discovery' as const, data }
+            }
+            // problem
+            problemId++
+            const { type, ...data } = raw
+            return {
+                type: 'problem' as const,
+                data: { id: problemId, ...data },
+            }
+        })
 
-        // Load discovery
-        const discoveryPath = useFallback
-            ? `${fallbackPrefix}${id}/discovery.json`
-            : `${prefix}${id}/discovery.json`
-        const discovery: DiscoveryData = discoveryModules[discoveryPath]?.default
-            ?? discoveryModules[`${fallbackPrefix}${id}/discovery.json`]?.default
-            ?? { title: id, lines: [] }
-
-        return { id, meta, problems, discovery }
+        return { id, meta, levels }
     })
 
     // Sort by order
@@ -128,10 +133,13 @@ export function resolveGlobalIndex(
     const sections = loadSections(locale)
     let offset = 0
     for (const section of sections) {
-        if (globalIdx < offset + section.problems.length) {
+        const problemCount = section.levels.filter(l => l.type === 'problem').length
+        if (globalIdx < offset + problemCount) {
+            // Return 0-based problem index within the section (NOT the level index).
+            // Callers that need level indices must add +1 to skip the discovery at level 0.
             return { sectionId: section.id, sectionIdx: globalIdx - offset }
         }
-        offset += section.problems.length
+        offset += problemCount
     }
     return null
 }
@@ -141,11 +149,13 @@ export function resolveGlobalIndex(
 /** Get all problems across all sections, with section metadata attached. */
 export function loadAllProblems(locale = 'en'): (Problem & { sectionId: string; sectionIdx: number })[] {
     return loadSections(locale).flatMap(section =>
-        section.problems.map(p => ({
-            ...p,
-            sectionId: section.id,
-            sectionIdx: p.id - 1, // 0-based within section
-        }))
+        section.levels
+            .filter((l): l is { type: 'problem'; data: Problem } => l.type === 'problem')
+            .map((l, i) => ({
+                ...l.data,
+                sectionId: section.id,
+                sectionIdx: i, // 0-based problem index within section
+            }))
     )
 }
 

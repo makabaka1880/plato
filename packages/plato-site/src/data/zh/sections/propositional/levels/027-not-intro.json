@@ -1,0 +1,36 @@
+{
+    "description": "欲擒故纵。",
+    "goal": "(not (and A (not A)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "目标是 $\\lnot (A \\land \\lnot A)$。这就是**[contradiction|矛盾]律**：没有 [proposition|命题] 可以同时为真又为假。要证明一个 [negation|否定]，我们用**[reductio-ad-absurdum|归谬法]**——假设我们想推翻的东西，然后证明它会导致矛盾。",
+            "tactic": null
+        },
+        {
+            "text": "策略：假设 $A \\land \\lnot A$，然后证明它里面装着两个互相矛盾的命题——$A$ 和 $\\lnot A$。规则 `not-intro` 会帮我们推出 $\\lnot (A \\land \\lnot A)$。先做出这个 [assumption|假设]。",
+            "tactic": "(assume (and A (not A)))"
+        },
+        {
+            "text": "拆出左边的合取支：$A$。",
+            "tactic": "(and-elim-l 1)"
+        },
+        {
+            "text": "再拆出右边的：$\\lnot A$。现在你同时持有 $A$（第 2 步）和 $\\lnot A$（第 3 步）——一个 [contradiction|矛盾]。",
+            "tactic": "(and-elim-r 1)"
+        },
+        {
+            "text": "`not-intro` 规则接受三个参数：要被否定的 [formula|公式]，以及两个步骤——它们（a）都在 [context|上下文] 中包含那个公式，且（b）证明了互相矛盾的东西。第 2 步和第 3 步共享 $A \\land \\lnot A$ 在上下文中，且它们的 [conclusion|结论] 是 $A$ 和 $\\lnot A$——完美。结果消去 [assumption|假设] 并产生它的 [negation|否定]。",
+            "tactic": "(not-intro (and A (not A)) 2 3)"
+        },
+        {
+            "text": "完成了。没有 [assumption|假设] 残留在上下文中——[contradiction|矛盾]律作为无条件真理独立成立。",
+            "tactic": null
+        }
+    ],
+    "hints": [],
+    "unlocks": [
+        "not-intro"
+    ],
+    "type": "problem"
+}

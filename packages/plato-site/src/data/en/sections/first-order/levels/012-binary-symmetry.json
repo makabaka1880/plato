@@ -1,0 +1,42 @@
+{
+    "description": "If a relation works both ways, then swapping the arguments is fair game.",
+    "goal": "(-> (forall x (forall y (-> (App (App R x) y) (App (App R y) x)))) (-> (App (App R a) b) (App (App R b) a)))",
+    "premise": [],
+    "guides": [
+        {
+            "text": "A **symmetric** relation is one where $R(x,y)$ always implies $R(y,x)$. For example, 'is a sibling of' is symmetric: if Alice is a sibling of Bob, then Bob is a sibling of Alice. The goal says: if $R$ is symmetric, then from $R(a,b)$ we can conclude $R(b,a)$. This is a two-step instantiation of the symmetry property.",
+            "tactic": null
+        },
+        {
+            "text": "Assume $R$ is symmetric: for all $x$ and $y$, $R(x,y)$ [implication|implies] $R(y,x)$. This is the [antecedent|antecedent] of the main implication.",
+            "tactic": "(assume (forall x (forall y (-> (App (App R x) y) (App (App R y) x)))))"
+        },
+        {
+            "text": "Now assume the second [antecedent|antecedent]: $R(a,b)$. We need to reach $R(b,a)$.",
+            "tactic": "(assume (App (App R a) b))"
+        },
+        {
+            "text": "Instantiate the symmetry property with $a$, replacing the outer $x$. This gives $\\forall y.\\; R(a,y) \\to R(y,a)$ — 'if $R$ relates $a$ to something, that something relates back to $a$.'",
+            "tactic": "(forall-elim 1 a)"
+        },
+        {
+            "text": "Now instantiate with $b$, replacing $y$. We get $R(a,b) \\to R(b,a)$ — exactly the [implication|implication] we need.",
+            "tactic": "(forall-elim 3 b)"
+        },
+        {
+            "text": "[modus-ponens|Modus ponens]: from $R(a,b) \\to R(b,a)$ (step 4) and $R(a,b)$ (step 2), conclude $R(b,a)$.",
+            "tactic": "(->-elim 4 2)"
+        },
+        {
+            "text": "[discharge|Discharge] the inner assumption $R(a,b)$, giving $R(a,b) \\to R(b,a)$.",
+            "tactic": "(->-intro (App (App R a) b) 5)"
+        },
+        {
+            "text": "[discharge|Discharge] the symmetry premise to complete the proof.",
+            "tactic": "(->-intro (forall x (forall y (-> (App (App R x) y) (App (App R y) x)))) 6)"
+        }
+    ],
+    "hints": [],
+    "unlocks": [],
+    "type": "problem"
+}

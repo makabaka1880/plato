@@ -1,0 +1,26 @@
+{
+    "type": "discovery",
+    "title": "A Proof for Everything",
+    "lines": [
+        {
+            "speaker": "Plato",
+            "text": "We have mastered the connectives. But there is a deeper pattern: a proof that works for one atom works for **any** atom.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "Substitution. If you proved a theorem using atom $A$, you can substitute any formula for $A$ everywhere, and the proof still holds.",
+            "sid": "A"
+        },
+        {
+            "speaker": "Plato",
+            "text": "`(subst N ...)` — give it a step and a mapping of atoms to formulas, and it rewrites the proof with those replacements. A single proof becomes a family of theorems.",
+            "sid": "P"
+        },
+        {
+            "speaker": "Aristotle",
+            "text": "This is what makes logic a tool, not just a game. A proof about $A$ is really a proof about everything that fits the same shape.",
+            "sid": "A"
+        }
+    ]
+}

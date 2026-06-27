@@ -1,0 +1,66 @@
+{
+    "description": "福无双至，祸不单行。",
+    "goal": "(-> (not (or A B)) (and (not A) (not B)))",
+    "premise": [],
+    "guides": [],
+    "hints": [
+        {
+            "text": "德摩根律的前一半：$\\lnot (A \\lor B) \\to \\lnot A \\land \\lnot B$。\"并非 (A 或 B)\" 等价于 \"非 A 且非 B\"。比如\"我既没中彩票也没捡到钱\"，那就等价于\"我不是中了彩票或捡到钱\"。先证一个方向。",
+            "tactic": null
+        },
+        {
+            "text": "假设 $\\lnot (A \\lor B)$。目标是 $\\lnot A \\land \\lnot B$——一个合取。所以需要分别证明 $\\lnot A$ 和 $\\lnot B$，然后合起来。",
+            "tactic": "(assume (not (or A B)))"
+        },
+        {
+            "text": "要证 $\\lnot A$，用 [reductio-ad-absurdum|归谬法]：假设 $A$，然后试着推出 [contradiction|矛盾]。",
+            "tactic": "(assume A)"
+        },
+        {
+            "text": "用 `extend` 把 $A$ 加进第1步的上下文里，保持结论 $\\lnot (A \\lor B)$ 不变。这就是**弱化**——为 `not-intro` 准备的否定那一半。",
+            "tactic": "(extend A 1)"
+        },
+        {
+            "text": "把 $\\lnot (A \\lor B)$ 加进第2步的上下文，保持 $A$ 作为结论。然后构造析取式。",
+            "tactic": "(extend (not (or A B)) 2)"
+        },
+        {
+            "text": "步骤 4 和 6 的上下文里都有 $A$，分别证明了 $\\lnot (A \\lor B)$ 和 $A \\lor B$——完美的 [contradiction|矛盾]。对 $A$ 应用 `not-intro` 得出 $\\lnot A$。",
+            "tactic": "(or-intro-l 4 B)"
+        },
+        {
+            "text": "$\\lnot A$ 搞定。如法炮制 $\\lnot B$：假设 $B$。",
+            "tactic": "(not-intro A 5 3)"
+        },
+        {
+            "text": "把 $B$ 和 $\\lnot (A \\lor B)$ 绑在一起（用 `and-intro`）。",
+            "tactic": "(assume B)"
+        },
+        {
+            "text": "用 `extend` 把 $B$ 加进第1步的上下文，保持 $\\lnot (A \\lor B)$ 作为结论。",
+            "tactic": "(extend B 1)"
+        },
+        {
+            "text": "把 $\\lnot (A \\lor B)$ 加进假设 $B$ 的那一步的上下文，保持 $B$ 作为结论。",
+            "tactic": "(extend (not (or A B)) 7)"
+        },
+        {
+            "text": "步骤 10 有 $\\lnot (A \\lor B)$，步骤 12 有 $A \\lor B$，两者共享 $B$ 的 [context|上下文]——对 $B$ 用 `not-intro` 得出 $\\lnot B$。",
+            "tactic": "(or-intro-r 9 A)"
+        },
+        {
+            "text": "合并 $\\lnot A$ 和 $\\lnot B$，合取得证。",
+            "tactic": "(not-intro B 10 8)"
+        },
+        {
+            "text": "消去最初的 [assumption|假设]。德摩根一半完成。",
+            "tactic": "(and-intro 6 11)"
+        },
+        {
+            "text": "Discharge the original [assumption|assumption].",
+            "tactic": "(->-intro (not (or A B)) 12)"
+        }
+    ],
+    "unlocks": [],
+    "type": "problem"
+}
